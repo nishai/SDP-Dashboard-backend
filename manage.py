@@ -16,7 +16,7 @@ if __name__ == '__main__':
         raise invalid_python_version_exception
 
     # default settings to use
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings.common")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dashboard.settings.common")
 
     # check if django is installed
     try:
