@@ -1,3 +1,5 @@
 from django.test import TestCase
+from .models import Enrolment
 
-# Create your tests here.
+class Enrolment(TestCase):
+    """This class defines test cases for the Enrolment model"""
