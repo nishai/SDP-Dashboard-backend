@@ -13,6 +13,9 @@ migrate:
 run:
 	python manage.py runserver
 
+clean-data:
+	make -C $(DEPLOY_DIR) clean-data
+
 clean:
 	make -C $(DEPLOY_DIR) clean
 

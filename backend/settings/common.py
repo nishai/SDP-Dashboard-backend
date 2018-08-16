@@ -12,15 +12,13 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+# Helper Variables
+DJANGO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # folder in same directory as manage.py
+PROJECT_ROOT = os.path.dirname(DJANGO_ROOT)                                 # folder containing manage.py
+RUNTIME_DIR = os.path.join(PROJECT_ROOT, "deploy", "data")                   # recommended data storage location
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'z9q1h8=siob2lm1y3ct@8av)9esvqfs5$_+q#*th=i5+!med$('
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -78,7 +76,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(RUNTIME_DIR, 'db.sqlite3'),
     }
 }
 
@@ -120,3 +118,29 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# ========================================================================== #
+# Secret Key                                                                 #
+# ========================================================================== #
+
+def get_or_gen_key(file: str, length: int):
+    try:
+        return open(file).read().strip()
+    except IOError:
+        try:
+            from django.utils.crypto import get_random_string
+            chars = 'abcdefghijklmnopqrstuvwxyz0123456789!$%&()=+-_'
+            key = get_random_string(length, chars)
+            with open(file, 'w') as f:
+                f.write(key)
+                print(f'Generated new secret key at: {file}')
+            if len(key) != length:
+                raise Exception('Secret key length mismatch!')
+            return key
+        except IOError:
+            raise Exception(f'Could not open {file} for writing!')
+
+
+SECRET_FILE = os.path.join(RUNTIME_DIR, "secret.token")
+SECRET_KEY = get_or_gen_key(SECRET_FILE, 50)

@@ -5,9 +5,11 @@ all:
 	# @echo "  run        to run the project"
 	# @echo "  clean      to clean runtime data"
 
+clean-data:
+	find ./data/* -not -name "README.md" -a -not -name ".gitignore" -exec rm -rf {} \;
+
 clean:
-	@echo "deploy is currently unimplemented"
-	# find ./data/* -not -name "README.md" -a -not -name ".gitignore" -exec rm -rf {} \;
+	@echo "clean is currently unimplemented"
 
 run:
 	@echo "deploy is currently unimplemented"
