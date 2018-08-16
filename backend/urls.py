@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from apps.dashboard_api.views import EnrolmentView
+from backend.apps.dashboard_api.views import EnrolmentView
 
 
 urlpatterns = [
