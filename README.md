@@ -16,18 +16,31 @@ Install requirements:
 ```
 $ pip install -r requirements.txt
 ```
-
 ### Run
 
-Migrate your database:
+**Recommended:** Run the server via a docker container (automatically sets up the environment)
+ - builds dashboard-api image:
+ - migrates database
+```
+$ make docker-run
+```
+
+**Non-Recommended**  Run the server (You need to manage the environment manually)
+ - migrates database
+```
+$ make run
+```
+
+**Manual**  Run the server manually (You need to manage the environment manually)
+- Migrate your database:
 ```
 $ python manage.py migrate
 ```
-Create a super user:
+- Create a super user:
 ```
 $ python manage.py createsuperuser --email admin@example.com --username admin
 ```
-Run the server:
+- Run the server:
 
 ```
 $ django-admin runserver

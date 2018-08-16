@@ -15,8 +15,7 @@ import os
 # Helper Variables
 DJANGO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))    # folder in same directory as manage.py
 PROJECT_DIR = os.path.dirname(DJANGO_DIR)                                   # folder containing manage.py
-DATA_DIR = os.path.join(PROJECT_DIR, "deploy", "data")                      # recommended data storage location
-CONFIG_DIR = os.path.join(PROJECT_DIR, "deploy", "config")
+DATA_DIR = os.path.join(PROJECT_DIR, "data")                                # recommended data storage location
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/

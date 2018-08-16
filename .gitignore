@@ -5,7 +5,7 @@
 *.py[cod]
 __python__/*
 
-# Used by Pyenv for the project (Highly recomend to install to manage your python versions)
+# Used by Pyenv for the project (Highly recommend to install to manage your python versions)
 .python-version
 .envrc
 

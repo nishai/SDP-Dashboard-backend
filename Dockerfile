@@ -12,7 +12,7 @@ FROM python:3.7-alpine
 # same as bash's cd
 WORKDIR /usr/src/dashboard-backend
 # mount point for data
-VOLUME ["/usr/src/dashboard-backend/deploy/data"]
+VOLUME ["/usr/src/dashboard-backend/data"]
 
 # ============= #
 # DEPENDENCIES: #
