@@ -1,3 +1,4 @@
+# ignore jetbrains project folder
 .idea
 
 # do NOT track Python compilation files
@@ -6,6 +7,7 @@ __python__/*
 
 # Used by Pyenv for the project (Highly recomend to install to manage your python versions)
 .python-version
+.envrc
 
 # ignore files and folders for cached items
 .cache*
@@ -17,3 +19,6 @@ __python__/*
 # ignore database files
 *.sql
 *.sqlite3
+
+# mac info files
+.DS_Store

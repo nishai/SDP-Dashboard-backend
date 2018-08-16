@@ -13,9 +13,10 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import os
 
 # Helper Variables
-DJANGO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # folder in same directory as manage.py
-PROJECT_ROOT = os.path.dirname(DJANGO_ROOT)                                 # folder containing manage.py
-RUNTIME_DIR = os.path.join(PROJECT_ROOT, "deploy", "data")                   # recommended data storage location
+DJANGO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))    # folder in same directory as manage.py
+PROJECT_DIR = os.path.dirname(DJANGO_DIR)                                   # folder containing manage.py
+DATA_DIR = os.path.join(PROJECT_DIR, "deploy", "data")                      # recommended data storage location
+CONFIG_DIR = os.path.join(PROJECT_DIR, "deploy", "config")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
@@ -37,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # user
     'rest_framework',
+    'apps.dashboard_api',
 ]
 
 MIDDLEWARE = [
@@ -76,7 +78,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(RUNTIME_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
     }
 }
 
@@ -124,6 +126,7 @@ STATIC_URL = '/static/'
 # Secret Key                                                                 #
 # ========================================================================== #
 
+
 def get_or_gen_key(file: str, length: int):
     try:
         return open(file).read().strip()
@@ -142,5 +145,6 @@ def get_or_gen_key(file: str, length: int):
             raise Exception(f'Could not open {file} for writing!')
 
 
-SECRET_FILE = os.path.join(RUNTIME_DIR, "secret.token")
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_FILE = os.path.join(DATA_DIR, "secret.token")
 SECRET_KEY = get_or_gen_key(SECRET_FILE, 50)
