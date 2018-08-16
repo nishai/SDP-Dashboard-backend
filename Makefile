@@ -19,5 +19,23 @@ clean-data:
 clean:
 	make -C $(DEPLOY_DIR) clean
 
-deploy:
-	make -C $(DEPLOY_DIR) run
+#deploy:
+#	make -C $(DEPLOY_DIR) run
+
+docker-build:
+	@echo
+	@echo "Building Docker Container: dashboard-api"
+	@echo "========================================"
+	docker build -t dashboard-api ./
+
+docker-migrate: docker-build
+	@echo
+	@echo "Migrating Docker Container:  dashboard-api"
+	@echo "========================================"
+	docker run --rm -it -v "$(shell pwd)/deploy/data:/usr/src/dashboard-backend/deploy/data" --name "dashboard-api-server" dashboard-api migrate
+
+docker-run: docker-migrate
+	@echo
+	@echo "Running Docker Container:  dashboard-api"
+	@echo "========================================"
+	docker run --rm -it -v "$(shell pwd)/deploy/data:/usr/src/dashboard-backend/deploy/data" -p 8000:8000 --name "dashboard-api-server" dashboard-api
