@@ -11,6 +11,8 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'dashboard.settings.common')
+# default settings to use - also set in manage.py
+os.environ.setdefault('DASHBOARD_DEVELOP', 'true')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', "dashboard.settings.development" if os.environ.get("DASHBOARD_DEVELOP") == "true" else "dashboard.settings.production")
 
 application = get_wsgi_application()

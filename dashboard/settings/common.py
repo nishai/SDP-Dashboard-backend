@@ -19,6 +19,7 @@ DATA_DIR = os.path.join(PROJECT_DIR, "data")                                # re
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
+# $ python manage.py check --deploy
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -35,12 +36,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
-    # external apps
-    'rest_framework',
-
     # dashboard apps
     'dashboard.apps.dashboard_api',
+    # external apps
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -55,6 +54,7 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'dashboard.urls'
 
+# needed for rest_framework debugging
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -120,9 +120,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
+# also needed for debug
 
 STATIC_URL = '/static/'
-
 
 # ========================================================================== #
 # Secret Key                                                                 #

@@ -15,8 +15,9 @@ if __name__ == '__main__':
         ) % (v[0], v[1], v[2], t[0], t[1], t[2]))  # old method of formatting to prevent errors if version is wrong.
         raise invalid_python_version_exception
 
-    # default settings to use
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "dashboard.settings.common")
+    # default settings to use - also set in dashboard.wsgi
+    os.environ.setdefault('DASHBOARD_DEVELOP', 'true')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', "dashboard.settings.development" if os.environ.get("DASHBOARD_DEVELOP") == "true" else "dashboard.settings.production")
 
     # check if django is installed
     try:
