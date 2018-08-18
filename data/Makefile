@@ -4,4 +4,6 @@ all:
 	@echo "  clean-data to clean runtime data"
 
 clean-data:
-	find ./data/* -not -name "README.md" -a -not -name ".gitignore" -a -not -name "Makefile" -exec rm -rf {} \;
+	@echo "[Cleaning: ./data]"
+	@find ./* -not -name "README.md" -a -not -name ".gitignore" -a -not -name "Makefile" -print -exec rm -rf {} \;
+	

@@ -12,32 +12,34 @@ all:
 	@echo "  clean-data         to clean only generated data"
 
 migrate:
-	python manage.py migrate
+	@python manage.py migrate
 
 run: migrate
-	python manage.py runserver
+	@python manage.py runserver
 
+check:
+	@python manage.py check --deploy
+
+clean-data:
+	@make -C $(DATA_DIR) clean-data
 
 clean: clean-data
 
-clean-data:
-	make -C $(DATA_DIR) clean
-
+# vars
+CONTAINER_NAME = dashboard-backend-server
+IMAGE_NAME     = dashboard-backend
+DIR_VOL        = $(shell pwd)/data
+DIR_MNT        = /usr/src/dashboard-backend/data
+RUN_PARAMS     = --rm -it -v "$(DIR_VOL):$(DIR_MNT)" --name "$(CONTAINER_NAME)"
 
 docker-build:
-	@echo
-	@echo "Building Docker Container: dashboard-api"
-	@echo "========================================"
-	docker build -t dashboard-api ./
+	docker build -t "$(IMAGE_NAME)" ./
 
 docker-migrate: docker-build
-	@echo
-	@echo "Migrating Docker Container:  dashboard-api"
-	@echo "========================================"
-	docker run --rm -it -v "$(shell pwd)/data:/usr/src/dashboard-backend/data" --name "dashboard-api-server" dashboard-api migrate
+	docker run $(RUN_PARAMS) $(IMAGE_NAME) migrate
 
 docker-run: docker-migrate
-	@echo
-	@echo "Running Docker Container:  dashboard-api"
-	@echo "========================================"
-	docker run --rm -it -v "$(shell pwd)/data:/usr/src/dashboard-backend/data" -p 8000:8000 --name "dashboard-api-server" dashboard-api
+	docker run $(RUN_PARAMS) -p "8000:8000" $(IMAGE_NAME)
+
+docker-check: docker-build
+	docker run $(RUN_PARAMS) $(IMAGE_NAME) check --deploy
