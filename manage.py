@@ -2,7 +2,7 @@
 import os
 import sys
 
-MIN_PYTHON_VERSION = (3, 7, 0)
+MIN_PYTHON_VERSION = (3, 6, 0)
 
 if __name__ == '__main__':
 
