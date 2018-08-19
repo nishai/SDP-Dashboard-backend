@@ -1,0 +1,12 @@
+
+# this file is important for building the docker image,
+# preventing all files from being copies into it,
+# except the ones defined below.
+
+# Ignore:
+**/*
+
+# Keep:
+!dashboard/**/*
+!manage.py
+!requirements.txt
