@@ -6,6 +6,12 @@
 # Intellij
 .idea/
 
+# Code Coverage stuff
+.codecov
+
+# Or stuff
+sprint_texts/
+
 # ============================================================================= #
 # PYTHON                                                                        #
 # https://github.com/github/gitignore/blob/master/Python.gitignore              #
