@@ -61,7 +61,9 @@ CONTAINER_NAME = dashboard-backend-server
 IMAGE_NAME     = dashboard-backend
 DIR_VOL        = $(shell pwd)/data
 DIR_MNT        = /usr/src/dashboard-backend/data
-RUN_PARAMS     = --rm -v "$(DIR_VOL):$(DIR_MNT)" --name "$(CONTAINER_NAME)"
+MIGRATIONS_VOL = $(shell pwd)/dashboard/apps/dashboard_api/migrations
+MIGRATIONS_MNT = /usr/src/dashboard-backend/dashboard/apps/dashboard_api/migrations
+RUN_PARAMS     = --rm -v "$(DIR_VOL):$(DIR_MNT)" -v "$(MIGRATIONS_VOL):$(MIGRATIONS_MNT)" --name "$(CONTAINER_NAME)"
 
 docker-build:
 	@make section tag="Docker - Building Image"
