@@ -29,8 +29,6 @@ section:
 # LOCAL                                                                     #
 # =========================================================================	#
 
-DATA_DIR = "./data"
-
 migrate:
 	@make section tag="Local - Migrating Database"
 	python manage.py makemigrations
@@ -49,9 +47,15 @@ check:
 	@make section tag="Local - Performing Checks"
 	python manage.py check --deploy
 
-clean:
-	@make section tag="Cleaning"
-	make -C $(DATA_DIR) clean-data
+clean: clean-data
+
+clean-data:
+	@make section tag="Cleaning Data"
+	make -C "$(DIR_VOL)" clean-data
+
+clean-migrations:
+	@make section tag="Cleaning Migrations"
+	make -C "$(MIGRATIONS_VOL)" clean-migrations
 
 # =========================================================================	#
 # DOCKER                                                                    #
@@ -59,10 +63,12 @@ clean:
 
 CONTAINER_NAME = dashboard-backend-server
 IMAGE_NAME     = dashboard-backend
+
 DIR_VOL        = $(shell pwd)/data
 DIR_MNT        = /usr/src/dashboard-backend/data
 MIGRATIONS_VOL = $(shell pwd)/dashboard/apps/dashboard_api/migrations
 MIGRATIONS_MNT = /usr/src/dashboard-backend/dashboard/apps/dashboard_api/migrations
+
 RUN_PARAMS     = --rm -v "$(DIR_VOL):$(DIR_MNT)" -v "$(MIGRATIONS_VOL):$(MIGRATIONS_MNT)" --name "$(CONTAINER_NAME)"
 
 docker-build:

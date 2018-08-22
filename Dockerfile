@@ -13,6 +13,8 @@ FROM python:3.7-alpine
 WORKDIR /usr/src/dashboard-backend
 # mount point for data
 VOLUME ["/usr/src/dashboard-backend/data"]
+# mount point for migrations (alreafy copied by default, use this to override/save new migrations)
+VOLUME ["/usr/src/dashboard-backend/dashboard/apps/dashboard_api/migrations"]
 
 # ============= #
 # DEPENDENCIES: #
