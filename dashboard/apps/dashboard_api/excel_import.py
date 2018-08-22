@@ -38,7 +38,10 @@ def load_file(file_url):
 			table_titles, table_data = load_csv(file_url)
 		elif file_url[-4:] == ".xls" or file_url[-5:] == ".xlsx":
 			all_titles, all_data = load_excel(file_url)
-			all_titles = [[col.replace(" ","_") for col in sheet_title] for sheet_titles in all_titles]
+			
+			# asapt titles to snake case
+			all_titles = [[col.replace(" ","_").lower() for col in sheet_title] for sheet_titles in all_titles]
+			# adapt data from lists to tuples
 			all_data = [[tuple(row) for row in sheet_data] for sheet_data in all_data]
 		else:
 			raise Exception("bad file type provided. only .csv, .xls, .xlsx accepted.")
