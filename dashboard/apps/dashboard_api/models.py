@@ -14,15 +14,15 @@ class StudentInfo(models.Model):
 	program_code = models.ForeignKey('ProgramInfo', on_delete=models.PROTECT)
 	
 
-class ProgramInfo(model.Model):
+class ProgramInfo(models.Model):
 	program_code = models.CharField(max_length=5, primary_key=True)
 	program_title = models.CharField(max_length=255)
 
-class CourseInfo(model.Model):
+class CourseInfo(models.Model):
 	course_code = models.CharField(max_length=8, primary_key=True)
 	course_title = models.CharField(max_length=255)
 	
-class CourseStats(model.Model):
+class CourseStats(models.Model):
 	course_code = models.ForeignKey('CourseInfo', on_delete=models.PROTECT)
 	calendar_instance_year = models.CharField(max_length=4)
 	student_number = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
