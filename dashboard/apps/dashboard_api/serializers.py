@@ -18,3 +18,8 @@ class CourseStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseStats
         fields = '__all__'
+
+class AverageYearMarksSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = AverageYearMarks
+		fields = '__all__'
