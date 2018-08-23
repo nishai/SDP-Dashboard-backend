@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # dashboard apps
     'dashboard.apps.dashboard_api',
-	'dashboard.apps.excel_import'
+	'dashboard.apps.excel_import',
     # external apps
     'rest_framework',
 ]
