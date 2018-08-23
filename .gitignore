@@ -9,6 +9,10 @@
 # Code Coverage stuff
 .codecov
 
+# Excel  Data Files
+*.xls
+*.xlsx
+
 # Or stuff
 sprint_texts/
 
