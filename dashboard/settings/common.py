@@ -17,6 +17,10 @@ DJANGO_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))    # fo
 PROJECT_DIR = os.path.dirname(DJANGO_DIR)                                   # folder containing manage.py
 DATA_DIR = os.path.join(PROJECT_DIR, "data")                                # recommended data storage location
 
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
+    print(f"Made data directory: {DATA_DIR}")
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 # $ python manage.py check --deploy
