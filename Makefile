@@ -1,5 +1,7 @@
 
 .DEFAULT_GOAL := help
+# force rebuilds
+.PHONY: dockerfile dockerfile.serve
 
 # =========================================================================	#
 # UTIL                                                                      #
@@ -8,17 +10,18 @@
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "  migrate            initialise & migrate the database"
-	@echo "  run                serve the project in *production mode*"
 	@echo "  dev                serve the project in *develop mode*, supports live updates"
-	@echo "  check              run django production checks"
-	@echo "  clean              clean the project"
+	@echo "  serve              serve the project in *production mode*"
 	@echo
-	@echo "  docker-build       dockerise the project"
+	@echo "  clean-data         clean the project"
+	@echo "  clean-migrations   clean the project"
+	@echo
+	@echo "  dockerfile         dockerise the project"
 	@echo "  docker-migrate     dockerised version of migrate"
-	@echo "  docker-run         dockerised version of run"
 	@echo "  docker-dev         dockerised version of dev"
-	@echo "  docker-check       dockerised version of check"
-	@echo "  docker-up          docker-compose up"
+	@echo
+	@echo "  dockerfile.serve   dockerise the production project"
+	@echo "  docker-serve       dockerised version of serve"
 
 label = Backend
 
@@ -29,64 +32,69 @@ section:
 # LOCAL                                                                     #
 # =========================================================================	#
 
-DATA_DIR = "./data"
-
 migrate:
 	@make section tag="Local - Migrating Database"
 	python manage.py makemigrations
 	@make section tag="Local - Making Migrations"
 	python manage.py migrate
 
-run: migrate
-	@make section tag="Local - Serving"
-	DEBUG="false" python manage.py runserver
-
 dev: migrate
 	@make section tag="Local - Serving (Dev Mode)"
 	DEBUG="true" python manage.py runserver
 
-check:
-	@make section tag="Local - Performing Checks"
-	python manage.py check --deploy
+serve: migrate
+	@make section tag="Local - Serving"
+	DEBUG="false" python manage.py runserver
 
-clean:
-	@make section tag="Cleaning"
-	make -C $(DATA_DIR) clean-data
+clean-data:
+	@make section tag="Cleaning Data"
+	make -C "./data" clean-data
+
+clean-migrations:
+	@make section tag="Cleaning Migrations"
+	make -C "./dashboard/apps/dashboard_api/migrations" clean-migrations
 
 # =========================================================================	#
-# DOCKER                                                                    #
+# DOCKER - Local Modifictions & Live Updates                                #
 # =========================================================================	#
 
-CONTAINER_NAME = dashboard-backend-server
-IMAGE_NAME     = dashboard-backend
-DIR_VOL        = $(shell pwd)/data
-DIR_MNT        = /usr/src/dashboard-backend/data
-MIGRATIONS_VOL = $(shell pwd)/dashboard/apps/dashboard_api/migrations
-MIGRATIONS_MNT = /usr/src/dashboard-backend/dashboard/apps/dashboard_api/migrations
-RUN_PARAMS     = --rm -v "$(DIR_VOL):$(DIR_MNT)" -v "$(MIGRATIONS_VOL):$(MIGRATIONS_MNT)" --name "$(CONTAINER_NAME)"
+IMAGE_NAME       = backend-image
+CNTNR_NAME       = backend-container
 
-docker-build:
-	@make section tag="Docker - Building Image"
+VBIND_DATA       = -v "$(shell pwd)/data:/app/data"
+VBIND_SRC        = -v "$(shell pwd)/manage.py:/app/manage.py" -v "$(shell pwd)/dashboard:/app/dashboard"
+
+RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC)
+
+dockerfile:
+	@make section tag="Local - Building Dockerfile"
 	docker build -t "$(IMAGE_NAME)" ./
 
-docker-migrate: docker-build
+docker-migrate: dockerfile
 	@make section tag="Docker - Making Migrations"
-	docker run $(RUN_PARAMS) $(IMAGE_NAME) makemigrations
+	docker run $(RUN_FLAGS) $(IMAGE_NAME) makemigrations
 	@make section tag="Docker - Migrating Database"
-	docker run $(RUN_PARAMS) $(IMAGE_NAME) migrate
-
-docker-run: docker-migrate
-	@make section tag="Docker - Serving"
-	docker run $(RUN_PARAMS) -p "8000:8000" $(IMAGE_NAME)
+	docker run $(RUN_FLAGS) $(IMAGE_NAME) migrate
 
 docker-dev: docker-migrate
 	@make section tag="Docker - Serving (Dev Mode)"
-	@echo NOT IMPLEMENTED
+	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) runserver
 
-docker-check: docker-build
-	@make section tag="Docker - Performing Checks"
-	docker run $(RUN_PARAMS) $(IMAGE_NAME) check --deploy
+# =========================================================================	#
+# DOCKER - Serve Production                                                 #
+# =========================================================================	#
 
-docker-up:
-	@make section tag="Docker Compose - Up"
-	docker-compose up
+IMAGE_NAME_SERVE = backend-image-serve
+
+CNTNR_NAME_SERVE = backend-container-serve
+
+RUN_FLAGS_SERVE  = --rm --name "$(CNTNR_NAME_SERVE)"
+
+dockerfile.serve:
+	@make section tag="Local - Building Dockerfile.serve"
+	docker build -t "$(IMAGE_NAME_SERVE)" -f "Dockerfile.serve" ./
+
+docker-serve: dockerfile.serve
+	@make section tag="Docker - Serving"
+	docker run $(RUN_FLAGS_SERVE) -p "8000:8000" $(IMAGE_NAME_SERVE)
+
