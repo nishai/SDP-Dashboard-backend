@@ -27,3 +27,11 @@ CMD ["runserver", "0.0.0.0:8000"]
 
 # Make sure to add exceptions for files that can be copied in .dockerignore
 COPY . .
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+# additions - Above should be the same as the standard ./Dockerfile   #
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - #
+
+VOLUME /app/data
+
+ENV DEBUG="false"
