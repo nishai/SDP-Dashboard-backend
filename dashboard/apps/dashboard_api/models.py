@@ -15,10 +15,16 @@ class StudentInfo(models.Model):
 	secondary_school_name = models.CharField(max_length=255)
 	program_code = models.ForeignKey('ProgramInfo', on_delete=models.PROTECT)
 	
+	class Meta:
+		verbose_name = "Student personal information"
+
 # Table for program (i.e BSc General) info
 class ProgramInfo(models.Model):
 	program_code = models.CharField(max_length=5, primary_key=True)
 	program_title = models.CharField(max_length=255)
+
+	class Meta:
+		verbose_name = "Program information (i.e information about BSc General Program)"
 
 # Stats of a student in a certain course in a certain year
 # Foreign keys to student_number in StudentInfo
@@ -33,7 +39,15 @@ class CourseStats(models.Model):
 	progress_outcome_type = models.CharField(max_length=10)
 	award_grade = models.CharField(max_length=2)
 
+	class Meta:
+		verbose_name = "Information about a student for a course in a specific calendar year"
+
 class AverageYearMarks(models.Model):
+	calendar_instance_year = models.CharField(max_length=4)
 	year_of_study = models.PositiveSmallIntegerField	# Refers to YOS student is registered for
+														# within this course year
 	student_number = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
 	average_marks = models.DecimalField(max_digits=6, decimal_places=3)
+
+	class Meta:
+		verbose_name = "Average mark for a student in a pecific calendar year"
