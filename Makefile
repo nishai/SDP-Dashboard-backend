@@ -13,12 +13,16 @@ help:
 	@echo "  dev                serve the project in *develop mode*, supports live updates"
 	@echo "  serve              serve the project in *production mode*"
 	@echo
-	@echo "  clean-data         clean the project"
-	@echo "  clean-migrations   clean the project"
+	@echo "  clean-data         clean the project data files"
+	@echo "  clean-migrations   clean the project migration files"
+	@echo "  clean              clean the project (both data and migration). Used for remaking database."
 	@echo
 	@echo "  dockerfile         dockerise the project"
 	@echo "  docker-migrate     dockerised version of migrate"
 	@echo "  docker-dev         dockerised version of dev"
+	@echo "  docker-import      dockerised version for importing excel files"
+	@echo "                     usage for all files: make docker-import"
+	@echo "                     usage for specific file: make docker-import FILE-<filename>"
 	@echo
 	@echo "  dockerfile.serve   dockerise the production project"
 	@echo "  docker-serve       dockerised version of serve"
@@ -54,6 +58,8 @@ clean-migrations:
 	@make section tag="Cleaning Migrations"
 	make -C "./dashboard/apps/dashboard_api/migrations" clean-migrations
 
+clean: clean-migrations clean-data
+
 # =========================================================================	#
 # DOCKER - Local Modifictions & Live Updates                                #
 # =========================================================================	#
@@ -82,7 +88,7 @@ docker-dev: docker-migrate
 
 docker-import: docker-migrate 
 	@make section tag="Docker - Import Excel Files (Dev Mode)"
-	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) excel_import
+	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) excel_import --file=$(FILE)
 
 # =========================================================================	#
 # DOCKER - Serve Production                                                 #
