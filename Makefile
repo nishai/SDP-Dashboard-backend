@@ -80,6 +80,10 @@ docker-dev: docker-migrate
 	@make section tag="Docker - Serving (Dev Mode)"
 	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) runserver
 
+docker-import: docker-migrate 
+	@make section tag="Docker - Import Excel Files (Dev Mode)"
+	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) excel_import
+
 # =========================================================================	#
 # DOCKER - Serve Production                                                 #
 # =========================================================================	#
