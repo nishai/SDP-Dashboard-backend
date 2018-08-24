@@ -3,16 +3,17 @@
 
 # usage python3.6 manage.py excel_import [--file <file_name>]
 
-from excel_import.models import *
+from dashboard.apps.dashboard_api.models import *
+from django.apps import apps
+
 import django.apps
 import sys
 import xlrd # excel file importing
 
 from django.core.management.base import BaseCommand, CommandError # for custom manage.py commands
 
-#listing files in a directory
-from os import listdir
-from os.path import isfile, join, abspath
+#managing files
+import os
 
 class Command(BaseCommand):
 	help = 'Imports data from excel_import/excel_files/ into the dadtabase'
@@ -29,7 +30,7 @@ class Command(BaseCommand):
 	# Output: 
 	#	success: returns 0. Data will be inserted directly into the model tables.
 	#	failure: raises exception
-	def handle(self):
+	def handle(self, *args, **options):
 		# obtain absolute path for excel files directory
 		mypath = os.path.join(os.path.abspath(os.path.join(__file__,os.path.join(*[os.pardir]*3))),"excel_files")
 		# create a list of all excel files
@@ -41,11 +42,11 @@ class Command(BaseCommand):
 			file_urls = [os.path.join(mypath,f) for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
 
 		# load data from files file by file
-		file_failure - False
+		file_failure = False
 		for url in file_urls:
 			try:
 				# load file data
-				all_titles, all_data = load_file(url)
+				all_titles, all_data = self.load_file(url)
 			except Exception as e:
 				file_failure = True
 				print("Error loading file: " + str(e))
@@ -54,7 +55,7 @@ class Command(BaseCommand):
 			try:
 				# insert data to database worksheet by worksheet
 				for sheet_titles, sheet_data in zip(all_titles, all_data):
-					add_data_to_tables(sheet_titles, sheet_data)
+					self.add_data_to_tables(sheet_titles, sheet_data)
 			except Exception as e:
 				file_failure = True
 				print("Error adding data to tables from file " + url + ": " + str(e))
@@ -75,12 +76,28 @@ class Command(BaseCommand):
 	#	success: returns 0. The database will have the data provided inserted into it
 	#	failure: raises exception
 	def add_data_to_tables(self, titles, data):
+		print("-----------------------------------------------------------------------")
+		print("Inserting data from table to  models: ")
+		print("-----------------------------------------------------------------------")
+		sys.stdout.flush()
 		try:
-			for _model in django.apps.apps.get_models():
+			api_app = apps.get_app_config('dashboard_api')
+			api_models = api_app.models.values()
+
+			for _model in api_models:
+				print("-----------------------------------------------------------------------")
+				print("Inserting data to model: " + _model.__name__)
+				print("-----------------------------------------------------------------------")
+				sys.stdout.flush()
 				_model_fields = [f.name for f in _model._meta.get_fields()]
+				print("model fields: " + str(_model_fields))
+				print("titles of excel table" + str(titles))
+				sys.stdout.flush()
 				for row in data:
 					_model_dict = {key: value for key, value in zip(titles, row) if key in _model_fields}
 					_model.objects.update_or_create(**_model_dict)
+				print("model values: " + str(_model.objects.values()))
+				sys.stdout.flush()
 			return 0
 		except Exception as e:
 			raise Exception("Error inserting data to database with error: " + str(e))
@@ -95,23 +112,29 @@ class Command(BaseCommand):
 	#		and a list of the data as a list for each row (list of lists)
 	# 	failure: raise an exception
 	def load_excel(self, excel_url):
+		print("----------------------------------------------------------------------------")
+		print("Attempting to load excel file:\n" + excel_url)
+		print("----------------------------------------------------------------------------")
+		sys.stdout.flush()
 		try:
 			with xlrd.open_workbook(excel_url) as workbook:
 				worksheet_names = workbook.sheet_names()
 				worksheets = []
 				for name in worksheet_names:
+					print("Loading worksheet: " + name)
 					worksheets.append(workbook.sheet_by_name(name))
 
 				all_titles = []
 				all_data_lists = []
-				for worksheet in worksheets:
+				for worksheet, name in zip(worksheets, worksheet_names):
+					print("extracting data from worksheet: " + name)
 					titles = worksheet.row_values(0)
-					all_titles.append(title)
+					all_titles.append(titles)
 
 					sheet_data_list = []
-					for rownum in xrange(1,worksheet.nrows):
+					for rownum in range(1,worksheet.nrows):
 						sheet_data_list += [worksheet.row_values(rownum)]
-					all_data_lists.append(data_list)
+					all_data_lists.append(sheet_data_list)
 
 				return all_titles, all_data_lists
 
@@ -134,10 +157,20 @@ class Command(BaseCommand):
 				# NOT IMPLEMENTED
 				pass
 			elif file_url[-4:] == ".xls" or file_url[-5:] == ".xlsx":
-				all_titles, all_data = load_excel(file_url)
-				
+				print("----------------------------------------------------------------------------")
+				print(file_url + " Has correct file format for excel files")
+				print("----------------------------------------------------------------------------")
+				sys.stdout.flush()
+				all_titles, all_data = self.load_excel(file_url)
+				print("----------------------------------------------------------------------------")
+				print("Loading succesful of excel file:\n" + file_url)
+				print("----------------------------------------------------------------------------")
+				sys.stdout.flush()				
+
 				# adapt titles to snake case
-				all_titles = [[col.replace(" ","_").replace("_/_","_").lower() for col in sheet_title] for sheet_titles in all_titles]
+				all_titles =\
+					 [[col.replace(" ","_").replace("_/_","_").lower() for col in sheet_titles]\
+					 for sheet_titles in all_titles]
 				# adapt data from lists to tuples
 				all_data = [[tuple(row) for row in sheet_data] for sheet_data in all_data]
 			else:
