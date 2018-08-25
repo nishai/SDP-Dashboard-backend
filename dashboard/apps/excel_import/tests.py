@@ -36,6 +36,5 @@ class ExcelImportTestCase(TestCase):
 		command.handler(options=['test_db.xlsx'])
 		self.assertEqual(StudentInfo.objects.filter(pk="0008F0850D5A573D93162E7F14E46BD1").age, 29)
 
-	def test_all_excel():
-		command.handler(options=[])
+	def test_multiple_excel():
 		pass
