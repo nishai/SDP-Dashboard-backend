@@ -12,6 +12,7 @@
 # Excel  Data Files
 *.xls
 *.xlsx
+**/excel_files/
 
 # Or stuff
 sprint_texts/
