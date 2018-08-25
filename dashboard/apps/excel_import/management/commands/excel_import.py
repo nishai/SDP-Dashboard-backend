@@ -3,20 +3,27 @@
 
 # usage python3.6 manage.py excel_import [--file <file_name>]
 
-from dashboard.apps.dashboard_api.models import *
-from django.apps import apps
 
+# project imports
+from dashboard.apps.dashboard_api.models import *
+
+#django imports
+from django.core.management.base import BaseCommand, CommandError # for custom manage.py commands
+from django.apps import apps
+from django.db.models import *
 import django.apps
+
+#system imports
 import sys
 import xlrd # excel file importing
+import os #managing files
 
-from django.core.management.base import BaseCommand, CommandError # for custom manage.py commands
-
-#managing files
-import os
+# testing imports
+#import warnings
+#warnings.filterwarnings('error')
 
 class Command(BaseCommand):
-	help = 'Imports data from excel_import/excel_files/ into the dadtabase'
+	help = 'Imports data from excel_import/excel_files/ into the database'
 
 	# inserts the files provided after --files flag into the parser variable for use in handler function
 	def add_arguments(self, parser):
@@ -31,10 +38,13 @@ class Command(BaseCommand):
 	#	success: returns 0. Data will be inserted directly into the model tables.
 	#	failure: raises exception
 	def handle(self, *args, **options):
+		print("-----------------------------------------------------------------------")
+		print("importing files: " + str(options['files']))
+		print("-----------------------------------------------------------------------")
 		# obtain absolute path for excel files directory
 		mypath = os.path.join(os.path.abspath(os.path.join(__file__,os.path.join(*[os.pardir]*3))),"excel_files")
 		# create a list of all excel files
-		if options['files']:
+		if options['files'][0] != '':
 			# If file names are provided, use them
 			file_urls = [os.path.join(mypath,f) for f in options['files'] if os.path.isfile(os.path.join(mypath, f))]
 		else:
@@ -61,8 +71,11 @@ class Command(BaseCommand):
 				print("Error adding data to tables from file " + url + ": " + str(e))
 
 		if file_failure:
-			raise CommandError("Some files had problems importing data to database")
+			raise Exception("Some files had problems importing data to database - see warnings")
 		else:
+			print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+			print("All files imported successfully")
+			print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 			return 0
 
 	# Description:
@@ -89,12 +102,28 @@ class Command(BaseCommand):
 				print("Inserting data to model: " + _model.__name__)
 				print("-----------------------------------------------------------------------")
 				sys.stdout.flush()
-				_model_fields = [f.name for f in _model._meta.get_fields()]
-				print("model fields: " + str(_model_fields))
+				_model_field_names = [f.name for f in _model._meta.get_fields()]
+				print("model fields: " + str(_model_field_names))
 				print("titles of excel table" + str(titles))
 				sys.stdout.flush()
+
+				# check for foreign keys
+				_model_field_objects = [f for f in _model._meta.get_fields()]
+				foreign_key_fields_dict = {}
+				for field in _model_field_objects:
+					if field.__class__ is ForeignKey:
+						foreign_key_fields_dict[field.name] =  field.related_model
+				print("Foreign key fields are: " + str(foreign_key_fields_dict))
+				sys.stdout.flush()
+
 				for row in data:
-					_model_dict = {key: value for key, value in zip(titles, row) if key in _model_fields}
+					_model_dict = {key: value for key, value in zip(titles, row) if key in _model_field_names}
+					# adjust foreign key to their class
+					for key in _model_dict:
+						if key in foreign_key_fields_dict:
+							_model_dict[key] = foreign_key_fields_dict[key].objects.get(pk=_model_dict[key])
+
+					# insert to table
 					_model.objects.update_or_create(**_model_dict)
 				print("model values: " + str(_model.objects.values()))
 				sys.stdout.flush()
@@ -169,10 +198,13 @@ class Command(BaseCommand):
 
 				# adapt titles to snake case
 				all_titles =\
-					 [[col.replace(" ","_").replace("_/_","_").lower() for col in sheet_titles]\
+					 [[col.replace(" ","_").replace("_/_","_").lower() for col in sheet_titles] \
 					 for sheet_titles in all_titles]
-				# adapt data from lists to tuples
-				all_data = [[tuple(row) for row in sheet_data] for sheet_data in all_data]
+				# adapt data from lists to tuples		
+				all_data = [[[i if i != '' else None for i in row] for row in sheet_data]\
+					 for sheet_data in all_data]
+				all_data = [[tuple(row) for row in sheet_data]\
+					 for sheet_data in all_data]
 			else:
 				raise Exception("bad file type provided. only .csv, .xls, .xlsx accepted.")
 			return all_titles, all_data
