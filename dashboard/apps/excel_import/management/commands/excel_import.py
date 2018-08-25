@@ -123,8 +123,11 @@ class Command(BaseCommand):
 						if key in foreign_key_fields_dict:
 							_model_dict[key] = foreign_key_fields_dict[key].objects.get(pk=_model_dict[key])
 
-					# insert to table
-					_model.objects.update_or_create(**_model_dict)
+					try:
+						# insert to table
+						_model.objects.update_or_create(**_model_dict)
+					except Exception as e:
+						pass
 				print("model values: " + str(_model.objects.values()))
 				sys.stdout.flush()
 			return 0
