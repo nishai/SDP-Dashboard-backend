@@ -18,9 +18,10 @@ import sys
 import xlrd # excel file importing
 import os #managing files
 
-# testing imports
-#import warnings
-#warnings.filterwarnings('error')
+# import the logging library
+#import logging
+# Get an instance of a logger
+#logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
 	help = 'Imports data from excel_import/excel_files/ into the database'
@@ -28,6 +29,7 @@ class Command(BaseCommand):
 	# inserts the files provided after --files flag into the parser variable for use in handler function
 	def add_arguments(self, parser):
 		parser.add_argument('--files', dest='files', nargs='+', help='Specify file to be important')
+		parser.add_argument('--test', action='store_true', dest='test', help='Specify if this is a test run')
 
 	# Description:
 	# 	Go through all the excel files provided using the --files flag (if non are provided use all files available)
@@ -43,6 +45,8 @@ class Command(BaseCommand):
 		print("-----------------------------------------------------------------------")
 		# obtain absolute path for excel files directory
 		mypath = os.path.join(os.path.abspath(os.path.join(__file__,os.path.join(*[os.pardir]*3))),"excel_files")
+		if options['test']:
+			mypath = os.path.join(mypath,"test_excels")
 		# create a list of all excel files
 		if options['files'][0] != '':
 			# If file names are provided, use them

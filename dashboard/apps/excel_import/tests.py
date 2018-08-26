@@ -1,40 +1,66 @@
 from django.test import TestCase
-from excel_import.management.commands  import Command
+from django.core.management import call_command
+from dashboard.apps.excel_import.management.commands.excel_import  import Command
 from dashboard.apps.dashboard_api.models import *
 
+from decimal import Decimal
+
 class ExcelImportTestCase(TestCase):
-	command = Command.Command()
 	def setUp(self):
 		pass
 
-	def test_load_excel():
-		self.assertEqual(command.load_excel("test_db.xlsx"),\
-			([['Encrypted Student No', '', '', 'Calendar Instance Year', 'Program Code', 'Program Title', '', 'Year of Study', 'Nationality Short Name', '', '', 'Home Language Description', 'Race Description', 'Gender', 'Age', 'Course Code', 'Final Mark', 'Final Grade', 'Progress Outcome Type', 'Progress Outcome Type Description', 'Award Grade', 'Average Marks', 'Secondary School Quintile', 'Urban Rural Secondary School', 'Secondary School Name'],\
-			['QWE', 'ASD', 'ZXC']],\
-			[[['0008F0850D5A573D93162E7F14E46BD1','','',	'2014',	'AB000','Bachelor of Arts','',	'YOS 1', 'South Africa','','',	'Setswana',	'Black', 'M', '29',	'ENGL1001', '55', 'PAS', 'PCD',	'Permitted to proceed',	'R','56.5',	'3',	'URBAN', 'Phahama Senior School'],\
-				['0008F0850D5A573D93162E7F14E46BD1',	'',	'',	'2014',	'AB001', 'Bachelor of Arts', '', 'YOS 1', 'South Africa', '', '', 'Setswana', 'Black', 'X', '29', 'ENGL1001', '44',	'PAS',	'PCD',	'Permitted to proceed',	None, '56.5', '3', 'URBAN', 'Phahama Senior School'],\
-				['004A51D4390D5B4DF6B1DE331512BB7B', '', '', '2017', 'AB000', 'Bachelor of Arts', '', 'YOS 2', 'South Africa', '', '', 'Zulu', 'Black', 'M', '26', 'ENGL2003', '37', 'FAL', 'PCD', 'Permitted to proceed', 'U',	'58.17', None, 'UN']],\
-			[['rty','fgh','vbn']]]))
+	# test excel_import custom command with provided files
+	def test_specific_excel(self):
+		args = ['--file=test_db1.xlsx', '--test']
+		opts = {}
+		call_command('excel_import', *args, **opts)
+		self.assertEqual(\
+			StudentInfo.objects.filter(pk="0008F0850D5A573D93162E7F14E46BD1").values()[0],\
+			{'encrypted_student_no': '0008F0850D5A573D93162E7F14E46BD1', 'nationality_short_name': 'South Africa', 'home_language_description': 'Setswana', 'race_description': 'Black', 'gender': 'M', 'age': 29, 'secondary_school_quintile': '3', 'urban_rural_secondary_school': 'URBAN', 'secondary_school_name': 'Phahama Senior School', 'program_code_id': 'AB000'})
+		self.assertEqual(\
+			CourseStats.objects.filter(encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1").values()[0],\
+			{'id': 1, 'course_code': 'ENGL1001', 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'year_of_study': 'YOS 1', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS', 'progress_outcome_type': 'PCD', 'award_grade': 'R'})
+		self.assertEqual(\
+			AverageYearMarks.objects.filter(encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1").values()[0],\
+			{'id': 1, 'calendar_instance_year': '2014', 'year_of_study': 'YOS 1', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'average_marks': Decimal('56.500')})
+		self.assertEqual(\
+			ProgramInfo.objects.filter(pk="AB000").values()[0],\
+			{'program_code': 'AB000', 'program_title': 'Bachelor of Arts'})
 
-	def test_load_file():
-		self.assertEqual(command.load_file("test_db.xlsx"),\
-			([['encrypted_student_no', '', '', 'calendar_instance_year', 'program_code', 'program_title', '', 'year_of_study', 'nationality_short_name', '', '', 'home_language_description', 'race_description', 'gender', 'age', 'course_code', 'final_mark', 'final_grade', 'progress_outcome_type', 'progress_outcome_type_description', 'award_grade', 'average_marks', 'secondary_school_quintile', 'urban_rural_secondary_school', 'secondary_school_name'],\
-			['qwe', 'asd', 'zxc']],\
-			[[('0008F0850D5A573D93162E7F14E46BD1','','',	'2014',	'AB000','Bachelor of Arts','',	'YOS 1', 'South Africa','','',	'Setswana',	'Black', 'M', '29',	'ENGL1001', '55', 'PAS', 'PCD',	'Permitted to proceed',	'R','56.5',	'3',	'URBAN', 'Phahama Senior School'),\
-				('0008F0850D5A573D93162E7F14E46BD1',	'',	'',	'2014',	'AB001', 'Bachelor of Arts', '', 'YOS 1', 'South Africa', '', '', 'Setswana', 'Black', 'X', '29', 'ENGL1001', '44',	'PAS',	'PCD',	'Permitted to proceed',	None, '56.5', '3', 'URBAN', 'Phahama Senior School'),\
-				('004A51D4390D5B4DF6B1DE331512BB7B', '', '', '2017', 'AB000', 'Bachelor of Arts', '', 'YOS 2', 'South Africa', '', '', 'Zulu', 'Black', 'M', '26', 'ENGL2003', '37', 'FAL', 'PCD', 'Permitted to proceed', 'U',	'58.17', None, 'UN')],\
-			[('rty','fgh','vbn')]]))
+	
+	# test excel_import custom command without providing files
+	# i.e. test importing all files in files directory
+	def test_multiple_excel(self):
+		args = ['--file=', '--test']
+		opts = {}
+		call_command('excel_import', *args, **opts)
+		# asserts for first table
+		self.assertEqual(\
+			StudentInfo.objects.filter(pk="0008F0850D5A573D93162E7F14E46BD1").values()[0],\
+			{'encrypted_student_no': '0008F0850D5A573D93162E7F14E46BD1', 'nationality_short_name': 'South Africa', 'home_language_description': 'Setswana', 'race_description': 'Black', 'gender': 'M', 'age': 29, 'secondary_school_quintile': '3', 'urban_rural_secondary_school': 'URBAN', 'secondary_school_name': 'Phahama Senior School', 'program_code_id': 'AB000'})
+		self.assertEqual(\
+			CourseStats.objects.filter(encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1").values()[0],\
+			{'id': 1, 'course_code': 'ENGL1001', 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'year_of_study': 'YOS 1', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS', 'progress_outcome_type': 'PCD', 'award_grade': 'R'})
+		self.assertEqual(\
+			AverageYearMarks.objects.filter(encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1").values()[0],\
+			{'id': 1, 'calendar_instance_year': '2014', 'year_of_study': 'YOS 1', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'average_marks': Decimal('56.500')})
+		self.assertEqual(\
+			ProgramInfo.objects.filter(pk="AB000").values()[0],\
+			{'program_code': 'AB000', 'program_title': 'Bachelor of Arts'})
 
-	def test_add_data_to_tables():
-		self.assertEqual(command.add_data_to_tables(\
-			[['encrypted_student_no', '', '', 'calendar_instance_year', 'program_code', 'program_title', '', 'year_of_study', 'nationality_short_name', '', '', 'home_language_description', 'race_description', 'gender', 'age', 'course_code', 'final_mark', 'final_grade', 'progress_outcome_type', 'progress_outcome_type_description', 'award_grade', 'average_marks', 'secondary_school_quintile', 'urban_rural_secondary_school', 'secondary_school_name']],\
-			[('0008F0850D5A573D93162E7F14E46BD1','','',    '2014', 'AB000','Bachelor of Arts','',  'YOS 1', 'South     Africa','','',  'Setswana', 'Black', 'M', '29', 'ENGL1001', '55', 'PAS', 'PCD', 'Permitted to proceed', 'R','56.5'    , '3',    'URBAN', 'Phahama Senior School')]
-		), 0)
-		self.assertEqual(command.add_data_to_tables(['qwe', 'asd', 'zxc'], [('rty','fgh','vbn')], 0))
+		# asserts for second table
+		self.assertEqual(\
+			StudentInfo.objects.filter(pk="1234QWERASDFZXCV5687TYIUGHKJBNML").values()[0],\
+				{'encrypted_student_no': '1234QWERASDFZXCV5687TYIUGHKJBNML', 'nationality_short_name': 'South Africa', 'home_language_description': 'Setswana', 'race_description': 'Black', 'gender': 'G', 'age': 29, 'secondary_school_quintile': '3', 'urban_rural_secondary_school': 'URBAN', 'secondary_school_name': 'Phahama Senior School', 'program_code_id': 'AB004'})
+		self.assertEqual(\
+			CourseStats.objects.filter(encrypted_student_no="1234QWERASDFZXCV5687TYIUGHKJBNML").values()[0],\
+			{'id': 4, 'course_code': 'ENGL1001', 'calendar_instance_year': '1234', 'encrypted_student_no_id': '1234QWERASDFZXCV5687TYIUGHKJBNML', 'year_of_study': 'YOS 1', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS', 'progress_outcome_type': 'PCD', 'award_grade': 'R'})
 
-	def test_specific_excel():
-		command.handler(options=['test_db.xlsx'])
-		self.assertEqual(StudentInfo.objects.filter(pk="0008F0850D5A573D93162E7F14E46BD1").age, 29)
+		self.assertEqual(\
+			AverageYearMarks.objects.filter(encrypted_student_no="1234QWERASDFZXCV5687TYIUGHKJBNML").values()[0],\
+			{'id': 3, 'calendar_instance_year': '1234', 'year_of_study': 'YOS 1', 'encrypted_student_no_id': '1234QWERASDFZXCV5687TYIUGHKJBNML', 'average_marks': Decimal('56.500')})
+		self.assertEqual(\
+			ProgramInfo.objects.filter(pk="AB004").values()[0],\
+			{'program_code': 'AB004', 'program_title': 'Bachelor of Arts'})
 
-	def test_multiple_excel():
-		pass
+	
