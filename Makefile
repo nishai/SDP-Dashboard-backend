@@ -84,7 +84,7 @@ docker-migrate: dockerfile
 
 docker-dev: docker-migrate
 	@make section tag="Docker - Serving (Dev Mode)"
-	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) runserver
+	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) runserver 0.0.0.0:8000
 
 docker-import: docker-migrate 
 	@make section tag="Docker - Import Excel Files (Dev Mode)"
