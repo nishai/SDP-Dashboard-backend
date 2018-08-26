@@ -23,6 +23,7 @@ help:
 	@echo "  docker-import      dockerised version for importing excel files"
 	@echo "                     usage for all files: make docker-import"
 	@echo "                     usage for specific file: make docker-import FILE-<filename>"
+	@echo "  docker-test        runs `manage.py test` for running unit tests"
 	@echo
 	@echo "  dockerfile.serve   dockerise the production project"
 	@echo "  docker-serve       dockerised version of serve"
