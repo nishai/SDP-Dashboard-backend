@@ -12,7 +12,7 @@
 # Excel  Data Files
 *.xls
 *.xlsx
-**/excel_files/
+!test*.xlsx
 
 # Or stuff
 sprint_texts/
