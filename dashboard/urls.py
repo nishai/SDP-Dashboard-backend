@@ -16,11 +16,19 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from dashboard.apps.dashboard_api.views import EnrollmentList
-from rest_framework.urlpatterns import format_suffix_patterns
+from django.conf.urls import url, include
+from rest_framework import routers
+
+
+router = routers.DefaultRouter()
+router.register(r'enrol', EnrollmentList)
 
 urlpatterns = [
+    # resful api
+    url(r'^', include(router.urls)),
+    # Builtin Django database admin
     path('admin/', admin.site.urls),
-    path('enrol/', EnrollmentList.as_view()),
+    # https://django-rest-auth.readthedocs.io/en/latest/index.html
+    # RESTful Authentication/Login/Logout Api
+    path('rest-auth/', include('rest_auth.urls')),
 ]
-
-urlpatterns = format_suffix_patterns(urlpatterns)

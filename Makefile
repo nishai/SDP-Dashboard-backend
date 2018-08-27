@@ -32,6 +32,10 @@ section:
 # LOCAL                                                                     #
 # =========================================================================	#
 
+admin: migrate
+	@make section tag="Local - Creating Default Admin User"
+	python manage.py createsuperuser --username=admin --email=admin@dashboard.ms.wits.ac.za || true
+
 migrate:
 	@make section tag="Local - Migrating Database"
 	python manage.py makemigrations
@@ -45,6 +49,8 @@ dev: migrate
 serve: migrate
 	@make section tag="Local - Serving"
 	DEBUG="false" python manage.py runserver
+
+clean: clean-data clean-migrations
 
 clean-data:
 	@make section tag="Cleaning Data"

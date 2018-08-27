@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'dashboard.apps.dashboard_api',
     # external apps
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
 ]
 
 MIDDLEWARE = [
