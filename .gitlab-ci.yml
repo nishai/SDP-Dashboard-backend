@@ -1,19 +1,3 @@
-image: ubuntu:16.04
-
-before_script:
-  - apt-get update -qy
-  - apt-get -y install python3.6
-  - apt-get -y install python-pip
-  - apt-get -y install curl
-  - pip install -r requirements.txt
-  - pip install codecov
-  - pip install pytest-cov
-
-
-excel_sql:
+test:
   script:
-    - codecov --token=93ba4041-0079-4870-9773-5e942e1c2e76
-    - py.test --cov=./
-    - curl -s https://codecov.io/bash > .codecov
-    - chmod +x .codecov
-    - ./.codecov -t 93ba4041-0079-4870-9773-5e942e1c2e76
+    - make docker-test

@@ -17,7 +17,7 @@ COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # set the debug environment variable inside the container
-ENV DEBUG="true"
+ENV DASHBOARD_DEVELOP="true"
 # documentation only
 EXPOSE 8000
 # binary with args to run

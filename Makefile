@@ -72,6 +72,7 @@ VBIND_DATA       = -v "$(shell pwd)/data:/app/data"
 VBIND_SRC        = -v "$(shell pwd)/manage.py:/app/manage.py" -v "$(shell pwd)/dashboard:/app/dashboard"
 
 RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC)
+TEST_FLAGS       = --rm --name "$(CNTNR_NAME)"
 
 dockerfile:
 	@make section tag="Local - Building Dockerfile"
@@ -91,9 +92,9 @@ docker-import: docker-migrate
 	@make section tag="Docker - Import Excel Files (Dev Mode)"
 	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) excel_import --file=$(FILE)
 
-docker-test: docker-migrate 
+docker-test: 
 	@make section tag="Docker - Run Unit Tests (Dev Mode)"
-	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) test
+	docker run $(TEST_FLAGS) -p 8000:8000 $(IMAGE_NAME) test
 
 # =========================================================================	#
 # DOCKER - Serve Production                                                 #
