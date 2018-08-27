@@ -59,7 +59,7 @@ class ExcelImportTestCase(TestCase):
 		temp_dict = CourseStats.objects.filter(encrypted_student_no="1234QWERASDFZXCV5687TYIUGHKJBNML").values()[0]
 		del temp_dict['id']
 		self.assertEqual(\
-			CourseStats.objects.filter(encrypted_student_no="1234QWERASDFZXCV5687TYIUGHKJBNML").values()[0],\
+			temp_dict,\
 			{'course_code': 'ENGL1001', 'calendar_instance_year': '1234', 'encrypted_student_no_id': '1234QWERASDFZXCV5687TYIUGHKJBNML', 'year_of_study': 'YOS 1', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS', 'progress_outcome_type': 'PCD', 'award_grade': 'R'})
 		temp_dict = AverageYearMarks.objects.filter(encrypted_student_no="1234QWERASDFZXCV5687TYIUGHKJBNML").values()[0]
 		del temp_dict['id']
