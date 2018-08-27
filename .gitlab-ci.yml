@@ -3,8 +3,4 @@ test:
     - make docker-test
 
 after_script:
-  -  rm dashboard/__pycache__/__init__.cpython-37.pyc
-  -  rm dashboard/settings/__pycache__/development.cpython-37.pyc
-  -  rm dashboard/settings/__pycache__/__init__.cpython-37.pyc
-  -  rm dashboard/settings/__pycache__/loggers.cpython-37.pyc
-  -  rm dashboard/settings/__pycache__/common.cpython-37.pyc
+  -  find . -name __pycache__ -type d -exec rm -rf {} \
