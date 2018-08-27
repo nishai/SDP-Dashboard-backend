@@ -92,9 +92,9 @@ docker-import: docker-migrate
 	@make section tag="Docker - Import Excel Files (Dev Mode)"
 	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) excel_import --file=$(FILE)
 
-docker-test: 
+docker-test: dockerfile
 	@make section tag="Docker - Run Unit Tests (Dev Mode)"
-	docker run $(TEST_FLAGS) -p 8000:8000 $(IMAGE_NAME) test
+	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) test
 
 # =========================================================================	#
 # DOCKER - Serve Production                                                 #
