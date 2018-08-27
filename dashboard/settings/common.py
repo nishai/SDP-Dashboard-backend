@@ -151,3 +151,8 @@ def get_or_gen_key(file: str, length: int):
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_FILE = os.path.join(DATA_DIR, "secret.token")
 SECRET_KEY = get_or_gen_key(SECRET_FILE, 50)
+
+# Logging stuff
+from .loggers import LOGGING
+import logging.config
+logging.config.dictConfig(LOGGING)

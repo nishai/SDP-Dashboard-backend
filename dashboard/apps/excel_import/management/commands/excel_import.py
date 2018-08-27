@@ -19,9 +19,11 @@ import xlrd # excel file importing
 import os #managing files
 
 # import the logging library
-#import logging
+import logging
 # Get an instance of a logger
-#logger = logging.getLogger(__name__)
+logger = logging.getLogger('debug-import')
+logger.debug("Running excel import code")
+
 
 class Command(BaseCommand):
 	help = 'Imports data from excel_import/excel_files/ into the database'
@@ -40,9 +42,9 @@ class Command(BaseCommand):
 	#	success: returns 0. Data will be inserted directly into the model tables.
 	#	failure: raises exception
 	def handle(self, *args, **options):
-		print("-----------------------------------------------------------------------")
-		print("importing files: " + str(options['files']))
-		print("-----------------------------------------------------------------------")
+		logger.info("-----------------------------------------------------------------------")
+		logger.info("importing files: " + str(options['files']))
+		logger.info("-----------------------------------------------------------------------")
 		# obtain absolute path for excel files directory
 		mypath = os.path.join(os.path.abspath(os.path.join(__file__,os.path.join(*[os.pardir]*3))),"excel_files")
 		if options['test']:
@@ -63,7 +65,7 @@ class Command(BaseCommand):
 				all_titles, all_data = self.load_file(url)
 			except Exception as e:
 				file_failure = True
-				print("Error loading file: " + str(e))
+				logger.error("Error loading file: " + str(e))
 				continue
 
 			try:
@@ -72,14 +74,14 @@ class Command(BaseCommand):
 					self.add_data_to_tables(sheet_titles, sheet_data)
 			except Exception as e:
 				file_failure = True
-				print("Error adding data to tables from file " + url + ": " + str(e))
+				logger.error("Error adding data to tables from file " + url + ": " + str(e))
 
 		if file_failure:
-			raise Exception("Some files had problems importing data to database - see warnings")
+			raise Exception("Some files had problems importing data to database - see logs")
 		else:
-			print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
-			print("All files imported successfully")
-			print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+			logger.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+			logger.info("All files imported successfully")
+			logger.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 			return 0
 
 	# Description:
@@ -93,22 +95,22 @@ class Command(BaseCommand):
 	#	success: returns 0. The database will have the data provided inserted into it
 	#	failure: raises exception
 	def add_data_to_tables(self, titles, data):
-		print("-----------------------------------------------------------------------")
-		print("Inserting data from table to  models: ")
-		print("-----------------------------------------------------------------------")
+		logger.info("-----------------------------------------------------------------------")
+		logger.info("Inserting data from table to  models: ")
+		logger.info("-----------------------------------------------------------------------")
 		sys.stdout.flush()
 		try:
 			api_app = apps.get_app_config('dashboard_api')
 			api_models = api_app.models.values()
 
 			for _model in api_models:
-				print("-----------------------------------------------------------------------")
-				print("Inserting data to model: " + _model.__name__)
-				print("-----------------------------------------------------------------------")
+				logger.info("-----------------------------------------------------------------------")
+				logger.info("Inserting data to model: " + _model.__name__)
+				logger.info("-----------------------------------------------------------------------")
 				sys.stdout.flush()
 				_model_field_names = [f.name for f in _model._meta.get_fields()]
-				print("model fields: " + str(_model_field_names))
-				print("titles of excel table" + str(titles))
+				logger.debug("model fields: " + str(_model_field_names))
+				logger.debug("titles of excel table" + str(titles))
 				sys.stdout.flush()
 
 				# check for foreign keys
@@ -117,7 +119,7 @@ class Command(BaseCommand):
 				for field in _model_field_objects:
 					if field.__class__ is ForeignKey:
 						foreign_key_fields_dict[field.name] =  field.related_model
-				print("Foreign key fields are: " + str(foreign_key_fields_dict))
+				logger.debug("Foreign key fields are: " + str(foreign_key_fields_dict))
 				sys.stdout.flush()
 
 				for row in data:
@@ -131,8 +133,9 @@ class Command(BaseCommand):
 						# insert to table
 						_model.objects.update_or_create(**_model_dict)
 					except Exception as e:
+						logger.warning("error inserting to table, ignored and continued. error is: " + str(e))
 						pass
-				print("model values: " + str(_model.objects.values()))
+				logger.debug("model values: " + str(_model.objects.values()))
 				sys.stdout.flush()
 			return 0
 		except Exception as e:
@@ -148,22 +151,22 @@ class Command(BaseCommand):
 	#		and a list of the data as a list for each row (list of lists)
 	# 	failure: raise an exception
 	def load_excel(self, excel_url):
-		print("----------------------------------------------------------------------------")
-		print("Attempting to load excel file:\n" + excel_url)
-		print("----------------------------------------------------------------------------")
+		logger.info("----------------------------------------------------------------------------")
+		logger.info("Attempting to load excel file:\n" + excel_url)
+		logger.info("----------------------------------------------------------------------------")
 		sys.stdout.flush()
 		try:
 			with xlrd.open_workbook(excel_url) as workbook:
 				worksheet_names = workbook.sheet_names()
 				worksheets = []
 				for name in worksheet_names:
-					print("Loading worksheet: " + name)
+					logger.info("Loading worksheet: " + name)
 					worksheets.append(workbook.sheet_by_name(name))
 
 				all_titles = []
 				all_data_lists = []
 				for worksheet, name in zip(worksheets, worksheet_names):
-					print("extracting data from worksheet: " + name)
+					logger.info("extracting data from worksheet: " + name)
 					titles = worksheet.row_values(0)
 					all_titles.append(titles)
 
@@ -193,14 +196,14 @@ class Command(BaseCommand):
 				# NOT IMPLEMENTED
 				pass
 			elif file_url[-4:] == ".xls" or file_url[-5:] == ".xlsx":
-				print("----------------------------------------------------------------------------")
-				print(file_url + " Has correct file format for excel files")
-				print("----------------------------------------------------------------------------")
+				logger.info("----------------------------------------------------------------------------")
+				logger.info(file_url + " Has correct file format for excel files")
+				logger.info("----------------------------------------------------------------------------")
 				sys.stdout.flush()
 				all_titles, all_data = self.load_excel(file_url)
-				print("----------------------------------------------------------------------------")
-				print("Loading succesful of excel file:\n" + file_url)
-				print("----------------------------------------------------------------------------")
+				logger.info("----------------------------------------------------------------------------")
+				logger.info("Loading succesful of excel file:\n" + file_url)
+				logger.info("----------------------------------------------------------------------------")
 				sys.stdout.flush()				
 
 				# adapt titles to snake case
