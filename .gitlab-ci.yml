@@ -4,4 +4,5 @@ test:
 
 after_script:
   -  cd ..
+  -  chmod -R 777 dashboard-backend
   -  rm -rf dashboard-backend
