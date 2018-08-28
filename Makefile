@@ -70,9 +70,10 @@ CNTNR_NAME       = backend-container
 
 VBIND_DATA       = -v "$(shell pwd)/data:/app/data"
 VBIND_SRC        = -v "$(shell pwd)/manage.py:/app/manage.py" -v "$(shell pwd)/dashboard:/app/dashboard"
+VBIND_TEST       = -v "$(shell pwd)/dashboard/apps/excel_import/excel_files/test_excels:/app/dashboard/apps/excel_import/excel_files/test_excels" -v "$(shell pwd)/data/secret.token:/app/data/secret.token"
 
 RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC)
-TEST_FLAGS       = --rm --name "$(CNTNR_NAME)"
+TEST_FLAGS       = --rm --name "$(CNTNR_NAME)" $(VBIND_TEST)
 
 dockerfile:
 	@make section tag="Local - Building Dockerfile"
@@ -92,7 +93,9 @@ docker-import: docker-migrate
 	@make section tag="Docker - Import Excel Files (Dev Mode)"
 	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) excel_import --file=$(FILE)
 
-docker-test: dockerfile
+docker-test: 
+	@make section tag="Local - Building Dockerfile with --no-cache"
+	docker build --no-cache -t "$(IMAGE_NAME)" ./
 	@make section tag="Docker - Run Unit Tests (Dev Mode)"
 	docker run $(TEST_FLAGS) -p 8000:8000 $(IMAGE_NAME) test --verbosity=2
 
