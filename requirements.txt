@@ -6,4 +6,10 @@
 
 django==2.1
 djangorestframework==3.8.2
+
+# Code Coverage
+coverage
+django-nose
+
+# Excel File Reader
 xlrd
