@@ -70,10 +70,10 @@ CNTNR_NAME       = backend-container
 
 VBIND_DATA       = -v "$(shell pwd)/data:/app/data"
 VBIND_SRC        = -v "$(shell pwd)/manage.py:/app/manage.py" -v "$(shell pwd)/dashboard:/app/dashboard"
-VBIND_TEST       = -v "$(shell pwd)/dashboard/apps/excel_import/excel_files/test_excels:/app/dashboard/apps/excel_import/excel_files/test_excels"
+VBIND_TEST       = -v "$(shell pwd)/dashboard/apps/excel_import/excel_files/test_excels:/app/dashboard/apps/excel_import/excel_files/test_excels:ro" -v "$(shell pwd)/.git:/app/.git:ro"
 
 RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC)
-TEST_FLAGS       = --rm --name "$(CNTNR_NAME)" $(VBIND_TEST)
+TEST_FLAGS       = --name "$(CNTNR_NAME)" $(VBIND_TEST)
 
 dockerfile:
 	@make section tag="Local - Building Dockerfile"
@@ -98,6 +98,11 @@ docker-test:
 	docker build --no-cache -t "$(IMAGE_NAME)" ./
 	@make section tag="Docker - Run Unit Tests (Dev Mode)"
 	docker run $(TEST_FLAGS) -p 8000:8000 $(IMAGE_NAME) test --verbosity=2
+	docker cp $(CNTNR_NAME):/app/.coverage $(shell pwd)
+	docker container stop $(CNTNR_NAME)
+	docker rm $(CNTNR_NAME)
+	docker rmi $(IMAGE_NAME)
+
 
 # =========================================================================	#
 # DOCKER - Serve Production                                                 #

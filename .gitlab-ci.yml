@@ -1,3 +1,6 @@
 test:
   script:
     - make docker-test
+
+after_script:
+  - codecov --token=93ba4041-0079-4870-9773-5e942e1c2e76
