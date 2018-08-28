@@ -94,7 +94,7 @@ docker-import: docker-migrate
 
 docker-test: dockerfile
 	@make section tag="Docker - Run Unit Tests (Dev Mode)"
-	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) test --verbosity=2
+	docker run $(TEST_FLAGS) -p 8000:8000 $(IMAGE_NAME) test --verbosity=2
 
 # =========================================================================	#
 # DOCKER - Serve Production                                                 #
