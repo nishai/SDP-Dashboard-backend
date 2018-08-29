@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     # external apps
     'rest_framework',
     # erd diagram generator
-    'django_extensions',
+#    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -168,8 +168,8 @@ import logging.config
 logging.config.dictConfig(LOGGING)
 
 # graph generation
-GRAPH_MODELS = {
-  'all_applications': True,
-  'group_models': True,
-}
+#GRAPH_MODELS = {
+#  'all_applications': True,
+#  'group_models': True,
+#}
 

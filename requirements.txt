@@ -14,3 +14,8 @@ pytest-cov
 
 # Excel File Reader
 xlrd
+
+# graph generating
+#django-extensions
+#pygraphviz
+#pydotplus
