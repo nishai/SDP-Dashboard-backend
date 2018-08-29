@@ -97,7 +97,7 @@ docker-test:
 	@make section tag="Local - Building Dockerfile with --no-cache"
 	docker build --no-cache -t "$(IMAGE_NAME)" ./
 	@make section tag="Docker - Run Unit Tests (Dev Mode)"
-	docker run $(TEST_FLAGS) $(ci_env) -p 8000:8000 --entrypoint pytest $(IMAGE_NAME) --cov=./
+	docker run $(TEST_FLAGS) $(ci_env) -p 8000:8000 --entrypoint pytest $(IMAGE_NAME) -v --cov=./
 	docker container start $(CNTNR_NAME)
 	docker exec $(CNTNR_NAME) coverage xml
 	docker cp $(CNTNR_NAME):/app/coverage.xml $(shell pwd)
