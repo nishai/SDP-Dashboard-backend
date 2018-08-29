@@ -45,6 +45,8 @@ INSTALLED_APPS = [
 	'dashboard.apps.excel_import',
     # external apps
     'rest_framework',
+    # erd diagram generator
+    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -164,4 +166,10 @@ SECRET_KEY = get_or_gen_key(SECRET_FILE, 50)
 from .loggers import LOGGING
 import logging.config
 logging.config.dictConfig(LOGGING)
+
+# graph generation
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}
 
