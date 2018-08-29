@@ -8,8 +8,9 @@ django==2.1
 djangorestframework==3.8.2
 
 # Code Coverage
+pytest-django
 coverage
-django-nose
+pytest-cov
 
 # Excel File Reader
 xlrd

@@ -45,7 +45,6 @@ INSTALLED_APPS = [
 	'dashboard.apps.excel_import',
     # external apps
     'rest_framework',
-	'django_nose',	# code coverage
 ]
 
 MIDDLEWARE = [
@@ -165,15 +164,4 @@ SECRET_KEY = get_or_gen_key(SECRET_FILE, 50)
 from .loggers import LOGGING
 import logging.config
 logging.config.dictConfig(LOGGING)
-
-# Code Coverage
-# Use nose to run all tests
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
-# Tell nose to measure coverage on the 'foo' and 'bar' apps
-NOSE_ARGS = [
-    '--with-coverage',
-    '--cover-package=dashboard.apps.dashboard_api,dashboard.apps.excel_import',
-    '--cover-html',
-]
 

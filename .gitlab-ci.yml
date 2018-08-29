@@ -3,7 +3,6 @@ test:
     - make docker-test
 
 after_script:
-  - pip install codecov
   - curl -s https://codecov.io/bash > .codecov
   - chmod +x .codecov
   - ./.codecov -t 93ba4041-0079-4870-9773-5e942e1c2e76

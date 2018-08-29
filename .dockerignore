@@ -10,3 +10,4 @@
 !dashboard/**/*
 !manage.py
 !requirements.txt
+!pytest.ini
