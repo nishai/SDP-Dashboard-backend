@@ -1,3 +1,8 @@
+# template from django docs:
+# https://docs.djangoproject.com/en/2.1/topics/logging/
+# and django loggers and handlers
+# https://stackoverflow.com/questions/45972977/django-logging-requests
+
 import os
 import datetime
 LOG_PATH = os.path.join(os.path.abspath(os.path.join(__file__,os.path.join(*[os.pardir]*2))),"logs")
@@ -54,14 +59,6 @@ LOGGING = {
             'formatter': 'verbose',
             'filename': LOG_PATH + '/django_db_error/' + CURR_TIME + '.log',
         },
-#	'production-requests-file': {
-#	    'level': 'DEBUG',
-#            'class': 'logging.FileHandler',
-#            'class': 'logging.handlers.RotatingFileHandler',
-#            'formatter': 'verbose',
-#            'filename': logpath + '/production_requests.log',
-#            'maxBytes': 1024 * 1024 * 5, #5MB
-#	},
     },
     'loggers': {
             'django': {
