@@ -115,7 +115,9 @@ IMAGE_NAME_SERVE = backend-image-serve
 
 CNTNR_NAME_SERVE = backend-container-serve
 
-RUN_FLAGS_SERVE  = --rm --name "$(CNTNR_NAME_SERVE)"
+VBIND_LOGS       = -v "$(shell pwd)/dashboard/logs:/app/dashboard/logs"
+
+RUN_FLAGS_SERVE  = --rm --name "$(CNTNR_NAME_SERVE)" $(VBIND_LOGS)
 
 dockerfile.serve:
 	@make section tag="Local - Building Dockerfile.serve"
