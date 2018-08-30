@@ -1,16 +1,16 @@
 from django.shortcuts import get_object_or_404
-from .serializers import EnrolmentSerializer
-from .models import Enrolment
+from .serializers import *
+from .models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
 #enrolments/
-class EnrollmentList(APIView):
+class StudentInfoList(APIView):
     """List enrolled students"""
 
     def get(self, request):
         """Return a list of all students"""
-        enrol = Enrolment.objects.all()
-        serializer = EnrolmentSerializer(enrol, many=True)
+        enrol = StudentInfo.objects.all()
+        serializer = StudentInfoSerializer(enrol, many=True)
         return Response(serializer.data)

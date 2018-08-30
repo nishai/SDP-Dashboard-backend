@@ -15,12 +15,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from dashboard.apps.dashboard_api.views import EnrollmentList
+from dashboard.apps.dashboard_api.views import *
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('enrol/', EnrollmentList.as_view()),
+    path('enrol/', StudentInfoList.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

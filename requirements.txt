@@ -1,6 +1,21 @@
 
 # Usage:
 # $ pip install -r requirements.txt
+# or
+# $ python3.6 -m pip install -r requirements.txt
 
 django==2.1
 djangorestframework==3.8.2
+
+# Code Coverage
+pytest-django
+coverage
+pytest-cov
+
+# Excel File Reader
+xlrd
+
+# graph generating
+#django-extensions
+#pygraphviz
+#pydotplus

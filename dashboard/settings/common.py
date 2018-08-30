@@ -42,8 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     # dashboard apps
     'dashboard.apps.dashboard_api',
+	'dashboard.apps.excel_import',
     # external apps
     'rest_framework',
+    # erd diagram generator
+#    'django_extensions',
 ]
 
 MIDDLEWARE = [
@@ -135,24 +138,38 @@ STATIC_URL = '/static/'
 # ========================================================================== #
 
 
-def get_or_gen_key(file: str, length: int):
+def get_or_gen_key(file_url: str, length: int):
     try:
-        return open(file).read().strip()
+        return open(file_url).read().strip()
     except IOError:
         try:
             from django.utils.crypto import get_random_string
             chars = 'abcdefghijklmnopqrstuvwxyz0123456789!$%&()=+-_'
             key = get_random_string(length, chars)
-            with open(file, 'w') as f:
+            if not os.path.exists(DATA_DIR):
+                os.makedirs(DATA_DIR)
+            with open(file_url, 'w+') as f:
                 f.write(key)
-                print(f'Generated new secret key at: {file}')
+                print(f'Generated new secret key at: {file_url}')
             if len(key) != length:
                 raise Exception('Secret key length mismatch!')
             return key
         except IOError:
-            raise Exception(f'Could not open {file} for writing!')
+            raise Exception(f'Could not open {file_url} for writing!')
 
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_FILE = os.path.join(DATA_DIR, "secret.token")
 SECRET_KEY = get_or_gen_key(SECRET_FILE, 50)
+
+# Logging stuff
+from .loggers import LOGGING
+import logging.config
+logging.config.dictConfig(LOGGING)
+
+# graph generation
+#GRAPH_MODELS = {
+#  'all_applications': True,
+#  'group_models': True,
+#}
+

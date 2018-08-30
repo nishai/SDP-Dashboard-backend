@@ -13,12 +13,17 @@ help:
 	@echo "  dev                serve the project in *develop mode*, supports live updates"
 	@echo "  serve              serve the project in *production mode*"
 	@echo
-	@echo "  clean-data         clean the project"
-	@echo "  clean-migrations   clean the project"
+	@echo "  clean-data         clean the project data files"
+	@echo "  clean-migrations   clean the project migration files"
+	@echo "  clean              clean the project (both data and migration). Used for remaking database."
 	@echo
 	@echo "  dockerfile         dockerise the project"
 	@echo "  docker-migrate     dockerised version of migrate"
 	@echo "  docker-dev         dockerised version of dev"
+	@echo "  docker-import      dockerised version for importing excel files"
+	@echo "                     usage for all files: make docker-import"
+	@echo "                     usage for specific file: make docker-import FILE-<filename>"
+	@echo "  docker-test        runs `manage.py test` for running unit tests"
 	@echo
 	@echo "  dockerfile.serve   dockerise the production project"
 	@echo "  docker-serve       dockerised version of serve"
@@ -54,17 +59,23 @@ clean-migrations:
 	@make section tag="Cleaning Migrations"
 	make -C "./dashboard/apps/dashboard_api/migrations" clean-migrations
 
+clean: clean-migrations clean-data
+
 # =========================================================================	#
 # DOCKER - Local Modifictions & Live Updates                                #
 # =========================================================================	#
 
 IMAGE_NAME       = backend-image
 CNTNR_NAME       = backend-container
+TEST_IMAGE_NAME       = test-backend-image
+TEST_CNTNR_NAME       = test-backend-container
 
 VBIND_DATA       = -v "$(shell pwd)/data:/app/data"
 VBIND_SRC        = -v "$(shell pwd)/manage.py:/app/manage.py" -v "$(shell pwd)/dashboard:/app/dashboard"
+VBIND_TEST       = -v "$(shell pwd)/dashboard/apps/excel_import/excel_files/test_excels:/app/dashboard/apps/excel_import/excel_files/test_excels:ro" -v "$(shell pwd)/.git:/app/.git:ro"
 
 RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC)
+TEST_FLAGS       = --name "$(TEST_CNTNR_NAME)" $(VBIND_TEST)
 
 dockerfile:
 	@make section tag="Local - Building Dockerfile"
@@ -78,7 +89,23 @@ docker-migrate: dockerfile
 
 docker-dev: docker-migrate
 	@make section tag="Docker - Serving (Dev Mode)"
-	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) runserver
+	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) runserver 0.0.0.0:8000
+
+docker-import: docker-migrate 
+	@make section tag="Docker - Import Excel Files (Dev Mode)"
+	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) excel_import --file=$(FILE)
+
+docker-test: 
+	@make section tag="Local - Building Dockerfile with --no-cache (Dev Mode)"
+	docker build --no-cache -t "$(TEST_IMAGE_NAME)" ./
+	@make section tag="Docker - Run Unit Tests (Dev Mode)"
+	docker run $(TEST_FLAGS) $(ci_env) -p 8000:8000 --entrypoint pytest $(TEST_IMAGE_NAME) -v --cov=./
+	docker container start $(TEST_CNTNR_NAME)
+	docker exec $(TEST_CNTNR_NAME) coverage xml
+	docker cp $(TEST_CNTNR_NAME):/app/coverage.xml $(shell pwd)
+	docker container stop $(TEST_CNTNR_NAME)
+	docker rm $(TEST_CNTNR_NAME)
+	docker rmi $(TEST_IMAGE_NAME)
 
 # =========================================================================	#
 # DOCKER - Serve Production                                                 #

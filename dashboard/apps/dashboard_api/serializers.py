@@ -1,7 +1,25 @@
-from .models import Enrolment
+from .models import *
 from rest_framework import serializers
 
-class EnrolmentSerializer(serializers.ModelSerializer):
+# Serializer for StudentInfo table
+class StudentInfoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Enrolment
+        model = StudentInfo
         fields = '__all__'
+
+# Serializer for ProgramInfo table
+class ProgramInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProgramInfo
+        fields = '__all__'
+
+# Serializer for CourseStats table
+class CourseStatsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseStats
+        fields = '__all__'
+
+class AverageYearMarksSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = AverageYearMarks
+		fields = '__all__'

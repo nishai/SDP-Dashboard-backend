@@ -6,6 +6,17 @@
 # Intellij
 .idea/
 
+# Code Coverage stuff
+.codecov
+
+# Excel  Data Files
+*.xls
+*.xlsx
+!test*.xlsx
+
+# Or stuff
+sprint_texts/
+
 # ============================================================================= #
 # PYTHON                                                                        #
 # https://github.com/github/gitignore/blob/master/Python.gitignore              #
