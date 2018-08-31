@@ -11,3 +11,5 @@
 !manage.py
 !requirements.txt
 !pytest.ini
+!data/db.sqlite3
+!static/**/*

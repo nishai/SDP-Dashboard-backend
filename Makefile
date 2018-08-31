@@ -70,11 +70,13 @@ CNTNR_NAME       = backend-container
 TEST_IMAGE_NAME       = test-backend-image
 TEST_CNTNR_NAME       = test-backend-container
 
+VBIND_STATIC     = -v "$(shell pwd)/static:/app/static" -v "$(shell pwd)/dashboard/static:/app/dashboard/static"
 VBIND_DATA       = -v "$(shell pwd)/data:/app/data"
 VBIND_SRC        = -v "$(shell pwd)/manage.py:/app/manage.py" -v "$(shell pwd)/dashboard:/app/dashboard"
 VBIND_TEST       = -v "$(shell pwd)/dashboard/apps/excel_import/excel_files/test_excels:/app/dashboard/apps/excel_import/excel_files/test_excels:ro" -v "$(shell pwd)/.git:/app/.git:ro"
 
-RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC)
+RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC) $(VBIND_STATIC)
+
 TEST_FLAGS       = --name "$(TEST_CNTNR_NAME)" $(VBIND_TEST)
 
 dockerfile:
@@ -86,6 +88,7 @@ docker-migrate: dockerfile
 	docker run $(RUN_FLAGS) $(IMAGE_NAME) makemigrations
 	@make section tag="Docker - Migrating Database"
 	docker run $(RUN_FLAGS) $(IMAGE_NAME) migrate
+	docker run $(RUN_FLAGS) $(IMAGE_NAME) showmigrations
 
 docker-dev: docker-migrate
 	@make section tag="Docker - Serving (Dev Mode)"
@@ -100,10 +103,12 @@ docker-test:
 	docker build --no-cache -t "$(TEST_IMAGE_NAME)" ./
 	@make section tag="Docker - Run Unit Tests (Dev Mode)"
 	docker run $(TEST_FLAGS) $(ci_env) -p 8000:8000 --entrypoint pytest $(TEST_IMAGE_NAME) -v --cov=./
+	@make section tag="Docker - Code Covergae (Dev Mode)"
 	docker container start $(TEST_CNTNR_NAME)
 	docker exec $(TEST_CNTNR_NAME) coverage xml
 	docker cp $(TEST_CNTNR_NAME):/app/coverage.xml $(shell pwd)
 	docker container stop $(TEST_CNTNR_NAME)
+	@make section tag="Docker - Remove Containers and Images (Dev Mode)"
 	docker rm $(TEST_CNTNR_NAME)
 	docker rmi $(TEST_IMAGE_NAME)
 
@@ -116,8 +121,9 @@ IMAGE_NAME_SERVE = backend-image-serve
 CNTNR_NAME_SERVE = backend-container-serve
 
 VBIND_LOGS       = -v "$(shell pwd)/dashboard/logs:/app/dashboard/logs"
+VBIND_DB         = -v "$(shell pwd)/data/db.sqlite3:/app/data/db.sqlite3"
 
-RUN_FLAGS_SERVE  = --rm --name "$(CNTNR_NAME_SERVE)" $(VBIND_LOGS)
+RUN_FLAGS_SERVE  = --rm --name "$(CNTNR_NAME_SERVE)" $(VBIND_LOGS) $(VBIND_DB) $(VBIND_STATIC)
 
 dockerfile.serve:
 	@make section tag="Local - Building Dockerfile.serve"
