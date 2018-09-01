@@ -5,7 +5,7 @@
 
 import os
 import datetime
-LOG_PATH = os.path.join(os.path.abspath(os.path.join(__file__,os.path.join(*[os.pardir]*2))),"logs")
+LOG_PATH = os.path.join(os.path.abspath(os.path.join(__file__,os.path.join(*[os.pardir]*3))),"logs")
 CURR_TIME = str(datetime.datetime.now()).replace(" ","_").replace(":","").replace("-","")[:-7]
 
 LOGGING = {

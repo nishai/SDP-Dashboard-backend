@@ -70,12 +70,13 @@ CNTNR_NAME       = backend-container
 TEST_IMAGE_NAME       = test-backend-image
 TEST_CNTNR_NAME       = test-backend-container
 
+VBIND_LOGS       = -v "$(shell pwd)/logs:/app/logs"
 VBIND_STATIC     = -v "$(shell pwd)/static:/app/static" -v "$(shell pwd)/dashboard/static:/app/dashboard/static"
 VBIND_DATA       = -v "$(shell pwd)/data:/app/data"
 VBIND_SRC        = -v "$(shell pwd)/manage.py:/app/manage.py" -v "$(shell pwd)/dashboard:/app/dashboard"
 VBIND_TEST       = -v "$(shell pwd)/dashboard/apps/excel_import/excel_files/test_excels:/app/dashboard/apps/excel_import/excel_files/test_excels:ro" -v "$(shell pwd)/.git:/app/.git:ro"
 
-RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC) $(VBIND_STATIC)
+RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC) $(VBIND_STATIC) $(VBIND_LOGS)
 
 TEST_FLAGS       = --name "$(TEST_CNTNR_NAME)" $(VBIND_TEST)
 
@@ -120,7 +121,6 @@ IMAGE_NAME_SERVE = backend-image-serve
 
 CNTNR_NAME_SERVE = backend-container-serve
 
-VBIND_LOGS       = -v "$(shell pwd)/dashboard/logs:/app/dashboard/logs"
 VBIND_DB         = -v "$(shell pwd)/data/db.sqlite3:/app/data/db.sqlite3"
 
 RUN_FLAGS_SERVE  = --rm --name "$(CNTNR_NAME_SERVE)" $(VBIND_LOGS) $(VBIND_DB) $(VBIND_STATIC)
