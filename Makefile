@@ -30,8 +30,12 @@ help:
 
 label = Backend
 
+
 section:
-	@printf "\n[\e[94m\e[1m$(label)\e[0m]: \e[93m\e[1m$(tag)\e[0m\n"
+	@printf "\n[\e[94m\e[1m$(label)\e[0m]: \e[93m\e[1m$(tag)\e[0m\n\n"
+ifdef details
+	@printf	"\e[90m$(details)\e[0m\n\n"
+endif
 
 # =========================================================================	#
 # LOCAL                                                                     #
@@ -65,24 +69,27 @@ clean: clean-migrations clean-data
 # DOCKER - Local Modifictions & Live Updates                                #
 # =========================================================================	#
 
+# names
 IMAGE_NAME       = backend-image
 CNTNR_NAME       = backend-container
-TEST_IMAGE_NAME       = test-backend-image
-TEST_CNTNR_NAME       = test-backend-container
-
-VBIND_LOGS       = -v "$(shell pwd)/logs:/app/logs"
+# paths
 VBIND_STATIC     = -v "$(shell pwd)/static:/app/static" -v "$(shell pwd)/dashboard/static:/app/dashboard/static"
 VBIND_DATA       = -v "$(shell pwd)/data:/app/data"
 VBIND_SRC        = -v "$(shell pwd)/manage.py:/app/manage.py" -v "$(shell pwd)/dashboard:/app/dashboard"
-VBIND_TEST       = -v "$(shell pwd)/dashboard/apps/excel_import/excel_files/test_excels:/app/dashboard/apps/excel_import/excel_files/test_excels:ro" -v "$(shell pwd)/.git:/app/.git:ro"
-
-RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC) $(VBIND_STATIC) $(VBIND_LOGS)
-
-TEST_FLAGS       = --name "$(TEST_CNTNR_NAME)" $(VBIND_TEST)
+# flags
+RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC) $(VBIND_STATIC)
 
 dockerfile:
-	@make section tag="Local - Building Dockerfile"
+ifneq ($(and $(http_proxy),$(https_proxy)),) # means: ifdef http_proxy && https_proxy
+	@make section tag="Local - Building Dockerfile" details="http_proxy  = '$(http_proxy)'\nhttps_proxy = '$(https_proxy)'"
+	docker build \
+		--build-arg http_proxy="$(http_proxy)" \
+		--build-arg https_proxy="$(https_proxy)" \
+		-t "$(IMAGE_NAME)" ./
+else
+	@make section tag="Local - Building Dockerfile" details="If behind a proxy, set both (lowercase) http_proxy & https_proxy"
 	docker build -t "$(IMAGE_NAME)" ./
+endif
 
 docker-migrate: dockerfile
 	@make section tag="Docker - Making Migrations"
@@ -95,11 +102,24 @@ docker-dev: docker-migrate
 	@make section tag="Docker - Serving (Dev Mode)"
 	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) runserver 0.0.0.0:8000
 
-docker-import: docker-migrate 
+docker-import: docker-migrate
 	@make section tag="Docker - Import Excel Files (Dev Mode)"
 	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) excel_import --file=$(FILE)
 
-docker-test: 
+# =========================================================================	#
+# DOCKER - Serve Production                                                 #
+# =========================================================================	#
+
+# names
+TEST_IMAGE_NAME  = test-backend-image
+TEST_CNTNR_NAME  = test-backend-container
+# paths
+PATH_EXCEL_TESTS = dashboard/apps/excel_import/excel_files/test_excels
+VBIND_TEST       = -v "$(shell pwd)/$(PATH_EXCEL_TESTS):/app/$(PATH_EXCEL_TESTS):ro" -v "$(shell pwd)/.git:/app/.git:ro"
+# flags
+TEST_FLAGS       = --name "$(TEST_CNTNR_NAME)" $(VBIND_TEST)
+
+docker-test:
 	@make section tag="Local - Building Dockerfile with --no-cache (Dev Mode)"
 	docker build --no-cache -t "$(TEST_IMAGE_NAME)" ./
 	@make section tag="Docker - Run Unit Tests (Dev Mode)"
@@ -117,12 +137,13 @@ docker-test:
 # DOCKER - Serve Production                                                 #
 # =========================================================================	#
 
+# names
 IMAGE_NAME_SERVE = backend-image-serve
-
 CNTNR_NAME_SERVE = backend-container-serve
-
+# paths
+VBIND_LOGS       = -v "$(shell pwd)/dashboard/logs:/app/dashboard/logs"
 VBIND_DB         = -v "$(shell pwd)/data/db.sqlite3:/app/data/db.sqlite3"
-
+# flags
 RUN_FLAGS_SERVE  = --rm --name "$(CNTNR_NAME_SERVE)" $(VBIND_LOGS) $(VBIND_DB) $(VBIND_STATIC)
 
 dockerfile.serve:

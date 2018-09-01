@@ -3,19 +3,10 @@
 # ./Dockerfile to ./Dockerfile.serve
 
 # ============= #
-# django        #
+# common        #
 # ============= #
 
-FROM python:3.7-alpine
-
-# set the debug environment variable inside the container
-ENV DASHBOARD_DEVELOP "true"
-ENV http_proxy "http://students%5C1501858:Hanoch%2E456@proxyss.wits.ac.za:80"
-ENV https_proxy "https://students%5C1501858:Hanoch%2E456@proxyss.wits.ac.za:80"
-ENV ftp_proxy "ftp://students%5C1501858:Hanoch%2E456@proxyss.wits.ac.za:80"
-ENV HTTP_PROXY "http://students%5C1501858:Hanoch%2E456@proxyss.wits.ac.za:80"
-ENV HTTPS_PROXY "https://students%5C1501858:Hanoch%2E456@proxyss.wits.ac.za:80"
-ENV FTP_PROXY "ftp://students%5C1501858:Hanoch%2E456@proxyss.wits.ac.za:80"
+FROM python:3.7-alpine as common
 
 # same as bash's cd
 WORKDIR /app
@@ -23,6 +14,8 @@ WORKDIR /app
 # dependencies file
 COPY requirements.txt ./
 # install dependencies
+# behind a proxy pip only requires (lowercase): http_proxy & https_proxy
+# set this with $ docker build --build-arg http_proxy="" --build-arg https_proxy="" ...
 RUN pip install --no-cache-dir -r requirements.txt
 
 # documentation only
@@ -34,3 +27,12 @@ CMD ["runserver", "0.0.0.0:8000"]
 
 # Make sure to add exceptions for files that can be copied in .dockerignore
 COPY . .
+
+# ============= #
+# develop       #
+# ============= #
+
+FROM common as develop
+
+# set the debug environment variable inside the container
+ENV DASHBOARD_DEVELOP "true"
