@@ -5,5 +5,5 @@ all:
 
 clean-migrations:
 	@echo "[Cleaning: ./data]"
-	@find ./* -not -name "README.md" -a -not -name ".gitignore" -a -not -name "Makefile" -a -not -name "__init__.py" -print -exec rm -rf {} \;
+	@find ./* -not -name "README.md" -a -not -name ".gitignore" -a -not -name "Makefile" -a -not -name "__init__.py" -print -exec rm -rf {} \; || true
 	@#find ./* -not -name "README.md" -a -not -name ".gitignore" -a -not -name "Makefile" -a -not -regex "[.]/[0-9]\{4\}.*.py" -print -exec rm -rf {} \;
