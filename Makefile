@@ -71,7 +71,7 @@ import: migrate
 
 dev: migrate
 	@make section tag="Serving (Dev Mode)"
-	$(ENV_DEV) python $(PY_ARGS) manage.py runserver localhost:$(DEV_PORT)
+	$(ENV_DEV) python $(PY_ARGS) manage.py runserver 0.0.0.0:$(DEV_PORT)
 
 test: clean clean-data migrate
 	@mkdir -p coverage
