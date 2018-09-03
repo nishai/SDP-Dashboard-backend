@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     'dashboard.apps.excel_import',
     # external apps
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
 ]
 
 # ========================================================================= #
@@ -203,3 +205,4 @@ def get_or_gen_key(file_url: str, length: int):
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_FILE = os.path.join(DATA_DIR, "secret.token")
 SECRET_KEY = get_or_gen_key(SECRET_FILE, 50)
+

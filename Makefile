@@ -55,6 +55,10 @@ ENV_PROD        := PYTHONDONTWRITEBYTECODE="true" DJANGO_DEVELOP="false"
 ENV_TEST        := PYTHONDONTWRITEBYTECODE="true" DJANGO_DEVELOP="true" COVERAGE_FILE="coverage/coverage.dat"
 OUT_COV_FILE    := coverage/converage.xml
 
+admin: migrate
+	@make section tag="Local - Creating Default Admin User"
+	$(ENV_DEV) python manage.py createsuperuser --username=admin --email=admin@dashboard.ms.wits.ac.za || true
+
 migrate:
 	@make section tag="Migrating Database"
 	$(ENV_DEV) python $(PY_ARGS) manage.py makemigrations
@@ -63,7 +67,7 @@ migrate:
 
 import: migrate
 	@make section tag="Import Excel Files (Dev Mode)"
-	$(ENV_DEV) python $(PY_ARGS) manage.py excel_import --file=$(file)
+	$(ENV_DEV) python $(PY_ARGS) manage.py excel_import --file="$(file)"
 
 dev: migrate
 	@make section tag="Serving (Dev Mode)"
@@ -87,6 +91,8 @@ serve: dist migrate
 # =========================================================================	#
 # CLEAN                                                                     #
 # =========================================================================	#
+
+clean: clean-data clean-migrations
 
 clean-data:
 	@make section tag="Cleaning Data"
