@@ -1,7 +1,7 @@
 
 .DEFAULT_GOAL := help
 # force rebuilds
-.PHONY: help dist
+.PHONY: help dist fresh stop Dockerfile
 
 
 # =========================================================================	#
@@ -62,7 +62,7 @@ $(TARGETS) :: RUN_FLAGS += -t $(shell [ -t 0 ] && echo "-i") # terminal flags, -
 # Run the sequence of commands for the target
 # Append commands with || true in 
 
-$(TARGETS) :: Dockerfile
+$(TARGETS) :: Dockerfile fresh
 	@make section tag="Run - $@"
 	@# unknown volumes are automatically created by $ docker run
 	@# TODO: add bash EXIT trap, eg: $ bash -c "trap 'docker-compose down' EXIT; docker-compose up --build"
@@ -76,14 +76,18 @@ dist       ::
 dev serve  ::
 	@make section tag="Copy ./logs"
 	docker cp "$(CONTAINER_NAME):/app/logs" "$(shell pwd)/" || true
-$(TARGETS) ::
-	@make section tag="Stopping Container"
-	docker container stop $(CONTAINER_NAME) || true
-	docker container rm $(CONTAINER_NAME) || true
+$(TARGETS) :: stop
 
 # =========================================================================	#
 # [Makefile.Docker] Specific Targets                                        #
 # =========================================================================	#
+
+# Target needs to be run twice above.
+# If the same name is specified twice, only the first instance is run.
+fresh stop:
+	@make section tag="Stopping & Removing Container"
+	docker container stop $(CONTAINER_NAME) || true
+	docker container rm $(CONTAINER_NAME) || true
 
 rm:
 	@make section tag="Removing Default Volumes"
