@@ -1,7 +1,7 @@
 
 .DEFAULT_GOAL := help
 # force rebuilds
-.PHONY: dockerfile dockerfile.serve
+.PHONY: help FORCE
 
 # =========================================================================	#
 # UTIL                                                                      #
@@ -9,47 +9,84 @@
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
-	@echo "  migrate            initialise & migrate the database"
-	@echo "  dev                serve the project in *develop mode*, supports live updates"
-	@echo "  serve              serve the project in *production mode*"
+	@echo "    migrate            initialise & migrate the database"
+	@echo "    import             import an excel file into the db"
+	@echo "    dev                serve the project in *develop mode*, supports live updates"
+	@echo "    test               run project tests, and output coverage"
+	@echo "    serve              serve the project in *production mode*"
 	@echo
-	@echo "  clean-data         clean the project data files"
-	@echo "  clean-migrations   clean the project migration files"
-	@echo "  clean              clean the project (both data and migration). Used for remaking database."
-	@echo
-	@echo "  dockerfile         dockerise the project"
-	@echo "  docker-migrate     dockerised version of migrate"
-	@echo "  docker-dev         dockerised version of dev"
-	@echo "  docker-import      dockerised version for importing excel files"
-	@echo "                     usage for all files: make docker-import"
-	@echo "                     usage for specific file: make docker-import FILE-<filename>"
-	@echo "  docker-test        runs `manage.py test` for running unit tests"
-	@echo
-	@echo "  dockerfile.serve   dockerise the production project"
-	@echo "  docker-serve       dockerised version of serve"
+	@echo "    clean-data         clean the project data files"
+	@echo "    clean-migrations   clean the project migration files"
+	@echo "    clean-dist         clean the dist folder (rm)"
+	@echo "    clean-logs         clean the logs folder of all logs"
+	@echo "    clean-cov          clean the coverage folder (rm)"
+	@echo "    clean-pycache      clean all the pycache files (rm)"
+	@echo "    clean              clean everything except data"
 
-label = Backend
+# =========================================================================	#
+# PRINT                                                                     #
+# =========================================================================	#
+
+label           := Frontend
+docker          := $(shell [ -f /.dockerenv ] && echo 1)
+location        := $(if $(docker),\033[94mDocker\033[0m,\033[92mLocal\033[0m)
 
 section:
-	@printf "\n[\e[94m\e[1m$(label)\e[0m]: \e[93m\e[1m$(tag)\e[0m\n"
+	@printf "\n[\033[91m\033[1m$(label): $(location)\033[0m]: \033[93m\033[1m$(tag)\033[0m\n"
+ifdef details
+	@printf	"\033[90m$(details)\033[0m\n\n"
+endif
 
 # =========================================================================	#
 # LOCAL                                                                     #
 # =========================================================================	#
 
+DEV_PORT        := 3000
+PROD_PORT       := 4000
+
+echo-dev-port:
+	@echo $(DEV_PORT)
+echo-prod-port:
+	@echo $(PROD_PORT)
+
+PY_ARGS         := -B # same as PYTHONDONTWRITEBYTECODE
+ENV_DEV         := PYTHONDONTWRITEBYTECODE="true" DJANGO_DEVELOP="true"
+ENV_PROD        := PYTHONDONTWRITEBYTECODE="true" DJANGO_DEVELOP="false"
+ENV_TEST        := PYTHONDONTWRITEBYTECODE="true" DJANGO_DEVELOP="true" COVERAGE_FILE="coverage/coverage.dat"
+OUT_COV_FILE    := coverage/converage.xml
+
 migrate:
-	@make section tag="Local - Migrating Database"
-	python manage.py makemigrations
-	@make section tag="Local - Making Migrations"
-	python manage.py migrate
+	@make section tag="Migrating Database"
+	$(ENV_DEV) python $(PY_ARGS) manage.py makemigrations
+	@make section tag="Making Migrations"
+	$(ENV_DEV) python $(PY_ARGS) manage.py migrate
+
+import: migrate
+	@make section tag="Import Excel Files (Dev Mode)"
+	$(ENV_DEV) python $(PY_ARGS) manage.py excel_import --file=$(file)
 
 dev: migrate
-	@make section tag="Local - Serving (Dev Mode)"
-	DEBUG="true" python manage.py runserver
+	@make section tag="Serving (Dev Mode)"
+	$(ENV_DEV) python $(PY_ARGS) manage.py runserver localhost:$(DEV_PORT)
 
-serve: migrate
-	@make section tag="Local - Serving"
-	DEBUG="false" python manage.py runserver
+test: clean clean-data migrate
+	@mkdir -p coverage
+	@make section tag="Run Unit Tests"
+	$(ENV_TEST) python $(PY_ARGS) -m pytest -v --cov=./
+	@make section tag="Code Covergage"
+	$(ENV_TEST) python $(PY_ARGS) -m coverage xml -o $(OUT_COV_FILE)
+
+dist: clean-dist
+	@make section tag="Collecting Static Files"
+	$(ENV_PROD) python $(PY_ARGS) manage.py collectstatic
+
+serve: dist migrate
+	@make section tag="Serving"
+	$(ENV_PROD) python $(PY_ARGS) manage.py runserver 0.0.0.0:$(PROD_PORT)
+
+# =========================================================================	#
+# CLEAN                                                                     #
+# =========================================================================	#
 
 clean-data:
 	@make section tag="Cleaning Data"
@@ -59,77 +96,21 @@ clean-migrations:
 	@make section tag="Cleaning Migrations"
 	make -C "./dashboard/apps/dashboard_api/migrations" clean-migrations
 
-clean: clean-migrations clean-data
+clean-dist:
+	@make section tag="Cleaning Dist Folder"
+	rm -rf ./dist || true
 
-# =========================================================================	#
-# DOCKER - Local Modifictions & Live Updates                                #
-# =========================================================================	#
+clean-logs:
+	@make section tag="Cleaning Logs"
+	make -C "./logs" clean-logs
 
-IMAGE_NAME       = backend-image
-CNTNR_NAME       = backend-container
-TEST_IMAGE_NAME       = test-backend-image
-TEST_CNTNR_NAME       = test-backend-container
+clean-cov:
+	@make section tag="Cleaning Coverage"
+	rm -rvf ./coverage ./.pytest_cache/ || true
 
-VBIND_LOGS       = -v "$(shell pwd)/logs:/app/logs"
-VBIND_STATIC     = -v "$(shell pwd)/static:/app/static" -v "$(shell pwd)/dashboard/static:/app/dashboard/static"
-VBIND_DATA       = -v "$(shell pwd)/data:/app/data"
-VBIND_SRC        = -v "$(shell pwd)/manage.py:/app/manage.py" -v "$(shell pwd)/dashboard:/app/dashboard"
-VBIND_TEST       = -v "$(shell pwd)/dashboard/apps/excel_import/excel_files/test_excels:/app/dashboard/apps/excel_import/excel_files/test_excels:ro" -v "$(shell pwd)/.git:/app/.git:ro"
+clean-pycache:
+	@make section tag="Cleaning all __pycache__"
+	find . -name __pycache__ -exec rm -rf {} \; || true
 
-RUN_FLAGS        = --rm --name "$(CNTNR_NAME)" $(VBIND_DATA) $(VBIND_SRC) $(VBIND_STATIC) $(VBIND_LOGS)
-
-TEST_FLAGS       = --name "$(TEST_CNTNR_NAME)" $(VBIND_TEST)
-
-dockerfile:
-	@make section tag="Local - Building Dockerfile"
-	docker build -t "$(IMAGE_NAME)" ./
-
-docker-migrate: dockerfile
-	@make section tag="Docker - Making Migrations"
-	docker run $(RUN_FLAGS) $(IMAGE_NAME) makemigrations
-	@make section tag="Docker - Migrating Database"
-	docker run $(RUN_FLAGS) $(IMAGE_NAME) migrate
-	docker run $(RUN_FLAGS) $(IMAGE_NAME) showmigrations
-
-docker-dev: docker-migrate
-	@make section tag="Docker - Serving (Dev Mode)"
-	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) runserver 0.0.0.0:8000
-
-docker-import: docker-migrate 
-	@make section tag="Docker - Import Excel Files (Dev Mode)"
-	docker run $(RUN_FLAGS) -p 8000:8000 $(IMAGE_NAME) excel_import --file=$(FILE)
-
-docker-test: 
-	@make section tag="Local - Building Dockerfile with --no-cache (Dev Mode)"
-	docker build --no-cache -t "$(TEST_IMAGE_NAME)" ./
-	@make section tag="Docker - Run Unit Tests (Dev Mode)"
-	docker run $(TEST_FLAGS) $(ci_env) -p 8000:8000 --entrypoint pytest $(TEST_IMAGE_NAME) -v --cov=./
-	@make section tag="Docker - Code Covergae (Dev Mode)"
-	docker container start $(TEST_CNTNR_NAME)
-	docker exec $(TEST_CNTNR_NAME) coverage xml
-	docker cp $(TEST_CNTNR_NAME):/app/coverage.xml $(shell pwd)
-	docker container stop $(TEST_CNTNR_NAME)
-	@make section tag="Docker - Remove Containers and Images (Dev Mode)"
-	docker rm $(TEST_CNTNR_NAME)
-	docker rmi $(TEST_IMAGE_NAME)
-
-# =========================================================================	#
-# DOCKER - Serve Production                                                 #
-# =========================================================================	#
-
-IMAGE_NAME_SERVE = backend-image-serve
-
-CNTNR_NAME_SERVE = backend-container-serve
-
-VBIND_DB         = -v "$(shell pwd)/data/db.sqlite3:/app/data/db.sqlite3"
-
-RUN_FLAGS_SERVE  = --rm --name "$(CNTNR_NAME_SERVE)" $(VBIND_LOGS) $(VBIND_DB) $(VBIND_STATIC)
-
-dockerfile.serve:
-	@make section tag="Local - Building Dockerfile.serve"
-	docker build -t "$(IMAGE_NAME_SERVE)" -f "Dockerfile.serve" ./
-
-docker-serve: dockerfile.serve
-	@make section tag="Docker - Serving"
-	docker run $(RUN_FLAGS_SERVE) -p "8000:8000" $(IMAGE_NAME_SERVE)
+clean: clean-dist clean-logs clean-cov clean-pycache
 

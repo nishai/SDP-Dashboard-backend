@@ -5,5 +5,4 @@ all:
 
 clean-data:
 	@echo "[Cleaning: ./data]"
-	@find ./* -not -name "README.md" -a -not -name ".gitignore" -a -not -name "Makefile" -print -exec rm -rf {} \;
-	
+	@find ./* -not -name "README.md" -a -not -name ".gitignore" -a -not -name "Makefile" -exec rm -rf {} \; || true

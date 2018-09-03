@@ -1,15 +1,19 @@
 
 # this file is important for building the docker image,
-# preventing all files from being copies into it,
+# preventing all files from being copied into it,
 # except the ones defined below.
 
 # Ignore:
-**/*
+#**/*
 
 # Keep:
-!dashboard/**/*
-!manage.py
-!requirements.txt
-!pytest.ini
-!data/db.sqlite3
-!static/**/*
+#!dashboard/**/*
+#!manage.py
+#!requirements.txt
+#!pytest.ini
+
+# Ignore Again
+__pycache__
+*.pyc
+**/__pycache__/**
+**/*.pyc
