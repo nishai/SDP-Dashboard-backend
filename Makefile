@@ -1,4 +1,3 @@
-
 .DEFAULT_GOAL := help
 # force rebuilds
 .PHONY: help FORCE
@@ -11,6 +10,7 @@ help:
 	@echo "Please use \`make <target>' where <target> is one of"
 	@echo "    migrate            initialise & migrate the database"
 	@echo "    import             import an excel file into the db"
+	@echo "                        to specify a file use the argument `file=<file_url>`"
 	@echo "    dev                serve the project in *develop mode*, supports live updates"
 	@echo "    test               run project tests, and output coverage"
 	@echo "    serve              serve the project in *production mode*"
@@ -27,7 +27,7 @@ help:
 # PRINT                                                                     #
 # =========================================================================	#
 
-label           := Frontend
+label           := Backend
 docker          := $(shell [ -f /.dockerenv ] && echo 1)
 location        := $(if $(docker),\033[94mDocker\033[0m,\033[92mLocal\033[0m)
 
