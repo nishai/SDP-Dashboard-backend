@@ -57,7 +57,7 @@ OUT_COV_FILE    := coverage/converage.xml
 
 admin: migrate
 	@make section tag="Local - Creating Default Admin User"
-	$(ENV_DEV) python manage.py createsuperuser --username=admin --email=admin@dashboard.ms.wits.ac.za || true
+	$(ENV_DEV) python manage.py createsuperuser --username=admin --email=admin@dashboard-dev.ms.wits.ac.za || true
 
 migrate:
 	@make section tag="Migrating Database"
