@@ -1,4 +1,3 @@
-
 .DEFAULT_GOAL := help
 # force rebuilds
 .PHONY: help dist fresh stop Dockerfile
@@ -16,6 +15,9 @@ help:
 	@echo "      with this makefile forwarding along the calls"
 	@echo
 	@make help
+	@echo
+	@echo " Usage:"
+	@echo "       make -f Makefile.docker"
 	@echo
 	@echo "    [Makefile.docker]:"
 	@echo
