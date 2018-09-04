@@ -28,11 +28,17 @@ help:
 # DOCKER                                                                    #
 # =========================================================================	#
 
-IMAGE_NAME      := $(if $(image_name),$(image_name),backend-image)
-CONTAINER_NAME  := $(if $(container_name),$(container_name),backend-container)
+# the difference between '=' and ':='
+#     - ':=' is only evaluated once when it is defined
+#     - ' =' acts like a function and is evaluated whenever it is USED
 
-VOLUME_DATA     := backend-volume-data
-VOLUME_LOGS     := backend-volume-logs
+NAME_PREFIX      = $(if $(name),$(name),backend)
+
+IMAGE_NAME       = $(NAME_PREFIX)-image
+CONTAINER_NAME   = $(NAME_PREFIX)-container
+
+VOLUME_DATA      = $(NAME_PREFIX)-volume-data
+VOLUME_LOGS      = $(NAME_PREFIX)-volume-logs
 
 DEV_PORT        := $(shell make echo-dev-port)
 PROD_PORT       := $(shell make echo-prod-port)
@@ -54,6 +60,9 @@ TARGETS         := $(TARGETS_USAGE) $(TARGETS_CLEAN)
 
 RUN_FLAGS       := # nothing
 
+test       :: name = backend-tests
+serve      :: name = backend-prod
+
 serve      :: RUN_FLAGS += -p $(PROD_PORT):$(PROD_PORT)
 dev        :: RUN_FLAGS += -p $(DEV_PORT):$(DEV_PORT)
 dev        :: RUN_FLAGS += --volume "$(shell pwd)/dashboard:/app/dashboard" # manage.py not supported
@@ -62,8 +71,9 @@ $(TARGETS) :: RUN_FLAGS += --volume "$(VOLUME_LOGS):/app/logs"
 $(TARGETS) :: RUN_FLAGS += -t $(shell [ -t 0 ] && echo "-i") # terminal flags, -t for color, and -i is only added if its an interactive terminal
 
 # Run the sequence of commands for the target
-# Append commands with || true in 
+# Append commands with || true
 
+test       :: rm
 $(TARGETS) :: Dockerfile fresh
 	@make section tag="Run - $@"
 	@# unknown volumes are automatically created by $ docker run
@@ -91,7 +101,7 @@ fresh stop:
 	docker container stop $(CONTAINER_NAME) || true
 	docker container rm $(CONTAINER_NAME) || true
 
-rm:
+rm: fresh
 	@make section tag="Removing Default Volumes"
 	@docker volume rm $(VOLUME_DATA) || true
 	@docker volume rm $(VOLUME_LOGS) || true
