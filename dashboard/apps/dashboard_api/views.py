@@ -1,13 +1,9 @@
-from django.contrib.auth.models import User
-from rest_framework.decorators import api_view, parser_classes
-
 from .serializers import *
 from .models import *
 from rest_framework import viewsets, permissions, authentication
-
-from rest_framework.parsers import JSONParser
+from django.shortcuts import get_object_or_404
+from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 
 class StudentInfoList(viewsets.ReadOnlyModelViewSet):
@@ -16,10 +12,15 @@ class StudentInfoList(viewsets.ReadOnlyModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
-@api_view(['POST'])
-@parser_classes((JSONParser,))
-def student_query_view(request, format=None):
-    """
-    A view that can accept POST requests with JSON content.
-    """
-    return Response({'received data': request.data})
+class StudentViewSet(viewsets.ViewSet):
+
+    def list(self, request):
+        queryset = StudentInfo.objects.all()
+        serializer = StudentInfoSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def retrieve(self, request, pk=None):
+        queryset = StudentInfo.objects.all()
+        user = get_object_or_404(queryset, pk=pk)
+        serializer = StudentInfoSerializer(user)
+        return Response(serializer.data)
