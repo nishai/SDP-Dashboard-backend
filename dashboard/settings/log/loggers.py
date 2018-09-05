@@ -61,22 +61,34 @@ def create_default_logger(log_path, name):
         },
         'loggers': {
             'django': {
-                'handlers': ['django-record', 'console'],
+                'handlers': [
+                    'django-record',
+                    'console',
+                ],
                 'level': 'INFO',
                 'propagate': True,
             },
             'django.request': {
-                'handlers': ['django-request-error', 'console'],
+                'handlers': [
+                    'django-request-error',
+                    'console',
+                ],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'django.db.backends': {
-                'handlers': ['django-db-error', 'console'],
+                'handlers': [
+                    'django-db-error',
+                    'console',
+                ],
                 'level': 'ERROR',
                 'propagate': True,
             },
             'debug-import': {
-                'handlers': ['debug-import-file'],
+                'handlers': [
+                    'debug-import-file',
+                    'console',
+                ],
                 'level': 'DEBUG',
                 #            'filters': ['require_debug_true']
             }

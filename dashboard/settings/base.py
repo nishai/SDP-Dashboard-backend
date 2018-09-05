@@ -173,7 +173,8 @@ STATIC_ROOT = os.path.join(ROOT_DIR, 'dist')
 
 LOGGING = create_default_logger(
     os.path.join(ROOT_DIR, "logs"),
-    datetime.datetime.now().strftime("%y-%m-%d_%H-%M-%S")
+    "backend"
+    # datetime.datetime.now().strftime("%y-%m-%d_%H-%M-%S")
 )
 
 logging.config.dictConfig(LOGGING)
