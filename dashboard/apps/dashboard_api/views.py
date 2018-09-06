@@ -1,10 +1,15 @@
+
 from django.http import JsonResponse
 from rest_framework.decorators import parser_classes, api_view
-from .serializers import *
+from dashboard.apps.dashboard_api.json_query.parser import parse
+from dashboard.apps.dashboard_api.serializers import StudentInfoSerializer, RawStudentSerializer
 from .models import *
-from rest_framework import viewsets, permissions, authentication, parsers
-from rest_framework import viewsets
-from rest_framework.response import Response
+from rest_framework import permissions, parsers, viewsets
+
+
+# ========================================================================= #
+# VIEWS                                                                     #
+# ========================================================================= #
 
 
 class StudentInfoList(viewsets.ReadOnlyModelViewSet):
@@ -14,45 +19,46 @@ class StudentInfoList(viewsets.ReadOnlyModelViewSet):
 
 
 class RawStudentListViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = RawStudentModel.objects.order_by("calendar_instance_year", "encrypted_student_no")[:10]
+    """
+    Data Structure:
+    ---------------
+        Encrypted Student No                      =   0021D31BE03E4AB097DCF9C0C89B13BA
+        Calendar Instance Year                    =   2013
+        Program Code                              =   SB000
+        Program Title                             =   Bachelor of  Science
+        Year of Study                             =   YOS 2
+        Nationality Short Name                    =   South Africa
+        Home Language Description                 =   South Sotho
+        Race Description                          =   Black
+        Gender                                    =   F
+        Age                                       =   25
+        Course Code                               =   CHEM2003
+        Final Mark                                =   50
+        Final Grade                               =   PMP
+        Progress Outcome Type                     =   PCD
+        Progress Outcome Type Description         =   Permitted to proceed
+        Award Grade                               =   Q         # used for 3rd years / degree completion
+        Average Marks                             =   65,67
+        Secondary School Quintile                 =   4
+        Urban / Rural Secondary School            =   URBAN
+        Secondary School Name                     =   Forte Secondary School
+    """
+    queryset = RawStudentModel.objects.order_by("calendar_instance_year", "encrypted_student_no")
     serializer_class = RawStudentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
+# ========================================================================= #
+# QUERY VIEW                                                                #
+# ========================================================================= #
+
 @api_view(['GET', 'POST'])
 @parser_classes((parsers.JSONParser,))
 def student_query_view(request):
-    query = request.data
-    queryset = RawStudentModel.objects.all()
+    queryset = parse(
+        RawStudentModel,
+        request.data
+    )
+    return JsonResponse({"results": list(queryset)})
 
-    if 'filter' in query:
-        pass
 
-    if 'group_by' in query:
-        pass
-
-    if 'where' in query:
-        pass
-
-    if 'order_by' in query:
-        order_by = query['order_by']
-        # TODO check that order_by belongs in database
-        if type(order_by) is str:
-            order_by = [order_by]
-        if type(order_by) is list:
-            queryset = queryset.order_by(*order_by)
-        else:
-            return JsonResponse({'error': 'order_by invalid'}, status=400)
-
-    if 'top' not in query:
-        queryset = queryset[:5]
-        # TODO add paging
-    else:
-        top = query['top']
-        if type(top) is int:
-            queryset = queryset[:top]
-        else:
-            return JsonResponse({'error': 'top invalid'}, status=400)
-
-    serializer = RawStudentSerializer(queryset, many=True)
-    return Response(serializer.data)

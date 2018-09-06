@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 class RawStudentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StudentInfo
+        model = RawStudentModel
         fields = '__all__'
 
 # Serializer for StudentInfo table
@@ -33,3 +33,9 @@ class AverageYearMarksSerializer(serializers.ModelSerializer):
         model = AverageYearMarks
         fields = '__all__'
 
+
+
+class GeneralSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = None
+        fields = '__all__'

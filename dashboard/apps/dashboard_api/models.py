@@ -23,28 +23,56 @@ from django.db import models
 # Urban / Rural Secondary School            =   URBAN
 # Secondary School Name                     =   Forte Secondary School
 
+# # raw input format received from wits
+# class RawStudentModel(models.Model):
+#     encrypted_student_no = models.CharField(max_length=40)
+#     calendar_instance_year = models.CharField(max_length=4, null=True)
+#     program_code = models.CharField(max_length=5)
+#     program_title = models.CharField(max_length=255, null=True)
+#     year_of_study = models.CharField(max_length=5, null=True)
+#     nationality_short_name = models.CharField(max_length=255, null=True)
+#     home_language_description = models.CharField(max_length=30, null=True)
+#     race_description = models.CharField(max_length=30, null=True)
+#     gender = models.CharField(max_length=1, null=True)
+#     age = models.IntegerField(null=True)
+#     course_code = models.CharField(max_length=8)
+#     final_mark = models.DecimalField(max_digits=6, decimal_places=3, null=True)
+#     final_grade = models.CharField(max_length=5, null=True)
+#     progress_outcome_type = models.CharField(max_length=10, null=True)
+#     progress_outcome_type_description = models.CharField(max_length=255, null=True)
+#     award_grade = models.CharField(max_length=2, null=True)
+#     average_marks = models.DecimalField(max_digits=6, decimal_places=3, null=True)
+#     secondary_school_quintile = models.CharField(max_length=5, null=True)
+#     urban_rural_secondary_school = models.CharField(max_length=10, null=True)
+#     secondary_school_name = models.CharField(max_length=255, null=True)
+#
+#     class Meta:
+#         verbose_name = "Raw student data as recievied from Wits"
 
+
+# TODO: convert values when loading
 # raw input format received from wits
 class RawStudentModel(models.Model):
-    encrypted_student_no = models.CharField(max_length=40)
-    calendar_instance_year = models.CharField(max_length=4, null=True)
-    program_code = models.CharField(max_length=5)
+    # fields
+    encrypted_student_no = models.CharField(max_length=255, null=True)
+    calendar_instance_year = models.CharField(max_length=255, null=True)
+    program_code = models.CharField(max_length=255, null=True)
     program_title = models.CharField(max_length=255, null=True)
-    year_of_study = models.CharField(max_length=5, null=True)
+    year_of_study = models.CharField(max_length=255, null=True)
     nationality_short_name = models.CharField(max_length=255, null=True)
-    home_language_description = models.CharField(max_length=30, null=True)
-    race_description = models.CharField(max_length=30, null=True)
-    gender = models.CharField(max_length=1, null=True)
-    age = models.IntegerField(null=True)
-    course_code = models.CharField(max_length=8)
-    final_mark = models.DecimalField(max_digits=6, decimal_places=3, null=True)
-    final_grade = models.CharField(max_length=5, null=True)
-    progress_outcome_type = models.CharField(max_length=10, null=True)
+    home_language_description = models.CharField(max_length=255, null=True)
+    race_description = models.CharField(max_length=255, null=True)
+    gender = models.CharField(max_length=255, null=True)
+    age = models.CharField(max_length=255, null=True)
+    course_code = models.CharField(max_length=255, null=True)
+    final_mark = models.CharField(max_length=255, null=True)
+    final_grade = models.CharField(max_length=255, null=True)
+    progress_outcome_type = models.CharField(max_length=255, null=True)
     progress_outcome_type_description = models.CharField(max_length=255, null=True)
-    award_grade = models.CharField(max_length=2, null=True)
-    average_marks = models.DecimalField(max_digits=6, decimal_places=3, null=True)
-    secondary_school_quintile = models.CharField(max_length=5, null=True)
-    urban_rural_secondary_school = models.CharField(max_length=10, null=True)
+    award_grade = models.CharField(max_length=255, null=True)
+    average_marks = models.CharField(max_length=255, null=True)
+    secondary_school_quintile = models.CharField(max_length=255, null=True)
+    urban_rural_secondary_school = models.CharField(max_length=255, null=True)
     secondary_school_name = models.CharField(max_length=255, null=True)
 
     class Meta:

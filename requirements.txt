@@ -1,20 +1,30 @@
 
-# Usage:
-# $ pip install -r requirements.txt
-# or
-# $ python3.6 -m pip install -r requirements.txt
+# - - - - - - - - - - - - - - - - - - - - - - - - #
+# Usage:                                          #
+# $ pip3 install -r requirements.txt              #
+# or                                              #
+# $ python3.6 -m pip install -r requirements.txt  #
+# - - - - - - - - - - - - - - - - - - - - - - - - #
 
-django==2.1
+# =============================================== #
+# MAKE SURE TO ADD THE VERSION SO THAT IF A       #
+# PACKAGE'S API CHANGES, WE AREN'T STUCK TRYING   #
+# TO FIGURE OUT WHAT WENT WRONG!                  #
+# =============================================== #
+
+django==2.1.1
 djangorestframework==3.8.2
 django-rest-auth==0.9.3
+jsonschema==2.6.0
 
 # Code Coverage
-pytest-django
-coverage
-pytest-cov
+pytest-django==3.4.2
+coverage==4.5.1
+pytest-cov==2.6.0
 
 # Excel File Reader
-xlrd
+xlrd==1.1.0
+pandas==0.22.0
 
 # graph generating
 #django-extensions
