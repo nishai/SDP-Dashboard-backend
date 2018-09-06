@@ -2,6 +2,11 @@ from .models import *
 from rest_framework import serializers
 
 
+class RawStudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentInfo
+        fields = '__all__'
+
 # Serializer for StudentInfo table
 class StudentInfoSerializer(serializers.ModelSerializer):
     class Meta:

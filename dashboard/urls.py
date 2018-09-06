@@ -16,19 +16,22 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from dashboard.apps.dashboard_api.views import StudentInfoList, StudentViewSet
+from dashboard.apps.dashboard_api.views import StudentInfoList, RawStudentListViewSet, student_query_view
 from django.conf.urls import url, include
 from rest_framework import routers
 
 router = routers.DefaultRouter()
 router.register(r'enrol', StudentInfoList)
-router.register(r'students', StudentViewSet, base_name="student_query")
+# router.register(r'query', student_query_view, base_name="student_query")
+router.register(r'raw', RawStudentListViewSet, base_name="raw_student")
 
 urlpatterns = [
     # resful api
     url(r'^', include(router.urls)),
     # Builtin Django database admin
     path('admin/', admin.site.urls),
+    path('query', student_query_view),
+    path('query/', student_query_view),
     # https://django-rest-auth.readthedocs.io/en/latest/index.html
     # RESTful Authentication/Login/Logout Api
     path('rest-auth/', include('rest_auth.urls')),

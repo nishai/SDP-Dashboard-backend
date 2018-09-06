@@ -1,5 +1,55 @@
 from django.db import models
 
+# https://docs.djangoproject.com/en/2.1/topics/migrations/
+
+# Encrypted Student No                      =   0021D31BE03E4AB097DCF9C0C89B13BA
+# Calendar Instance Year                    =   2013
+# Program Code                              =   SB000
+# Program Title                             =   Bachelor of  Science
+# Year of Study                             =   YOS 2
+# Nationality Short Name                    =   South Africa
+# Home Language Description                 =   South Sotho
+# Race Description                          =   Black
+# Gender                                    =   F
+# Age                                       =   25
+# Course Code                               =   CHEM2003
+# Final Mark                                =   50
+# Final Grade                               =   PMP
+# Progress Outcome Type                     =   PCD
+# Progress Outcome Type Description         =   Permitted to proceed
+# Award Grade                               =   Q                           # used for 3rd years / degree completion
+# Average Marks                             =   65,67
+# Secondary School Quintile                 =   4
+# Urban / Rural Secondary School            =   URBAN
+# Secondary School Name                     =   Forte Secondary School
+
+
+# raw input format received from wits
+class RawStudentModel(models.Model):
+    encrypted_student_no = models.CharField(max_length=40)
+    calendar_instance_year = models.CharField(max_length=4, null=True)
+    program_code = models.CharField(max_length=5)
+    program_title = models.CharField(max_length=255, null=True)
+    year_of_study = models.CharField(max_length=5, null=True)
+    nationality_short_name = models.CharField(max_length=255, null=True)
+    home_language_description = models.CharField(max_length=30, null=True)
+    race_description = models.CharField(max_length=30, null=True)
+    gender = models.CharField(max_length=1, null=True)
+    age = models.IntegerField(null=True)
+    course_code = models.CharField(max_length=8)
+    final_mark = models.DecimalField(max_digits=6, decimal_places=3, null=True)
+    final_grade = models.CharField(max_length=5, null=True)
+    progress_outcome_type = models.CharField(max_length=10, null=True)
+    progress_outcome_type_description = models.CharField(max_length=255, null=True)
+    award_grade = models.CharField(max_length=2, null=True)
+    average_marks = models.DecimalField(max_digits=6, decimal_places=3, null=True)
+    secondary_school_quintile = models.CharField(max_length=5, null=True)
+    urban_rural_secondary_school = models.CharField(max_length=10, null=True)
+    secondary_school_name = models.CharField(max_length=255, null=True)
+
+    class Meta:
+        verbose_name = "Raw student data as recievied from Wits"
+
 
 # Table for program (i.e BSc General) info
 class ProgramInfo(models.Model):

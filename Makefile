@@ -63,7 +63,7 @@ migrate:
 	@make section tag="Migrating Database"
 	$(ENV_DEV) python $(PY_ARGS) manage.py makemigrations
 	@make section tag="Making Migrations"
-	$(ENV_DEV) python $(PY_ARGS) manage.py migrate
+	$(ENV_DEV) python $(PY_ARGS) manage.py migrate --run-syncdb
 
 import: migrate
 	@make section tag="Import Excel Files (Dev Mode)"

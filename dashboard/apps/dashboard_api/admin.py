@@ -5,3 +5,6 @@ admin.site.register(StudentInfo)
 admin.site.register(ProgramInfo)
 admin.site.register(CourseStats)
 admin.site.register(AverageYearMarks)
+
+# raw input data
+admin.site.register(RawStudentModel)
