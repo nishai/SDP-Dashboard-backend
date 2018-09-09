@@ -1,5 +1,4 @@
 from typing import Dict, List
-
 from django.db import models
 from django.db.models import Model, QuerySet
 
@@ -22,7 +21,6 @@ AGGREGATE_METHODS = {
 # SCHEMA - https://json-schema.org & https://pypi.org/project/jsonschema    #
 # ========================================================================= #
 
-
 schema_filter = {
     "filter": {
         "type": "array",
@@ -30,17 +28,19 @@ schema_filter = {
             "type": "object",
             "properties": {
                 "field": {"type": "string"},
-                "comparator": {"type": "string"},
-                "value": {"type": "string"}
+                "operator": {"type": "string"},
+                "value": {"type": "string"},
+                "exclude": {"type": "boolean"},
             },
             "required": [
                 "field",
                 "comparator",
                 "value",
+                "exclude"
             ]
         },
         "uniqueItems": True,
-        "minItems": 1,
+        "minItems": 0,
     }
 }
 
@@ -68,7 +68,7 @@ schema_group = {
                         "enum": list(AGGREGATE_METHODS.keys()),
                         "description": "aggregate method",
                     },
-                    "of": {
+                    "from": {
                         "type": "string",
                         "description": "field to apply aggregation to",
                     },
@@ -76,7 +76,7 @@ schema_group = {
                 "required": [
                     # "name",
                     "via",
-                    "of",
+                    "from",
                 ],
             },
             "uniqueItems": True,
@@ -85,7 +85,7 @@ schema_group = {
     },
     "required": [
         "by",
-        "yield",
+        # "yield",
     ],
 }
 
@@ -103,7 +103,7 @@ schema_order = {
         ]
     },
     "uniqueItems": True,
-    "minItems": 1,
+    "minItems": 0,
 }
 
 schema_limit = {
@@ -145,11 +145,16 @@ schema_subquery = {
 }
 
 schema_query = {
-    "type": "array",
-    "items": schema_subquery,
-    "minItems": 1,
-    "maxItems": 1,  # TODO
-    "uniqueItems": True,
+    "type": "object",
+    "properties": {
+        "chain": {
+            "type": "array",
+            "items": schema_subquery,
+            "minItems": 0,
+            "uniqueItems": True,
+        },
+        "limit": schema_limit
+    }
 }
 
 
@@ -158,19 +163,26 @@ schema_query = {
 # ========================================================================= #
 
 
-def _filter(queryset: QuerySet, fragment: Dict):
+def _filter(queryset: QuerySet, fragment: List):
+    for f in fragment:
+        filterer = (queryset.exclude if f['exclude'] else queryset.filter)
+        queryset = filterer(**{f"{f['field']}__{f['operator']}": f['value']})
+        # todo ast for evaluation value with relation to other fields.
     return queryset
 
 
 def _group(queryset: QuerySet, fragment: Dict):
     # find these unique pairs
     unique = queryset.values(*fragment['by'])
+    # return early
+    if 'yield' not in fragment:
+        return unique
     # data generators
     yields = {}
     for y in fragment['yield']:
-        (via, of) = (y['via'], y['of'])
-        name = y['name'] if 'name' in y else f"{of}_{via}"
-        yields[name] =  AGGREGATE_METHODS[via](of)
+        (_via, _from) = (y['via'], y['from'])
+        name = y['name'] if 'name' in y else f"{_from}_{_via}"
+        yields[name] =  AGGREGATE_METHODS[_via](_from)
     # generate
     return unique.annotate(**yields)
 
@@ -196,17 +208,66 @@ def _limit(queryset: QuerySet, fragment: Dict[str, object]):
 
 # TODO: check https://github.com/carltongibson/django-filter
 
+# Valid Query Example:
+
+# {
+# 	"chain": [
+# 		{
+# 			"group": {
+# 				"by": [
+# 					"age",
+# 					"race_description"
+# 				],
+# 				"yield": [
+# 					{
+# 						"name": "ave",
+# 						"via": "ave",
+# 						"from": "average_marks"
+# 					},
+# 					{
+# 						"name": "count",
+# 						"via": "count",
+# 						"from": "average_marks"
+# 					}
+# 				]
+# 			},
+# 			"order": [
+# 				{
+# 					"field": "age",
+# 					"descending": false
+# 				}
+# 			]
+# 		},
+# 		{
+# 			"filter": [
+# 				{
+# 					"field": "race_description",
+# 					"operator": "startswith",
+# 					"value": "Black",
+# 					"exclude": false
+# 				}
+# 			],
+# 			"group": {
+# 				"by": [
+# 					"race_description",
+# 					"ave"
+# 				]
+# 			}
+# 		}
+# 	],
+# 	"limit": {
+# 		"type": "first",
+# 		"num": 3
+# 	}
+# }
 
 def parse(model: Model, data: List):
-
     if data == {}:
         data = [data]
 
     try:
         validate(data, schema_query)
     except ValidationError as e:
-
-        # TODO
         raise e
     except SchemaError as e:
         raise e  # we caused this with invalid schema above
@@ -214,21 +275,16 @@ def parse(model: Model, data: List):
     queryset = model.objects
 
     # https://www.laurencegellert.com/2016/09/django-group-by-having-query-example/
-    for i, frag in enumerate(data):
-        assert i == 0
+    for i, frag in enumerate(data['chain']):
         if 'group' not in frag:
             queryset = queryset.all()
-            print(queryset)
         if 'filter' in frag:
             queryset = _filter(queryset, frag['filter'])
-            print(queryset)
         if 'group' in frag:
             queryset = _group(queryset, frag['group'])
-            print(queryset)
         if 'order' in frag:
             queryset = _order(queryset, frag['order'])
-            print(queryset)
-        # must contain limit
-        queryset = _limit(queryset, frag['limit'] if 'limit' in frag else {"type": "first", "num": 10})
+
+    queryset = _limit(queryset, data['limit'] if 'limit' in data else {"type": "first", "num": 10})
 
     return queryset

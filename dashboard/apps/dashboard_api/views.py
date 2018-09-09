@@ -1,7 +1,7 @@
 
 from django.http import JsonResponse
 from rest_framework.decorators import parser_classes, api_view
-from dashboard.apps.dashboard_api.json_query.parser import parse
+from dashboard.apps.dashboard_api.jsonquery import jsonquery
 from dashboard.apps.dashboard_api.serializers import StudentInfoSerializer, RawStudentSerializer
 from .models import *
 from rest_framework import permissions, parsers, viewsets
@@ -55,7 +55,7 @@ class RawStudentListViewSet(viewsets.ReadOnlyModelViewSet):
 @api_view(['GET', 'POST'])
 @parser_classes((parsers.JSONParser,))
 def student_query_view(request):
-    queryset = parse(
+    queryset = jsonquery.parse(
         RawStudentModel,
         request.data
     )
