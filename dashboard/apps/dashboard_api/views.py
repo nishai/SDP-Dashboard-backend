@@ -1,5 +1,6 @@
-
+from django.core.exceptions import FieldError
 from django.http import JsonResponse
+from jsonschema import ValidationError, SchemaError
 from rest_framework.decorators import parser_classes, api_view
 from dashboard.apps.dashboard_api.jsonquery import jsonquery
 from dashboard.apps.dashboard_api.serializers import StudentInfoSerializer, RawStudentSerializer
@@ -55,10 +56,15 @@ class RawStudentListViewSet(viewsets.ReadOnlyModelViewSet):
 @api_view(['GET', 'POST'])
 @parser_classes((parsers.JSONParser,))
 def student_query_view(request):
-    queryset = jsonquery.parse(
-        RawStudentModel,
-        request.data
-    )
-    return JsonResponse({"results": list(queryset)})
+    try:
+        queryset = jsonquery.parse(
+            RawStudentModel,
+            request.data
+        )
+    except ValidationError as e:
+        return JsonResponse({"status": "invalid", "message": str(e)})
+    except FieldError as e:
+        return JsonResponse({"status": "invalid", "message":  str(e)})
+    return JsonResponse({"status": "valid", "results": list(queryset)})
 
 
