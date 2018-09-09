@@ -10,9 +10,11 @@ WORKDIR /app
 # dependencies file
 COPY requirements.txt ./
 # install dependencies
-# behind a proxy pip only requires (lowercase): http_proxy & https_proxy
-# set this with $ docker build --build-arg http_proxy="..." --build-arg https_proxy="..." ...
-RUN apk add --update make && \
+#   - behind a proxy pip and apk only requires (lowercase): http_proxy & https_proxy
+#     set this with $ docker build --build-arg http_proxy="..." --build-arg https_proxy="..." ...
+#   - *NB* apk does not work well when escape codes are used instead of special values
+#     in the username and password, for example "%5C" instead of "\" does not work.
+RUN apk add --no-cache --update make && \
     pip install --no-cache-dir -r requirements.txt
 
 #RUN addgroup -g 1003 -S dockeruser && \
