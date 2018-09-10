@@ -21,6 +21,7 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('--files', dest='files', nargs='+', help='Specify file to be important')
         parser.add_argument('--test', action='store_true', dest='test', help='Specify if this is a test run')
+        parser.add_argument('--convert', dest='convert', nargs='*', type=int, help='Convert any excel files to csv and save them')
 
     def handle(self, *args, **options):
         logger.info("-----------------------------------------------------------------------")
@@ -41,22 +42,52 @@ class Command(BaseCommand):
             # If no file name is provided take all files in the folder
             file_urls = [os.path.join(mypath, f) for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
 
+        imported = 0
         for path in file_urls:
-            self.load_file(path)
+            try:
+                # load file
+                df = self.load_file(path)
+                # convert xlsx to csv if required
+                self.convert_to_csv(df, orig_path=path, **options)
+                # import into db
+                if options['convert'] is None:
+                    self.import_df(df)
+                    imported += len(df)
+            except Exception as e:
+                logger.error(e)
+
+        if options['convert'] is None:
+            logger.info(f"Imported: {imported} records")
+
 
     def load_file(self, path):
-        df = pd.read_excel(path, index_col=None, header=5)
+        ext = os.path.splitext(path)[1].lower()
+        logger.info(f"Loading table: {path}")
+        if ext == ".xlsx":
+            df = pd.read_excel(path, index_col=None, header=5)
+        elif ext == ".csv":
+            df = pd.read_csv(path, index_col=None)
+        else:
+            raise Exception(f"Unsupported file extension: {ext}")
         df = df.filter(regex='^(?!Unnamed:).*', axis=1)
         df = df.rename(lambda s: s.lower().replace(" ", "_").replace("_/_", "_"), axis='columns')
-        items = df.to_dict('records')
+        logger.info(f"Table entries loaded: {len(df)}")
+        return df
 
-        transaction.set_autocommit(False)
-        for i, item in enumerate(items):
-            try:
-                entry = RawStudentModel(**item)
-                entry.save()
-                if i % 1000 == 0:
-                    transaction.commit()
-                    print(f"Saved: {i} of {len(items)}")
-            except Exception as e:
-                print(e)
+    def convert_to_csv(self, df, orig_path, **options):
+        partial, ext = os.path.splitext(orig_path)
+        if options['convert'] is not None:
+            if len(options['convert']) <= 0:
+                options['convert'] += [-1]
+            for limit in [l for l in options['convert'] if not (ext.lower() == '.csv' and l < 0)]:
+                limit = min(max(-1, limit), len(df))
+                path = f"{partial}_{limit}.csv" if limit >= 0 else f"{partial}.csv"
+                logger.info(f"Converting to csv: {orig_path} -> {path}")
+                df[:limit].to_csv(path, header=True, index=False)
+
+    def import_df(self, df):
+        logger.info(f"Converting table to records")
+        items = df.to_dict('records')
+        items = [RawStudentModel(**item) for item in items]
+        logger.info(f"Saving records")
+        RawStudentModel.objects.bulk_create(items)
