@@ -116,16 +116,17 @@ FORCE:
 Dockerfile: FORCE
 ifneq ($(and $(http_proxy),$(https_proxy)),) # this means: ifdef http_proxy && ifdef https_proxy
 	@make section tag="Building $@ $(if $(no_cache),--no-cache,)" details="http_proxy & https_proxy are both set"
-	@docker build \
-		--build-arg http_proxy='$(http_proxy)' \
-		--build-arg https_proxy='$(https_proxy)' \
-		$(if $(no_cache),--no-cache,) \
-		-t $(IMAGE_NAME) -f $@ ./
+	docker build \
+		--build-arg http_proxy_encoded='$(http_proxy)' \
+		--build-arg https_proxy_encoded='$(https_proxy)' \
+		--build-arg http_proxy='$(shell python2 -c "import urllib; print urllib.unquote_plus('$(http_proxy)')")' \
+		--build-arg https_proxy='$(shell python2 -c "import urllib; print urllib.unquote_plus('$(https_proxy)')")' \
+		$(if $(build_args),$(build_args),) $(if $(no_cache),--no-cache,) \
+		-t $(IMAGE_NAME) -f $(if $(dockerfile_name),$(dockerfile_name),$@) ./
 else
 	@make section tag="Building $@ $(if $(no_cache),--no-cache,)" details="If behind a proxy, set both (lowercase) http_proxy & https_proxy"
-	@docker build \
-		$(if $(no_cache),--no-cache,) \
-		-t $(IMAGE_NAME) -f $@ ./
+	docker build \
+		$(if $(build_args),$(build_args),) $(if $(no_cache),--no-cache,) \
+		-t $(IMAGE_NAME) -f $(if $(dockerfile_name),$(dockerfile_name),$@) ./
 endif
-
 

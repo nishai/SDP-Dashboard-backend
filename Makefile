@@ -7,10 +7,10 @@
 # =========================================================================	#
 
 help:
-	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "Please use 'make <target>' where <target> is one of"
 	@echo "    migrate            initialise & migrate the database"
 	@echo "    import             import an excel file into the db"
-	@echo "                        to specify a file use the argument `file=<file_url>`"
+	@echo "                        to specify a file use the argument 'file=<file_url>'"
 	@echo "    dev                serve the project in *develop mode*, supports live updates"
 	@echo "    test               run project tests, and output coverage"
 	@echo "    serve              serve the project in *production mode*"
