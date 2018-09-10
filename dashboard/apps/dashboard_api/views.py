@@ -1,7 +1,8 @@
 from django.core.exceptions import FieldError
 from django.http import JsonResponse
-from jsonschema import ValidationError, SchemaError
+from jsonschema import ValidationError
 from rest_framework.decorators import parser_classes, api_view
+
 from dashboard.apps.dashboard_api.jsonquery import jsonquery
 from dashboard.apps.dashboard_api.serializers import StudentInfoSerializer, RawStudentSerializer
 from .models import *
@@ -48,10 +49,53 @@ class RawStudentListViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = RawStudentSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
-
 # ========================================================================= #
 # QUERY VIEW                                                                #
 # ========================================================================= #
+
+# {
+# 	"chain": [
+# 		{
+# 			"filter": [
+# 				{
+# 					"field": "year_of_study",
+# 					"operator": "startswith",
+# 					"value": "YOS 1",
+# 					"exclude": false
+# 				}
+# 			],
+# 			"group": {
+# 				"by": [
+# 					"age",
+# 					"year_of_study"
+# 				],
+# 				"yield": [
+# 					{
+# 						"name": "ave",
+# 						"via": "ave",
+# 						"from": "average_marks"
+# 					},
+# 					{
+# 						"name": "count",
+# 						"via": "count",
+# 						"from": "age"
+# 					}
+# 				]
+# 			},
+# 			"order": [
+# 				{
+# 					"field": "age",
+# 					"descending": false
+# 				}
+# 			]
+# 		}
+# 	],
+# 	"limit": {
+# 		"type": "first",
+# 		"num": 1000
+# 	}
+# }
+
 
 @api_view(['GET', 'POST'])
 @parser_classes((parsers.JSONParser,))
@@ -65,6 +109,5 @@ def student_query_view(request):
         return JsonResponse({"status": "invalid", "message": str(e)})
     except FieldError as e:
         return JsonResponse({"status": "invalid", "message":  str(e)})
+
     return JsonResponse({"status": "valid", "results": list(queryset)})
-
-

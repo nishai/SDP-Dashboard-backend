@@ -21,18 +21,20 @@ from django.conf.urls import url, include
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'enrol', StudentInfoList)
-# router.register(r'query', student_query_view, base_name="student_query")
-router.register(r'raw', RawStudentListViewSet, base_name="raw_student")
+router.register(r'student', StudentInfoList)
+router.register(r'raw', RawStudentListViewSet, base_name="raw_query")
 
+# admin / auth / debug
 urlpatterns = [
-    # resful api
-    url(r'^', include(router.urls)),
     # Builtin Django database admin
     path('admin/', admin.site.urls),
-    path('query', student_query_view),
-    path('query/', student_query_view),
     # https://django-rest-auth.readthedocs.io/en/latest/index.html
     # RESTful Authentication/Login/Logout Api
     path('rest-auth/', include('rest_auth.urls')),
+]
+
+# api
+urlpatterns += [
+    url(r'^', include(router.urls)),
+    path('raw/query', student_query_view),
 ]

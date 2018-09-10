@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Type
 from django.db import models
 from django.db.models import Model, QuerySet
 
@@ -137,11 +137,7 @@ schema_subquery = {
         "filter": schema_filter,
         "group": schema_group,
         "order": schema_order,
-        "limit": schema_limit,
     },
-    # "required": [
-    #     "limit"
-    # ],
 }
 
 schema_query = {
@@ -261,9 +257,7 @@ def _limit(queryset: QuerySet, fragment: Dict[str, object]):
 # 	}
 # }
 
-def parse(model: Model, data: List):
-    if data == {}:
-        data = [data]
+def parse(model: Type[Model], data: Dict):
 
     try:
         validate(data, schema_query)
@@ -272,18 +266,21 @@ def parse(model: Model, data: List):
     except SchemaError as e:
         raise e  # we caused this with invalid schema above
 
-    queryset = model.objects
+    queryset = model.objects.all()
 
-    # https://www.laurencegellert.com/2016/09/django-group-by-having-query-example/
-    for i, frag in enumerate(data['chain']):
-        if 'group' not in frag:
-            queryset = queryset.all()
-        if 'filter' in frag:
-            queryset = _filter(queryset, frag['filter'])
-        if 'group' in frag:
-            queryset = _group(queryset, frag['group'])
-        if 'order' in frag:
-            queryset = _order(queryset, frag['order'])
+    if 'chain' in data and len(data['chain']) > 0:
+        # https://www.laurencegellert.com/2016/09/django-group-by-having-query-example/
+        for i, frag in enumerate(data['chain']):
+            if 'group' not in frag:
+                queryset = queryset.all()
+            if 'filter' in frag:
+                queryset = _filter(queryset, frag['filter'])
+            if 'group' in frag:
+                queryset = _group(queryset, frag['group'])
+            if 'order' in frag:
+                queryset = _order(queryset, frag['order'])
+    else:
+        queryset = queryset.all()
 
     queryset = _limit(queryset, data['limit'] if 'limit' in data else {"type": "first", "num": 10})
 
