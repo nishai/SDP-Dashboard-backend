@@ -16,70 +16,50 @@ logger = logging.getLogger('debug-import')
 
 class Inserter(object):
 
-    def __init__(self, model_class: Type[Model]):
-        self.model_class = model_class
-        self.pks = self._get_pk_fields()
-        self.fields = self._get_fields()
-        self.foreign = self._get_fields_foreign()
-
-    def _get_pk_fields(self) -> Dict[str, str]:
-        pk = self.model_class._meta.pk
-        if pk.name != 'id':
-            pk = [pk]
-        else:
-            condition = lambda f: f.name != 'id' and not isinstance(f, ForeignObjectRel)  # and not isinstance(f, RelatedField)
-            pk = [f for f in self.model_class._meta.get_fields() if condition(f)]
-        pk = {f.name: f for f in pk}
-        print(f"[{self.model_class.__name__}]: PK={list(pk.keys())}")
-        return pk
-
-    def _get_fields(self) -> Dict:
-        fields = self.model_class._meta.get_fields()
-        condition = lambda f: f.name != 'id' and not isinstance(f, ForeignObjectRel)  # and not isinstance(f, RelatedField)
-        fields = {f.name: f for f in fields if condition(f)}
-        print(f"[{self.model_class.__name__}]: FIELDS={list(fields.keys())}")
-        return fields
-
-    def _get_fields_foreign(self) -> Dict[str, ForeignKey]:
-        fields = self.model_class._meta.get_fields()
-        fields = {f.name: f for f in fields if isinstance(f, ForeignKey)}
-        print(f"[{self.model_class.__name__}]: FOREIGN={list(fields.keys())}")
-        return fields
+    def __init__(self, model: Type[Model]):
+        self.model = model
+        # get pk
+        self.pk = self.model._meta.pk
+        # get fields
+        self.fields = {f.name: f for f in model._meta.get_fields()}
+        self.fields = {k: f for k, f in self.fields.items() if f != 'id' and not isinstance(f, ForeignObjectRel)}
+        # get fields keys
+        self.fks = {k: f for k, f in self.fields.items() if isinstance(f, ForeignKey)}
+        self.pks = {k: f for k, f in self.fields.items()} if self.pk.name == 'id' else {self.pk.name: self.pk}
 
     def _group(self, df: pd.DataFrame) -> List[Dict]:
-        logger.info(f"[{self.model_class.__name__}]: Grouping...")
+        logger.info(f"[{self.model.__name__}]: Grouping...")
+        logger.info(f"[{self.model.__name__}]: Grouping...")
         grouped = df.groupby(list(self.pks.keys()))
         entries = []
         for i, (key, dfgroup) in enumerate(grouped):
             if i % 1000 == 0:
-                print(f"[{self.model_class.__name__}]: {i} of {len(grouped)}")
+                print(f"[{self.model.__name__}]: {i} of {len(grouped)}")
             row = dfgroup.iloc[0]  # get first row
             row = row.loc[self.fields]  # get needed fields from from
             entries += [row.to_dict()]  # convert to dict
-        logger.info(f"[{self.model_class.__name__}]: {len(entries)} {list(self.pks.keys())}")
+        logger.info(f"[{self.model.__name__}]: {len(entries)} {list(self.pks.keys())}")
         return entries
 
     @transaction.atomic
     def _save(self, grouped: List[Dict]):
-        logger.info(f"[{self.model_class.__name__}]: loading Foreign Data {len(self.foreign)}")
+        logger.info(f"[{self.model.__name__}]: loading Foreign Data {len(self.fks)}")
         fk_objects = {}
-        for fk, fk_field in self.foreign.items():
+        for fk, fk_field in self.fks.items():
             items = {item[fk] for item in grouped}
             fk_objects[fk] = fk_field.foreign_related_fields[0].model.objects.in_bulk(list(items))
 
-        pprint(fk_objects)
-
-        logger.info(f"[{self.model_class.__name__}]: Replacing Foreign Data {len(grouped)}")
-        items = [self.model_class(**{k: fk_objects[k][v] if k in fk_objects else v for k, v in item.items()}) for item in
+        logger.info(f"[{self.model.__name__}]: Replacing Foreign Data {len(grouped)}")
+        items = [self.model(**{k: fk_objects[k][v] if k in fk_objects else v for k, v in item.items()}) for item in
                  grouped]
         items = {item.pk: item for item in items}
 
-        logger.info(f"[{self.model_class.__name__}]: Removing duplicates")
-        stored = self.model_class.objects.in_bulk(items.keys())
+        logger.info(f"[{self.model.__name__}]: Removing duplicates")
+        stored = self.model.objects.in_bulk(items.keys())
         insert = {k: v for k, v in items.items() if k not in stored}
         update = {k: v for k, v in items.items() if k in stored}
-        logger.info(f"[{self.model_class.__name__}]: Saving records {len(insert)}")
-        self.model_class.objects.bulk_create(insert.values())
+        logger.info(f"[{self.model.__name__}]: Saving records {len(insert)}")
+        self.model.objects.bulk_create(insert.values())
 
     def insert(self, df: pd.DataFrame):
         grouped = self._group(df)
