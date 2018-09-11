@@ -2,11 +2,11 @@ from pprint import pprint
 from typing import Dict, List, Type, Tuple
 from django.db import transaction
 import pandas as pd
-from django.db.models import Model
+from django.db.models import Model, CharField
 from django.db.models.fields.related import ForeignKey
 from django.db.models.fields.reverse_related import ForeignObjectRel
 from dashboard.apps.dashboard_api.management.measure import Timer
-from dashboard.apps.dashboard_api.models import StudentInfo, ProgramInfo, CourseStats, AverageYearMarks
+from dashboard.apps.dashboard_api.models import StudentInfo, ProgramInfo, CourseStats, AverageYearMarks, RawStudentModel
 from django.core.management.base import BaseCommand
 import os
 import logging
@@ -28,6 +28,13 @@ class Inserter(object):
         # get fields keys
         self.fks = {k: f for k, f in self.fields.items() if isinstance(f, ForeignKey)}
         self.pks = {k: f for k, f in self.fields.items()} if self.pk.name == 'id' else {self.pk.name: self.pk}
+        # converters
+        def get_converter(converter): # TODO: fix
+            def c(x):
+                val = converter(x)
+                return None if val == 'nan' else val
+            return c
+        self.field_converters = {k: get_converter(v.to_python) for k, v in self.fields.items()}
 
     def _group(self, df: pd.DataFrame) -> pd.DataFrame:
         with Timer("group", logger.debug):
@@ -49,33 +56,37 @@ class Inserter(object):
 
     def _save(self, grouped: pd.DataFrame) -> int:
         with Timer("save", logger.debug):
+            columns = list(grouped.columns.values)
+            converters = [self.field_converters[k] for k in columns]
+            # normalise importing values
+            grouped_set = set(tuple(converter(e) for e, converter in zip(row, converters)) for row in grouped.values)  # TODO change to dict that works with pks instead of fields
+            # normalise existing values
+            existing_values = self.model.objects.all().values()
+            existing_df = pd.DataFrame(list(existing_values))
+            existing_df = existing_df.rename(lambda x: x.rstrip('_id'), axis='columns')
+            existing_df = existing_df.drop(columns='id', errors='ignore')
+            existing_df = existing_df[columns]
+            existing_set = set(tuple(converter(e) for e, converter in zip(row, converters)) for row in existing_df.values) # TODO change to dict that works with pks instead of fields
+            # find values that we need to import
+            items = [{k: v for k, v in zip(columns, row)} for row in list(grouped_set - existing_set)]
             # load all foreign data that corresponds to foreign keys in this model
             fk_objects = dict()
             for fk, fk_field in self.fks.items():
-                fk_unique = np.unique(grouped[fk].values)
+                fk_unique = list(set(item[fk] for item in items))
                 fk_model = fk_field.foreign_related_fields[0].model
-                fk_objects[fk] = fk_model.objects.in_bulk(list(fk_unique))
+                fk_objects[fk] = fk_model.objects.in_bulk(fk_unique)
                 logger.info(f"[{self.model.__name__}]: Loaded Foreign Data: '{fk}' {len(fk_objects[fk])} ")
             # Foreign key fields need to be instances of the foreign models themselves
             logger.info(f"[{self.model.__name__}]: Replacing Foreign Data for {len(grouped)} entries")
-            for fk, fk_index in [(fk, grouped.columns.get_loc(fk)) for fk in self.fks.keys()]:
-                for i, value in enumerate(grouped.values[:, fk_index]):
-                    grouped.values[i, fk_index] = fk_objects[fk][value]
+            for fk in self.fks.keys():
+                for item in items:
+                    item[fk] = fk_objects[fk][item[fk]]
             # bulk_create only accepts a list instances of a model
-            with Timer("convert", logger.debug):
-                logger.info(f"[{self.model.__name__}]: Converting To Common Format for {len(grouped)} entries")
-                items = {}
-                for row in grouped.values:
-                    item = self.model(**{k: v for k, v in zip(grouped.columns, row)})
-                    if item.pk is not None:
-                        items[item.pk] = item
-            # bulk_create fails if unique constraints are not satisfied
-            logger.info(f"[{self.model.__name__}]: Removing duplicates")
-            stored = self.model.objects.in_bulk(items.keys())
-            insert = {k: v for k, v in items.items() if k not in stored}  # TODO: Updates
+            logger.info(f"[{self.model.__name__}]: Converting To Common Format for {len(grouped)} entries")
+            insert = [self.model(**item) for item in items]
             # insert data into the table
             logger.info(f"[{self.model.__name__}]: Saving records {len(insert)}")
-            self.model.objects.bulk_create(insert.values())
+            self.model.objects.bulk_create(insert)
             # return the insert count
             return len(insert)
 
@@ -102,6 +113,7 @@ class Command(BaseCommand):
     def import_table(self, df: pd.DataFrame):
         logger.info("Importing")
         count = 0
+        # count += Inserter(RawStudentModel).insert(df)
         count += Inserter(ProgramInfo).insert(df)
         count += Inserter(StudentInfo).insert(df)
         count += Inserter(CourseStats).insert(df)
