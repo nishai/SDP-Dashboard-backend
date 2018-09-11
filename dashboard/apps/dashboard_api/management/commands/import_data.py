@@ -57,18 +57,22 @@ class Inserter(object):
     def _save(self, grouped: pd.DataFrame) -> int:
         with Timer("save", logger.debug):
             columns = list(grouped.columns.values)
+            pk_column_indices = [grouped.columns.get_loc(c) for c in self.pks.keys()]
             converters = [self.field_converters[k] for k in columns]
             # normalise importing values
-            grouped_set = set(tuple(converter(e) for e, converter in zip(row, converters)) for row in grouped.values)  # TODO change to dict that works with pks instead of fields
+            grouped_list = [tuple(converter(e) for e, converter in zip(row, converters)) for row in grouped.values]
+            grouped_dict = {tuple(row[i] for i in pk_column_indices): row for row in grouped_list}
             # normalise existing values
             existing_values = self.model.objects.all().values()
+            pprint(list(existing_values))
             existing_df = pd.DataFrame(list(existing_values))
             existing_df = existing_df.rename(lambda x: x.rstrip('_id'), axis='columns')
             existing_df = existing_df.drop(columns='id', errors='ignore')
             existing_df = existing_df[columns]
-            existing_set = set(tuple(converter(e) for e, converter in zip(row, converters)) for row in existing_df.values) # TODO change to dict that works with pks instead of fields
+            existing_list = [tuple(converter(e) for e, converter in zip(row, converters)) for row in existing_df.values]
+            existing_dict = {tuple(row[i] for i in pk_column_indices): row for row in existing_list}
             # find values that we need to import
-            items = [{k: v for k, v in zip(columns, row)} for row in list(grouped_set - existing_set)]
+            items = [{k: v for k, v in zip(columns, grouped_dict[key])} for key in list(set(grouped_dict.keys()) - set(existing_dict.keys()))]
             # load all foreign data that corresponds to foreign keys in this model
             fk_objects = dict()
             for fk, fk_field in self.fks.items():
