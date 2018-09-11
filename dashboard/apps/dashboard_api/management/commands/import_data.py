@@ -29,30 +29,6 @@ class Inserter(object):
         self.fks = {k: f for k, f in self.fields.items() if isinstance(f, ForeignKey)}
         self.pks = {k: f for k, f in self.fields.items()} if self.pk.name == 'id' else {self.pk.name: self.pk}
 
-    def _group_old_old(self, df: pd.DataFrame) -> List[Dict]:
-        logger.info(f"[{self.model.__name__}]: Grouping...")
-        grouped = df.groupby(list(self.pks.keys()))
-        entries = []
-        for i, (key, dfgroup) in enumerate(grouped):
-            if i % 1000 == 0:
-                print(f"[{self.model.__name__}]: {i} of {len(grouped)}")
-            row = dfgroup.iloc[0]  # get first row
-            row = row.loc[self.fields]  # get needed fields from from
-            entries += [row.to_dict()]  # convert to dict
-        logger.info(f"[{self.model.__name__}]: {len(entries)} {list(self.pks.keys())}")
-        return entries
-
-    def _group_old(self, df: pd.DataFrame) -> Tuple[List[Dict], List[int]]:
-        logger.info(f"[{self.model.__name__}]: Grouping...")
-        indices = [df.columns.get_loc(c) for c in self.fields.keys()]
-        entries = []
-        grouped = df.groupby(list(self.pks.keys()))
-        for i, (key, dfgroup) in enumerate(grouped):
-            if (i+1) % 10000 == 0 or i+1 == grouped.ngroups:
-                logger.info(f"[{self.model.__name__}]: {i+1} of {grouped.ngroups}")
-            entries.append(dfgroup.values[0][indices])
-        return entries, indices
-
     def _group(self, df: pd.DataFrame) -> pd.DataFrame:
         logger.info(f"[{self.model.__name__}]: Grouping...")
         # get all data
@@ -65,33 +41,40 @@ class Inserter(object):
         pk_unique, table_indices = np.unique(table_pk, axis=0, return_index=True)
         # get unique data specific to table
         grouped = table[table_indices][:, table_column_indices]
-        grouped = pd.DataFrame(data=grouped, columns=table_column_indices)
+        grouped = pd.DataFrame(data=grouped, columns=self.fields.keys())
         # self explanatory
         logger.info(f"[{self.model.__name__}]: Grouped! Found {len(grouped)} unique entries")
         return grouped
 
-    def _save_old(self, grouped: List[Dict]):
-        logger.info(f"[{self.model.__name__}]: loading Foreign Data {len(self.fks)}")
-        fk_objects = {}
-        for fk, fk_field in self.fks.items():
-            items = {item[fk] for item in grouped}
-            fk_objects[fk] = fk_field.foreign_related_fields[0].model.objects.in_bulk(list(items))
+    def _save(self, grouped: pd.DataFrame) -> int:
 
-        logger.info(f"[{self.model.__name__}]: Replacing Foreign Data {len(grouped)}")
-        items = [self.model(**{k: fk_objects[k][v] if k in fk_objects else v for k, v in item.items()}) for item in
-                 grouped]
-        items = {item.pk: item for item in items}
+        fk_objects = dict()
+        for fk, fk_field in self.fks.items():
+            fk_unique = np.unique(grouped[fk].values)
+            fk_model = fk_field.foreign_related_fields[0].model
+            fk_objects[fk] = fk_model.objects.in_bulk(list(fk_unique))
+            logger.info(f"[{self.model.__name__}]: Loaded Foreign Data: '{fk}' {len(fk_objects[fk])} ")
+
+        logger.info(f"[{self.model.__name__}]: Replacing Foreign Data for {len(grouped)} entries")
+        for fk, fk_index in [(fk, grouped.columns.get_loc(fk)) for fk in self.fks.keys()]:
+            for i, value in enumerate(grouped.values[:, fk_index]):
+                grouped.values[i, fk_index] = fk_objects[fk][value]
+
+        logger.info(f"[{self.model.__name__}]: Converting To Common Format for {len(grouped)} entries")
+        items = {}
+        for row in grouped.values:
+            item = self.model(**{k: v for k, v in zip(grouped.columns, row)})
+            if item.pk is not None:
+                items[item.pk] = item
 
         logger.info(f"[{self.model.__name__}]: Removing duplicates")
         stored = self.model.objects.in_bulk(items.keys())
         insert = {k: v for k, v in items.items() if k not in stored}
-        update = {k: v for k, v in items.items() if k in stored}
+
         logger.info(f"[{self.model.__name__}]: Saving records {len(insert)}")
         self.model.objects.bulk_create(insert.values())
 
-    def _save(self, grouped: np.array):
-        logger.error("TODO: saving data")
-        return 0
+        return len(insert)
 
     def insert(self, df: pd.DataFrame) -> int:
         grouped = self._group(df)
@@ -120,55 +103,3 @@ class Command(BaseCommand):
         count += Inserter(CourseStats).insert(df)
         count += Inserter(AverageYearMarks).insert(df)
         return count
-
-        # logger.info("-----------------------------------------------------------------------")
-        # logger.info("Inserting data from table to  models: ")
-        # logger.info("-----------------------------------------------------------------------")
-        #
-        # sys.stdout.flush()
-        # try:
-        #     api_app = apps.get_app_config('dashboard_api')
-        #     api_models = api_app.models.values()
-        #
-        #     pprint(api_app)
-        #     pprint(api_models)
-        # except:
-        #     pass
-        #
-        #     for _model in api_models:
-        #         logger.info("-----------------------------------------------------------------------")
-        #         logger.info("Inserting data to model: " + _model.__name__)
-        #         logger.info("-----------------------------------------------------------------------")
-        #         sys.stdout.flush()
-        #         _model_field_names = [f.name for f in _model._meta.get_fields()]
-        #         logger.debug("model fields: " + str(_model_field_names))
-        #         logger.debug("titles of excel table" + str(titles))
-        #         sys.stdout.flush()
-        #
-        #         # check for foreign keys
-        #         _model_field_objects = [f for f in _model._meta.get_fields()]
-        #         foreign_key_fields_dict = {}
-        #         for field in _model_field_objects:
-        #             if field.__class__ is ForeignKey:
-        #                 foreign_key_fields_dict[field.name] = field.related_model
-        #         logger.debug("Foreign key fields are: " + str(foreign_key_fields_dict))
-        #         sys.stdout.flush()
-        #
-        #         for row in data:
-        #             _model_dict = {key: value for key, value in zip(titles, row) if key in _model_field_names}
-        #             # adjust foreign key to their class
-        #             for key in _model_dict:
-        #                 if key in foreign_key_fields_dict:
-        #                     _model_dict[key] = foreign_key_fields_dict[key].objects.get(pk=_model_dict[key])
-        #
-        #             try:
-        #                 # insert to table
-        #                 _model.objects.update_or_create(**_model_dict)
-        #             except Exception as e:
-        #                 logger.warning("error inserting to table, ignored and continued. error is: " + str(e))
-        #                 pass
-        #         logger.debug("model values: " + str(_model.objects.values()))
-        #         sys.stdout.flush()
-        #     return 0
-        # except Exception as e:
-        #     raise Exception("Error inserting data to database with error: " + str(e))
