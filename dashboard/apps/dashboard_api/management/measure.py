@@ -3,10 +3,10 @@ import time
 
 
 class Timer:
-
     _call_stack = []
+    _default_printer = print
 
-    def __init__(self, name, printer=print):
+    def __init__(self, name, printer=_default_printer):
         assert name and printer
         self.start = None
         self.end = None
@@ -26,8 +26,12 @@ class Timer:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.end = time.time()
-        self._print("\033[91m", "Finished", "\033[0m", ": ", self.duration(), "ms\n")
+        self._print("\033[91m", "Finished", "\033[0m", ": ", self.duration(), "ms")
         Timer._call_stack.pop()
 
     def duration(self):
         return round((self.end - self.start) * 1000 * 1000) / 1000
+
+    @staticmethod
+    def timer_builder(printer=_default_printer):
+        return lambda name: Timer(name, printer=printer)
