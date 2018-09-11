@@ -1,19 +1,14 @@
-import sys
-import time
 from pprint import pprint
 from typing import Dict, List
-
-from django.core.management.base import BaseCommand, CommandError  # for custom manage.py commands
-import os  # managing files
-import logging
 from django.db import transaction
 import pandas as pd
-
-# Get an instance of a logger
-from django.db.models.fields.related import RelatedField, ForeignKey
+from django.db.models.fields.related import ForeignKey
 from django.db.models.fields.reverse_related import ForeignObjectRel
-
-from dashboard.apps.dashboard_api.models import RawStudentModel, StudentInfo, ProgramInfo, CourseStats, AverageYearMarks
+from dashboard.apps.dashboard_api.models import StudentInfo, ProgramInfo, CourseStats, AverageYearMarks
+from django.core.management.base import BaseCommand
+import os
+import logging
+from dashboard.apps.dashboard_api.management.data_util import load_table
 
 logger = logging.getLogger('debug-import')
 logger.debug("Running excel import code")
@@ -22,134 +17,20 @@ logger.debug("Running excel import code")
 class Command(BaseCommand):
     help = 'Imports data from excel_import/excel_files/ into the database'
 
-    # inserts the files provided after --files flag into the parser variable for use in handler function
     def add_arguments(self, parser):
         parser.add_argument('--files', dest='files', nargs='+', help='Specify file to be important')
-        parser.add_argument('--test', action='store_true', dest='test', help='Specify if this is a test run')
-        parser.add_argument('--convert', dest='convert', nargs='*', type=int, help='Convert any excel files to csv and save them')
 
     def handle(self, *args, **options):
-        logger.info("-----------------------------------------------------------------------")
-        logger.info("importing files: " + str(options['files']))
-        logger.info("-----------------------------------------------------------------------")
-
-        # obtain absolute path for excel files directory
-        mypath = os.path.join(os.path.abspath(os.path.join(__file__, os.path.join(*[os.pardir] * 3))), "excel_files")
-
-        if options['test']:
-            mypath = os.path.join(mypath, "test_excels")
-
-        # create a list of all excel files
-        if options['files'][0] != '':
-            # If file names are provided, use them
-            file_urls = [os.path.join(mypath, f) for f in options['files'] if os.path.isfile(os.path.join(mypath, f))]
-        else:
-            # If no file name is provided take all files in the folder
-            file_urls = [os.path.join(mypath, f) for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
-
-        dataframe = None
-        for path in file_urls:
-            # load file
-            df = self.load_file(path)
-            # convert xlsx to csv if required
-            self.convert_to_csv(df, orig_path=path, **options)
-            # import into db
-            if options['convert'] is None:
-                dataframe = df if dataframe is None else dataframe.append(df)
-
-        if options['convert'] is None:
-            logger.info(f"Importing: {len(dataframe)} records")
-            self.import_df(dataframe)
-            logger.info(f"Imported: {len(dataframe)} records")
+        imported = 0
+        for file in options['files']:
+            logger.info(f"Importing: {file}")
+            assert os.path.isfile(file)
+            df = load_table(file, dataframe=True)
+            imported += self.import_table(df)
+        logger.info(f"Imported: {imported} records from {len(options['files'])} files")
 
 
-    def load_file(self, path):
-        ext = os.path.splitext(path)[1].lower()
-        logger.info(f"Loading table: {path}")
-        if ext == ".xlsx":
-            df = pd.read_excel(path, index_col=None, header=5)
-        elif ext == ".csv":
-            df = pd.read_csv(path, index_col=None)
-        else:
-            raise Exception(f"Unsupported file extension: {ext}")
-        df = df.filter(regex='^(?!Unnamed:).*', axis=1)
-        df = df.rename(lambda s: s.lower().replace(" ", "_").replace("_/_", "_"), axis='columns')
-        logger.info(f"Table entries loaded: {len(df)}")
-        return df
-
-    def convert_to_csv(self, df, orig_path, **options):
-        partial, ext = os.path.splitext(orig_path)
-        if options['convert'] is not None:
-            if len(options['convert']) <= 0:
-                options['convert'] += [-1]
-            for limit in [l for l in options['convert'] if not (ext.lower() == '.csv' and l < 0)]:
-                limit = min(max(-1, limit), len(df))
-                path = f"{partial}_{limit}.csv" if limit >= 0 else f"{partial}.csv"
-                logger.info(f"Converting to csv: {orig_path} -> {path}")
-                df[:limit].to_csv(path, header=True, index=False)
-
-    # def import_df(self, df):
-    #     logger.info(f"Converting table to records")
-    #     items = df.to_dict('records')
-    #     items = [RawStudentModel(**item) for item in items]
-    #     logger.info(f"Saving records")
-    #     RawStudentModel.objects.bulk_create(items)
-
-# """
-#     # Table for program (i.e BSc General) info
-#     class ProgramInfo(models.Model):
-# !       program_code = models.CharField(max_length=5, primary_key=True)
-#         program_title = models.CharField(max_length=255, null=True)
-#
-#         class Meta:
-#             verbose_name = "Program information (i.e information about BSc General Program)"
-#
-#     # Table for student personal information
-#     # Foreign key to program_code in ProgramInfo
-#     class StudentInfo(models.Model):
-# !       encrypted_student_no = models.CharField(max_length=40, primary_key=True)
-#         nationality_short_name = models.CharField(max_length=255, null=True)
-#         home_language_description = models.CharField(max_length=30, null=True)
-#         race_description = models.CharField(max_length=30, null=True)
-#         gender = models.CharField(max_length=1, null=True)
-#         age = models.IntegerField(null=True)
-#         secondary_school_quintile = models.CharField(max_length=5, null=True)
-#         urban_rural_secondary_school = models.CharField(max_length=10, null=True)
-#         secondary_school_name = models.CharField(max_length=255, null=True)
-# #        program_code = models.ForeignKey('ProgramInfo', on_delete=models.PROTECT)
-#
-#         class Meta:
-#             verbose_name = "Student personal information"
-#
-#     # Stats of a student in a certain course in a certain year
-#     # Foreign keys to student_number in StudentInfo
-#     class CourseStats(models.Model):
-#         course_code = models.CharField(max_length=8)
-#         calendar_instance_year = models.CharField(max_length=4, null=True)
-# #        encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
-#         year_of_study = models.CharField(max_length=5, null=True)  # Refers to YOS student is registered for
-#         # within this course year
-#         final_mark = models.DecimalField(max_digits=6, decimal_places=3, null=True)
-#         final_grade = models.CharField(max_length=5, null=True)
-#         progress_outcome_type = models.CharField(max_length=10, null=True)
-#         award_grade = models.CharField(max_length=2, null=True)
-#
-#         class Meta:
-#             verbose_name = "Information about a student for a course in a specific calendar year"
-#
-#     # Average mark for a student in a specific calendar year
-#     class AverageYearMarks(models.Model):
-#         calendar_instance_year = models.CharField(max_length=4, null=True)
-#         year_of_study = models.CharField(max_length=5, null=True)  # Refers to YOS student is registered for
-#         # within this course year
-# #        encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
-#         average_marks = models.DecimalField(max_digits=6, decimal_places=3, null=True)
-#
-#         class Meta:
-#             verbose_name = "Average mark for a student in a specific calendar year"
-# """
-
-    def import_df(self, df: pd.DataFrame):
+    def import_table(self, df: pd.DataFrame):
 
         logger.info("Importing")
 
@@ -235,9 +116,6 @@ class Command(BaseCommand):
         save(StudentInfo, students, student_info_foreign)
         save(CourseStats, stats, course_stats_foreign)
         save(AverageYearMarks, marks, average_year_marks_foreign)
-
-
-
 
         # logger.info("-----------------------------------------------------------------------")
         # logger.info("Inserting data from table to  models: ")
