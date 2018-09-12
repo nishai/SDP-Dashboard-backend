@@ -172,7 +172,7 @@ def _group(queryset: QuerySet, fragment: Dict):
     unique = queryset.values(*fragment['by'])
     # return early
     if 'yield' not in fragment:
-        return unique
+        fragment['yield'] = []
     # data generators
     yields = {}
     for y in fragment['yield']:
@@ -276,6 +276,7 @@ def parse(model: Type[Model], data: Dict):
             if 'filter' in frag:
                 queryset = _filter(queryset, frag['filter'])
             if 'group' in frag:
+                print("Grouping")
                 queryset = _group(queryset, frag['group'])
             if 'order' in frag:
                 queryset = _order(queryset, frag['order'])
