@@ -1,12 +1,9 @@
-import sqlite3
-from pprint import pprint
 from typing import Dict, List, Type, Tuple
 from django.db import transaction, IntegrityError, connection
 import pandas as pd
 from django.db.models import Model, CharField
 from django.db.models.fields.related import ForeignKey
 from django.db.models.fields.reverse_related import ForeignObjectRel
-from django.db.transaction import TransactionManagementError
 
 from dashboard.apps.dashboard_api.management.measure import Timer
 from dashboard.apps.dashboard_api.models import StudentInfo, ProgramInfo, CourseStats, AverageYearMarks, RawStudentModel
@@ -29,14 +26,14 @@ class Inserter(object):
     def __init__(self, model: Type[Model]):
         Inserter._assert_table_exists(model)
         self.model = model
-        # get pk
         self.pk = self.model._meta.pk
         # get fields
         self.fields = {f.name: f for f in model._meta.get_fields()}
         self.fields = {k: f for k, f in self.fields.items() if k != 'id' and not isinstance(f, ForeignObjectRel)}
+        self.fields_unique = {f: self.fields[f] for f in self.model._meta.unique_together[0]}
         # get fields keys
         self.fks = {k: f for k, f in self.fields.items() if isinstance(f, ForeignKey)}
-        self.pks = {k: f for k, f in self.fields.items()} if self.pk.name == 'id' else {self.pk.name: self.pk}
+        self.pks = self.fields_unique if len(self.fields_unique) > 0 else ({k: f for k, f in self.fields.items()} if self.pk.name == 'id' else {self.pk.name: self.pk})
         # converters
         def get_converter(converter): # TODO: fix
             def c(x):
@@ -45,6 +42,7 @@ class Inserter(object):
             return c
         self.field_converters = {k: get_converter(v.to_python) for k, v in self.fields.items()}
 
+    # TODO: efficient, but uses a lot of memory...
     def _group(self, df: pd.DataFrame) -> pd.DataFrame:
         with Timer("group", logger.debug):
             logger.info(f"[{self.model.__name__}]: Grouping...")
@@ -63,7 +61,7 @@ class Inserter(object):
             logger.info(f"[{self.model.__name__}]: Grouped! Found {len(grouped)} unique entries")
             return grouped
 
-    @transaction.atomic
+    # @transaction.atomic
     def _save(self, grouped: pd.DataFrame) -> int:
         with Timer("save", logger.debug):
             # load all foreign data that corresponds to foreign keys in this model
@@ -85,21 +83,30 @@ class Inserter(object):
             # insert values
             with Timer("insertion", logger.debug):
                 logger.info(f"[{self.model.__name__}]: Inserting {len(grouped)} entries")
-                count, conflict = 0, 0
-                for i, item in enumerate(items):
+                count, updated, manual = 0, 0, True
+                if len(self.model.objects.all()) == 0:  # insert for the first time (FAST)
                     try:
-                        self.model.objects.create(**item)
-                        count += 1
-                    except IntegrityError:  # caused by UNIQUE constraint failed
-                        conflict += 1
-                    except TransactionManagementError:  # caused by transaction.atomic
-                        conflict += 1
+                        objs = [self.model(**item) for item in items]
+                        self.model.objects.bulk_create(objs)
+                        manual, count = False, len(items)
                     except Exception as e:
                         logger.debug(e)
-                    if i % 1000 == 0:
-                        print(f"{round(i/len(items)*100*100)/100}%", end=" ", flush=True)
-                print("100%")
-                logger.info(f"[{self.model.__name__}]: Inserted {count} of {len(items)} entries - Confliting {conflict} - Error {len(items)-count-conflict}")
+                        logger.info("Failed to import items in one go, falling back to manual insertion.")
+                if manual:  # insert mode if table is not empty or there was an error (MUCH SLOWER)
+                    for i, item in enumerate(items):
+                        try:
+                            # TODO: add transaction support. This is way too slow
+                            obj, created = self.model.objects.get_or_create(**item)
+                            if created:
+                                count += 1
+                            else:
+                                updated += 1
+                        except Exception as e:
+                            pass
+                        if i % 1000 == 0:
+                            print(f"{round(i/len(items)*100*100)/100}%", end=" ", flush=True)
+                    print("100%")
+                logger.info(f"[{self.model.__name__}]: Inserted {count} of {len(items)} entries - Updated {updated} - Error {len(items)-count-updated}")
             return count
 
     def insert(self, df: pd.DataFrame) -> int:

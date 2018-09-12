@@ -122,7 +122,7 @@ class CourseStats(models.Model):
 
     class Meta:
         verbose_name = "Information about a student for a course in a specific calendar year"
-        unique_together = ('course_code', 'calendar_instance_year', 'encrypted_student_no',)
+        unique_together = ('course_code', 'calendar_instance_year', 'encrypted_student_no', 'year_of_study')
 
 
 # Average mark for a student in a specific calendar year
