@@ -129,6 +129,10 @@ class Command(BaseCommand):
 						if key in foreign_key_fields_dict:
 							_model_dict[key] = foreign_key_fields_dict[key].objects.get(pk=_model_dict[key])
 
+					if _model.__name__ == "StudentPrograms":
+						if _model_dict.object.get()
+						_model_dict["start_calendar_year"]
+
 					try:
 						# insert to table
 						_model.objects.update_or_create(**_model_dict)
