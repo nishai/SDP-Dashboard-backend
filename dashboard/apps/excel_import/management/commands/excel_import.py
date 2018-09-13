@@ -70,7 +70,10 @@ class Command(BaseCommand):
 
 			try:
 				# insert data to database worksheet by worksheet
-				for sheet_titles, sheet_data in zip(all_titles, all_data):
+				for i, (sheet_titles, sheet_data) in enumerate(zip(all_titles, all_data)):
+					logger.info("-----------------------------------------------------------------------")
+					logger.info("adding data for sheet number: " + str(i))
+					logger.info("-----------------------------------------------------------------------")
 					self.add_data_to_tables(sheet_titles, sheet_data)
 			except Exception as e:
 				file_failure = True
@@ -129,9 +132,29 @@ class Command(BaseCommand):
 						if key in foreign_key_fields_dict:
 							_model_dict[key] = foreign_key_fields_dict[key].objects.get(pk=_model_dict[key])
 
-					if _model.__name__ == "StudentPrograms":
-						if _model_dict.object.get()
-						_model_dict["start_calendar_year"]
+					if _model.__name__ == "StudentPrograms" and\
+						"program_code" in _model_dict and\
+						"encrypted_student_no" in _model_dict:
+
+						logger.debug("1111111111111111111111111111111111111111111111")
+						sp_row = _model.objects.filter(\
+									program_code=_model_dict["program_code"],\
+									encrypted_student_no=_model_dict["encrypted_student_no"]).values()
+						logger.debug("2222222222222222222222222222222222222222222222222")
+						
+						if len(sp_row) == 0:
+							logger.debug("3333333333333333333333333333333333333333333")
+							_model_dict["start_calendar_year"] = row[titles.index("calendar_instance_year")]
+							_model_dict["end_calendar_year"] = row[titles.index("calendar_instance_year")]
+						else:
+							logger.debug("444444444444444444444444444444444444444444444444444444444444")
+							if sp_row[0].start_calendar_year > row[titles.index("calendar_instance_year")]:
+								logger.debug("55555555555555555555555555555555555555555555555555555555555")
+								_model_dict["start_calendar_year"] = row[titles.index("calendar_instance_year")]
+							if sp_row[0].end_calendar_year < row[titles.index("calendar_instance_year")]:
+								logger.debug("6666666666666666666666666666666666666666666666666666666666")
+								_model_dict["end_calendar_year"] = row[titles.index("calendar_instance_year")]
+						logger.debug("7777777777777777777777777777777777777777777777777777")
 
 					try:
 						# insert to table

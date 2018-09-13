@@ -1,16 +1,6 @@
 from django.db import models
 
 # Table for program (i.e BSc General) info
-class StudentPrograms(models.Model):
-	program_code = models.ForeignKey('ProgramInfo', on_delete=models.PROTECT)
-	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.PROTECT)
-	start_calendar_year = models.CharField(max_length=4, null=True)
-	end_calendar_year = models.CharField(max_length=4, null=True)
-
-	class Meta:
-		verbose_name = "Table to keep track of which students are enrolled in which programs for which years."
-
-# Table for program (i.e BSc General) info
 class ProgramInfo(models.Model):
 	program_code = models.CharField(max_length=5, primary_key=True)
 	program_title = models.CharField(max_length=255, null=True)
@@ -61,3 +51,13 @@ class AverageYearMarks(models.Model):
 
 	class Meta:
 		verbose_name = "Average mark for a student in a specific calendar year"
+
+# Table for program (i.e BSc General) info
+class StudentPrograms(models.Model):
+	program_code = models.ForeignKey('ProgramInfo', on_delete=models.PROTECT)
+	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.PROTECT)
+	start_calendar_year = models.CharField(max_length=4, null=True)
+	end_calendar_year = models.CharField(max_length=4, null=True)
+
+	class Meta:
+		verbose_name = "Table to keep track of which students are enrolled in which programs for which years."
