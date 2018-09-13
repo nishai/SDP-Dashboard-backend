@@ -53,7 +53,7 @@ PY_ARGS         := -B # same as PYTHONDONTWRITEBYTECODE
 ENV_DEV         := PYTHONDONTWRITEBYTECODE="true" DJANGO_DEVELOP="true"
 ENV_PROD        := PYTHONDONTWRITEBYTECODE="true" DJANGO_DEVELOP="false"
 ENV_TEST        := PYTHONDONTWRITEBYTECODE="true" DJANGO_DEVELOP="true" COVERAGE_FILE="coverage/coverage.dat"
-OUT_COV_FILE    := coverage/converage.xml
+OUT_COV_FILE    := coverage/coverage.xml
 
 admin: migrate
 	@make section tag="Local - Creating Default Admin User"
