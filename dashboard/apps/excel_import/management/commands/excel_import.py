@@ -101,7 +101,6 @@ class Command(BaseCommand):
 		logger.info("-----------------------------------------------------------------------")
 		logger.info("Inserting data from table to  models: ")
 		logger.info("-----------------------------------------------------------------------")
-		sys.stdout.flush()
 		try:
 			api_app = apps.get_app_config('dashboard_api')
 			api_models = api_app.models.values()
@@ -110,11 +109,9 @@ class Command(BaseCommand):
 				logger.info("-----------------------------------------------------------------------")
 				logger.info("Inserting data to model: " + _model.__name__)
 				logger.info("-----------------------------------------------------------------------")
-				sys.stdout.flush()
 				_model_field_names = [f.name for f in _model._meta.get_fields()]
 				logger.debug("model fields: " + str(_model_field_names))
 				logger.debug("titles of excel table" + str(titles))
-				sys.stdout.flush()
 
 				# check for foreign keys
 				_model_field_objects = [f for f in _model._meta.get_fields()]
@@ -123,8 +120,14 @@ class Command(BaseCommand):
 					if field.__class__ is ForeignKey:
 						foreign_key_fields_dict[field.name] =  field.related_model
 				logger.debug("Foreign key fields are: " + str(foreign_key_fields_dict))
-				sys.stdout.flush()
 
+				# check for unique keys
+				unique_keys_fields_arr = []
+				for field in _model_field_objects:
+					if field.__class__ is CharField and (field._unique == True or field.primary_key == True):
+						unique_keys_fields_arr.append(field.name)
+				logger.debug("Unique keys fields are: " + str(unique_keys_fields_arr))
+				
 				for row in data:
 					_model_dict = {key: value for key, value in zip(titles, row) if key in _model_field_names}
 					# adjust foreign key to their class
@@ -136,34 +139,33 @@ class Command(BaseCommand):
 						"program_code" in _model_dict and\
 						"encrypted_student_no" in _model_dict:
 
-						logger.debug("1111111111111111111111111111111111111111111111")
 						sp_row = _model.objects.filter(\
 									program_code=_model_dict["program_code"],\
 									encrypted_student_no=_model_dict["encrypted_student_no"]).values()
-						logger.debug("2222222222222222222222222222222222222222222222222")
-						
 						if len(sp_row) == 0:
-							logger.debug("3333333333333333333333333333333333333333333")
 							_model_dict["start_calendar_year"] = row[titles.index("calendar_instance_year")]
 							_model_dict["end_calendar_year"] = row[titles.index("calendar_instance_year")]
 						else:
-							logger.debug("444444444444444444444444444444444444444444444444444444444444")
-							if sp_row[0].start_calendar_year > row[titles.index("calendar_instance_year")]:
-								logger.debug("55555555555555555555555555555555555555555555555555555555555")
+							if sp_row[0]["start_calendar_year"] > row[titles.index("calendar_instance_year")]:
 								_model_dict["start_calendar_year"] = row[titles.index("calendar_instance_year")]
-							if sp_row[0].end_calendar_year < row[titles.index("calendar_instance_year")]:
-								logger.debug("6666666666666666666666666666666666666666666666666666666666")
+							if sp_row[0]["end_calendar_year"] < row[titles.index("calendar_instance_year")]:
 								_model_dict["end_calendar_year"] = row[titles.index("calendar_instance_year")]
-						logger.debug("7777777777777777777777777777777777777777777777777777")
 
 					try:
-						# insert to table
-						_model.objects.update_or_create(**_model_dict)
+						if _model_dict != {}:
+							# insert to table
+							logger.debug("inserting dictionary into table: " + str(_model_dict))
+							if len(unique_keys_fields_arr) == 0:
+								_model.objects.update_or_create(**_model_dict)
+							else:
+								unique_keys_dict = {}
+								for key in unique_keys_fields_arr:
+									unique_keys_dict[key] = _model_dict[key]
+								_model.objects.update_or_create(**unique_keys_dict, defaults=_model_dict)
 					except Exception as e:
 						logger.warning("error inserting to table, ignored and continued. error is: " + str(e))
 						pass
 				logger.debug("model values: " + str(_model.objects.values()))
-				sys.stdout.flush()
 			return 0
 		except Exception as e:
 			raise Exception("Error inserting data to database with error: " + str(e))
@@ -181,7 +183,6 @@ class Command(BaseCommand):
 		logger.info("----------------------------------------------------------------------------")
 		logger.info("Attempting to load excel file:\n" + excel_url)
 		logger.info("----------------------------------------------------------------------------")
-		sys.stdout.flush()
 		try:
 			with xlrd.open_workbook(excel_url) as workbook:
 				worksheet_names = workbook.sheet_names()
@@ -226,12 +227,10 @@ class Command(BaseCommand):
 				logger.info("----------------------------------------------------------------------------")
 				logger.info(file_url + " Has correct file format for excel files")
 				logger.info("----------------------------------------------------------------------------")
-				sys.stdout.flush()
 				all_titles, all_data = self.load_excel(file_url)
 				logger.info("----------------------------------------------------------------------------")
 				logger.info("Loading succesful of excel file:\n" + file_url)
 				logger.info("----------------------------------------------------------------------------")
-				sys.stdout.flush()				
 
 				# adapt titles to snake case
 				all_titles =\
