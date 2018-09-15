@@ -88,6 +88,9 @@ dist       ::
 dev serve  ::
 	@make section tag="Copy ./logs"
 	docker cp "$(CONTAINER_NAME):/app/logs" "$(shell pwd)/" || true
+import     ::
+	@make section tag="Copy ./data"
+	docker cp "$(CONTAINER_NAME):/app/data" "$(shell pwd)/imported_data/" || true
 $(TARGETS) :: stop
 
 # =========================================================================	#

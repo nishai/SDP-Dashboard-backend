@@ -27,7 +27,7 @@ def create_default_logger(log_path, name):
         },
         'handlers': {
             'console': {
-                'level': 'DEBUG',
+                'level': 'INFO',
                 #            'filters': ['require_debug_true'],
                 'class': 'logging.StreamHandler',
                 'formatter': 'simple'
@@ -76,7 +76,7 @@ def create_default_logger(log_path, name):
                 'propagate': True,
             },
             'debug-import': {
-                'handlers': ['debug-import-file'],
+                'handlers': ['debug-import-file', 'console'],
                 'level': 'DEBUG',
                 #            'filters': ['require_debug_true']
             }
