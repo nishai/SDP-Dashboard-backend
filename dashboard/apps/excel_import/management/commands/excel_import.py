@@ -158,7 +158,7 @@ class Command(BaseCommand):
 					try:
 						if _model_dict != {}:
 							# insert to table
-							logger.debug("inserting dictionary into table: " + str(_model_dict))
+							#logger.debug("inserting dictionary into table: " + str(_model_dict))
 							if len(unique_keys_fields_arr) == 0:
 								_model.objects.update_or_create(**_model_dict)
 							else:

@@ -38,7 +38,7 @@ class CourseStats(models.Model):
 		unique_together = ("course_code", "calendar_instance_year", "encrypted_student_no")
 
 # Maps progress_outcome_type codes to verbos deiscription
-class ProgressDiscription(models.Model):
+class ProgressDescription(models.Model):
 	progress_outcome_type = models.CharField(max_length=10, primary_key=True)
 	progress_outcome_type_description = models.CharField(max_length=254)
 	class Meta:
@@ -49,7 +49,7 @@ class AverageYearMarks(models.Model):
 	calendar_instance_year = models.CharField(max_length=4, null=True)
 	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
 	average_marks = models.DecimalField(max_digits=6, decimal_places=3, null=True)
-	progress_outcome_type = models.ForeignKey('ProgressDiscription', on_delete=models.CASCADE, null=True)
+	progress_outcome_type = models.ForeignKey('ProgressDescription', on_delete=models.CASCADE, null=True)
 	award_grade = models.CharField(max_length=2, null=True)
 
 	class Meta:

@@ -37,8 +37,8 @@ class YearOfStudySerializer(serializers.ModelSerializer):
         model = YearOfStudy
         fields = '__all__'
 
-# Serializer for ProgressDiscription table
-class ProgressDiscriptionSerializer(serializers.ModelSerializer):
+# Serializer for ProgressDescription table
+class ProgressDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgressDiscription
         fields = '__all__'
