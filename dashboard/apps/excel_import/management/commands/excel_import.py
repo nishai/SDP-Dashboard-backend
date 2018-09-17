@@ -128,6 +128,9 @@ class Command(BaseCommand):
 				for field in _model_field_objects:
 					if field.__class__ is CharField and (field._unique == True or field.primary_key == True):
 						unique_keys_fields_arr.append(field.name)
+				if len(_model._meta.unique_together) > 0:
+					for field in _model._meta.unique_together[0]:
+						unique_keys_fields_arr.append(field)
 				logger.debug("Unique keys fields are: " + str(unique_keys_fields_arr))
 				
 				for row in data:
