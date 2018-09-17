@@ -29,7 +29,7 @@ class ExcelImportTestCase(TestCase):
 		self.assertEqual(\
 			StudentPrograms.objects.filter(calendar_instance_year='2014', program_code="AB000" , encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1" ).values().first(),\
 			{'id': 1, 'calendar_instance_year': '2014','program_code_id': 'AB000', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'degree_complete': False})
-		self.assertEqual(ProgressDiscription.objects.filter(progress_outcome_type="PCD").values().first(), {'progress_outcome_type':'PCD' , 'progress_outcome_type_description':'Permitted to proceed'})
+		self.assertEqual(ProgressDescription.objects.filter(progress_outcome_type="PCD").values().first(), {'progress_outcome_type':'PCD' , 'progress_outcome_type_description':'Permitted to proceed'})
 
 	
 	# test excel_import custom command without providing files
@@ -99,7 +99,7 @@ class ExcelImportTestCase(TestCase):
 		self.assertEqual(\
 			StudentInfo.objects.filter(pk="00B197BA7753B1F2CFD57570245D62E3").values().first(),\
 				{'encrypted_student_no': '00B197BA7753B1F2CFD57570245D62E3', 'nationality_short_name': 'South Africa', 'home_language_description': 'Zulu', 'race_description': 'Black', 'gender': 'M', 'age': 45, 'secondary_school_quintile': None, 'urban_rural_secondary_school': None, 'secondary_school_name': 'qwe'})
-		self.assertEqual(ProgressDiscription.objects.filter(progress_outcome_type="Q").values().first(), {'progress_outcome_type':'Q' , 'progress_outcome_type_description':'Completed all requirements for qualification'})
+		self.assertEqual(ProgressDescription.objects.filter(progress_outcome_type="Q").values().first(), {'progress_outcome_type':'Q' , 'progress_outcome_type_description':'Completed all requirements for qualification'})
 		
 		temp_dict = StudentPrograms.objects.filter(calendar_instance_year='2017', program_code=None , encrypted_student_no="00B197BA7753B1F2CFD57570245D62E5" ).values().first()
 		del temp_dict['id']
