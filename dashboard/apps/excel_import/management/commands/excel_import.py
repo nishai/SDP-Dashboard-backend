@@ -132,26 +132,28 @@ class Command(BaseCommand):
 				
 				for row in data:
 					_model_dict = {key: value for key, value in zip(titles, row) if key in _model_field_names}
+					# check if the entire dictionary has values of None - if so skip this data row
+					allNone = True
+					for key in _model_dict:
+						if key != None:
+							allNone = False
+					if allNone:
+						continue
 					# adjust foreign key to their class
 					for key in _model_dict:
 						if key in foreign_key_fields_dict:
-							_model_dict[key] = foreign_key_fields_dict[key].objects.get(pk=_model_dict[key])
+							try:
+								_model_dict[key] = foreign_key_fields_dict[key].objects.get(pk=_model_dict[key])
+							except:
+								_model_dict[key] = None
 
-					if _model.__name__ == "StudentPrograms" and\
-						"program_code" in _model_dict and\
-						"encrypted_student_no" in _model_dict:
+					if _model.__name__ == "StudentPrograms":
+						if row[titles.index("year_of_study")] == "YOS 3" and\
+							 row[titles.index("progress_outcome_type")] == "Q":
 
-						sp_row = _model.objects.filter(\
-									program_code=_model_dict["program_code"],\
-									encrypted_student_no=_model_dict["encrypted_student_no"]).values()
-						if len(sp_row) == 0:
-							_model_dict["start_calendar_year"] = row[titles.index("calendar_instance_year")]
-							_model_dict["end_calendar_year"] = row[titles.index("calendar_instance_year")]
+							_model_dict["degree_complete"] = True
 						else:
-							if sp_row[0]["start_calendar_year"] > row[titles.index("calendar_instance_year")]:
-								_model_dict["start_calendar_year"] = row[titles.index("calendar_instance_year")]
-							if sp_row[0]["end_calendar_year"] < row[titles.index("calendar_instance_year")]:
-								_model_dict["end_calendar_year"] = row[titles.index("calendar_instance_year")]
+							_model_dict["degree_complete"] = False
 
 					try:
 						if _model_dict != {}:

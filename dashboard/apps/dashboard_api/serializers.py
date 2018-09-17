@@ -28,5 +28,17 @@ class AverageYearMarksSerializer(serializers.ModelSerializer):
 # Serializer for StudentPrograms table
 class StudentProgramsSerializer(serializers.ModelSerializer):
     class Meta:
-        model = StudentInfo
+        model = StudentPrograms
+        fields = '__all__'
+
+# Serializer for YearOfStudy table
+class YearOfStudySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = YearOfStudy
+        fields = '__all__'
+
+# Serializer for ProgressDiscription table
+class ProgressDiscriptionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProgressDiscription
         fields = '__all__'

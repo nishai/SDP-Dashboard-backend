@@ -19,16 +19,17 @@ class ExcelImportTestCase(TestCase):
 			{'encrypted_student_no': '0008F0850D5A573D93162E7F14E46BD1', 'nationality_short_name': 'South Africa', 'home_language_description': 'Setswana', 'race_description': 'Black', 'gender': 'X', 'age': 29, 'secondary_school_quintile': '3', 'urban_rural_secondary_school': 'URBAN', 'secondary_school_name': 'Phahama Senior School'})
 		self.assertEqual(\
 			CourseStats.objects.filter(encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1").values().first(),\
-			{'id': 1, 'course_code': 'ENGL1001', 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'year_of_study': 'YOS 1', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS', 'progress_outcome_type': 'PCD', 'award_grade': 'R'})
+			{'id': 1, 'course_code': 'ENGL1001', 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS'})
 		self.assertEqual(\
 			AverageYearMarks.objects.filter(encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1").values().first(),\
-			{'id': 1, 'calendar_instance_year': '2014', 'year_of_study': 'YOS 1', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'average_marks': Decimal('56.500')})
+			{'id': 1, 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'average_marks': Decimal('56.500'), 'progress_outcome_type_id': 'PCD', 'award_grade': 'R'})
 		self.assertEqual(\
 			ProgramInfo.objects.filter(pk="AB000").values().first(),\
 			{'program_code': 'AB000', 'program_title': 'Bachelor of Arts'})
 		self.assertEqual(\
-			StudentPrograms.objects.filter(program_code="AB000" , encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1" ).values().first(),\
-			{'id': 1, 'program_code_id': 'AB000', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'start_calendar_year': '2014', 'end_calendar_year': '2014'})
+			StudentPrograms.objects.filter(calendar_instance_year='2014', program_code="AB000" , encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1" ).values().first(),\
+			{'id': 1, 'calendar_instance_year': '2014','program_code_id': 'AB000', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'degree_complete': False})
+		self.assertEqual(ProgressDiscription.objects.filter(progress_outcome_type="PCD").values().first(), {'progress_outcome_type':'PCD' , 'progress_outcome_type_description':'Permitted to proceed'})
 
 	
 	# test excel_import custom command without providing files
@@ -45,20 +46,20 @@ class ExcelImportTestCase(TestCase):
 		del temp_dict['id']
 		self.assertEqual(\
 		temp_dict,\
-			{'course_code': 'ENGL1001', 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'year_of_study': 'YOS 1', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS', 'progress_outcome_type': 'PCD', 'award_grade': 'R'})
+			{'course_code': 'ENGL1001', 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS'})
 		temp_dict = AverageYearMarks.objects.filter(encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1").values()[0]
 		del temp_dict['id']
 		self.assertEqual(\
 			temp_dict,\
-			{'calendar_instance_year': '2014', 'year_of_study': 'YOS 1', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'average_marks': Decimal('56.500')})
+			{'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'average_marks': Decimal('56.500'), 'progress_outcome_type_id': 'PCD', 'award_grade': 'R'})
 		self.assertEqual(\
 			ProgramInfo.objects.filter(pk="AB000").values().first(),\
 			{'program_code': 'AB000', 'program_title': 'Bachelor of Arts'})
-		temp_dict = StudentPrograms.objects.filter(program_code="AB000" , encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1" ).values().first()
+		temp_dict = StudentPrograms.objects.filter(calendar_instance_year='2014', program_code="AB000" , encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1" ).values().first()
 		del temp_dict['id']
 		self.assertEqual(\
 			temp_dict,\
-			{'program_code_id': 'AB000', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'start_calendar_year': '2014', 'end_calendar_year': '2014'})
+			{'calendar_instance_year': '2014', 'program_code_id': 'AB000', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'degree_complete': False})
 
 		# asserts for second file
 		self.assertEqual(\
@@ -68,33 +69,52 @@ class ExcelImportTestCase(TestCase):
 		del temp_dict['id']
 		self.assertEqual(\
 			temp_dict,\
-			{'course_code': 'ENGL1001', 'calendar_instance_year': '1234', 'encrypted_student_no_id': '1234QWERASDFZXCV5687TYIUGHKJBNML', 'year_of_study': 'YOS 1', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS', 'progress_outcome_type': 'PCD', 'award_grade': 'R'})
+			{'course_code': 'ENGL1001', 'calendar_instance_year': '1234', 'encrypted_student_no_id': '1234QWERASDFZXCV5687TYIUGHKJBNML', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS'})
 		temp_dict = AverageYearMarks.objects.filter(encrypted_student_no="1234QWERASDFZXCV5687TYIUGHKJBNML").values()[0]
 		del temp_dict['id']
 		self.assertEqual(\
 			temp_dict,\
-			{'calendar_instance_year': '1234', 'year_of_study': 'YOS 1', 'encrypted_student_no_id': '1234QWERASDFZXCV5687TYIUGHKJBNML', 'average_marks': Decimal('56.500')})
+			{'calendar_instance_year': '1234', 'encrypted_student_no_id': '1234QWERASDFZXCV5687TYIUGHKJBNML', 'average_marks': Decimal('56.500'), 'progress_outcome_type_id': 'PCD', 'award_grade': 'R'})
 		self.assertEqual(\
 			ProgramInfo.objects.filter(pk="AB004").values()[0],\
 			{'program_code': 'AB004', 'program_title': 'Bachelor of Arts'})
-		temp_dict = StudentPrograms.objects.filter(program_code="AB004" , encrypted_student_no="1234QWERASDFZXCV5687TYIUGHKJBNML" ).values().first()
+		temp_dict = StudentPrograms.objects.filter(calendar_instance_year='1234', program_code="AB004" , encrypted_student_no="1234QWERASDFZXCV5687TYIUGHKJBNML" ).values().first()
 		del temp_dict['id']
 		self.assertEqual(\
 			temp_dict,\
-			{'program_code_id': 'AB004', 'encrypted_student_no_id': '1234QWERASDFZXCV5687TYIUGHKJBNML', 'start_calendar_year': '1234', 'end_calendar_year': '1234'})
+			{'calendar_instance_year': '1234','program_code_id': 'AB004', 'encrypted_student_no_id': '1234QWERASDFZXCV5687TYIUGHKJBNML', 'degree_complete': False})
 
 		# asserts for third file
-		temp_dict = StudentPrograms.objects.filter(program_code="AB000" , encrypted_student_no="00B197BA7753B1F2CFD57570245D62E7" ).values().first()
+		temp_dict = StudentPrograms.objects.filter(calendar_instance_year='2013', program_code="AB000" , encrypted_student_no="00B197BA7753B1F2CFD57570245D62E7" ).values().first()
 		del temp_dict['id']
 		self.assertEqual(\
 			temp_dict,\
-			{'program_code_id': 'AB000', 'encrypted_student_no_id': '00B197BA7753B1F2CFD57570245D62E7', 'start_calendar_year': '2013', 'end_calendar_year': '2013'})
+			{'calendar_instance_year': '2013','program_code_id': 'AB000', 'encrypted_student_no_id': '00B197BA7753B1F2CFD57570245D62E7', 'degree_complete': False})
 
-		temp_dict = StudentPrograms.objects.filter(program_code="AB001" , encrypted_student_no="00B197BA7753B1F2CFD57570245D62E7" ).values().first()
+		temp_dict = StudentPrograms.objects.filter(calendar_instance_year='2016', program_code="AB001" , encrypted_student_no="00B197BA7753B1F2CFD57570245D62E7" ).values().first()
 		del temp_dict['id']
 		self.assertEqual(\
 			temp_dict,\
-			{'program_code_id': 'AB001', 'encrypted_student_no_id': '00B197BA7753B1F2CFD57570245D62E7', 'start_calendar_year': '2016', 'end_calendar_year': '2016'})
+			{'calendar_instance_year': '2016', 'program_code_id': 'AB001', 'encrypted_student_no_id': '00B197BA7753B1F2CFD57570245D62E7', 'degree_complete': True})
 		self.assertEqual(\
 			StudentInfo.objects.filter(pk="00B197BA7753B1F2CFD57570245D62E3").values().first(),\
 				{'encrypted_student_no': '00B197BA7753B1F2CFD57570245D62E3', 'nationality_short_name': 'South Africa', 'home_language_description': 'Zulu', 'race_description': 'Black', 'gender': 'M', 'age': 45, 'secondary_school_quintile': None, 'urban_rural_secondary_school': None, 'secondary_school_name': 'qwe'})
+		self.assertEqual(ProgressDiscription.objects.filter(progress_outcome_type="Q").values().first(), {'progress_outcome_type':'Q' , 'progress_outcome_type_description':'Completed all requirements for qualification'})
+		
+		temp_dict = StudentPrograms.objects.filter(calendar_instance_year='2017', program_code=None , encrypted_student_no="00B197BA7753B1F2CFD57570245D62E5" ).values().first()
+		del temp_dict['id']
+		self.assertEqual(\
+			temp_dict,\
+			{'calendar_instance_year': '2017', 'program_code_id': None, 'encrypted_student_no_id': '00B197BA7753B1F2CFD57570245D62E5', 'degree_complete': False})
+
+		temp_dict = StudentPrograms.objects.filter(calendar_instance_year='2017', program_code="AB001" , encrypted_student_no="00B197BA7753B1F2CFD57570245D62E4" ).values().first()
+		del temp_dict['id']
+		self.assertEqual(\
+			temp_dict,\
+			{'calendar_instance_year': '2017', 'program_code_id': 'AB001', 'encrypted_student_no_id': '00B197BA7753B1F2CFD57570245D62E4', 'degree_complete': False})
+	
+		temp_dict = YearOfStudy.objects.filter(calendar_instance_year="2016" , encrypted_student_no="00B197BA7753B1F2CFD57570245D62E3" ).values().first()
+		del temp_dict['id']
+		self.assertEqual(\
+			temp_dict,\
+			{'calendar_instance_year': '2016', 'encrypted_student_no_id': '00B197BA7753B1F2CFD57570245D62E3', 'year_of_study': 'YOS 3'})

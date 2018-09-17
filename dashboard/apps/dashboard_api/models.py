@@ -30,34 +30,48 @@ class CourseStats(models.Model):
 	course_code = models.CharField(max_length=8)
 	calendar_instance_year = models.CharField(max_length=4, null=True)
 	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
-	year_of_study = models.CharField(max_length=5, null=True)	# Refers to YOS student is registered for
-																# within this course year
 	final_mark = models.DecimalField(max_digits=6, decimal_places=3, null=True)
 	final_grade = models.CharField(max_length=5, null=True)
-	progress_outcome_type = models.CharField(max_length=10, null=True)
-	award_grade = models.CharField(max_length=2, null=True)
 
 	class Meta:
 		verbose_name = "Information about a student for a course in a specific calendar year"
 
+# Maps progress_outcome_type codes to verbos deiscription
+class ProgressDiscription(models.Model):
+	progress_outcome_type = models.CharField(max_length=10, primary_key=True)
+	progress_outcome_type_description = models.CharField(max_length=254)
+	class Meta:
+		verbose_name = "Maps progress_outcome_type codes to verbos deiscription"
 
 # Average mark for a student in a specific calendar year
 class AverageYearMarks(models.Model):
 	calendar_instance_year = models.CharField(max_length=4, null=True)
-	year_of_study = models.CharField(max_length=5, null=True)	# Refers to YOS student is registered for
-																# within this course year
 	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
 	average_marks = models.DecimalField(max_digits=6, decimal_places=3, null=True)
+	progress_outcome_type = models.ForeignKey('ProgressDiscription', on_delete=models.CASCADE, null=True)
+	award_grade = models.CharField(max_length=2, null=True)
 
 	class Meta:
 		verbose_name = "Average mark for a student in a specific calendar year"
 
+# keeps track of which year of study each student is in in each calendar year
+class YearOfStudy(models.Model):
+	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.PROTECT)
+	calendar_instance_year = models.CharField(max_length=4)
+	year_of_study = models.CharField(max_length=5, null=True)   # Refers to YOS student is registered for
+																# within this course year
+
+	class Meta:
+		verbose_name = "keeps track of which year of study each student is in in each calendar year"
+
 # Table for program (i.e BSc General) info
 class StudentPrograms(models.Model):
-	program_code = models.ForeignKey('ProgramInfo', on_delete=models.PROTECT)
+	calendar_instance_year = models.CharField(max_length=4)
+	program_code = models.ForeignKey('ProgramInfo', on_delete=models.PROTECT, null=True)
 	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.PROTECT)
-	start_calendar_year = models.CharField(max_length=4, null=True)
-	end_calendar_year = models.CharField(max_length=4, null=True)
+	degree_complete = models.BooleanField(null=True)
+#	start_calendar_year = models.CharField(max_length=4, null=True)
+#	end_calendar_year = models.CharField(max_length=4, null=True)
 
 	class Meta:
 		verbose_name = "Table to keep track of which students are enrolled in which programs for which years."
