@@ -35,6 +35,7 @@ class CourseStats(models.Model):
 
 	class Meta:
 		verbose_name = "Information about a student for a course in a specific calendar year"
+		unique_together = ("course_code", "calendar_instance_year", "encrypted_student_no")
 
 # Maps progress_outcome_type codes to verbos deiscription
 class ProgressDiscription(models.Model):
@@ -53,6 +54,7 @@ class AverageYearMarks(models.Model):
 
 	class Meta:
 		verbose_name = "Average mark for a student in a specific calendar year"
+		unique_together = ("calendar_instance_year", "encrypted_student_no")
 
 # keeps track of which year of study each student is in in each calendar year
 class YearOfStudy(models.Model):
@@ -63,6 +65,7 @@ class YearOfStudy(models.Model):
 
 	class Meta:
 		verbose_name = "keeps track of which year of study each student is in in each calendar year"
+		unique_together = ("calendar_instance_year", "encrypted_student_no")
 
 # Table for program (i.e BSc General) info
 class StudentPrograms(models.Model):
@@ -70,8 +73,6 @@ class StudentPrograms(models.Model):
 	program_code = models.ForeignKey('ProgramInfo', on_delete=models.PROTECT, null=True)
 	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.PROTECT)
 	degree_complete = models.BooleanField(null=True)
-#	start_calendar_year = models.CharField(max_length=4, null=True)
-#	end_calendar_year = models.CharField(max_length=4, null=True)
 
 	class Meta:
 		verbose_name = "Table to keep track of which students are enrolled in which programs for which years."
