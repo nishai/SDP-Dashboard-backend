@@ -30,13 +30,12 @@ schema_filter = {
                 "field": {"type": "string"},
                 "operator": {"type": "string"},
                 "value": {"type": "string"},
-                "exclude": {"type": "boolean"},
+                "exclude": {"type": "boolean"},  # default to false
             },
             "required": [
                 "field",
                 "comparator",
                 "value",
-                "exclude"
             ]
         },
         "uniqueItems": True,
@@ -95,11 +94,10 @@ schema_order = {
         "type": "object",
         "properties": {
             "field": {"type": "string"},
-            "descending": {"type": "boolean"},
+            "descending": {"type": "boolean"},  # defaults to false
         },
         "required": [
-            "field",
-            "descending",
+            "field"
         ]
     },
     "uniqueItems": True,
@@ -161,6 +159,8 @@ schema_query = {
 
 def _filter(queryset: QuerySet, fragment: List):
     for f in fragment:
+        if 'exclude' not in f:
+            f['exclude'] = False
         filterer = (queryset.exclude if f['exclude'] else queryset.filter)
         queryset = filterer(**{f"{f['field']}__{f['operator']}": f['value']})
         # todo ast for evaluation value with relation to other fields.
@@ -200,6 +200,36 @@ def _limit(queryset: QuerySet, fragment: Dict[str, object]):
         return queryset[:min(num, len(queryset))]
     elif type == 'last':
         return queryset[max(0, len(queryset)-num):]
+
+def parse(model: Type[Model], data: Dict):
+
+    try:
+        validate(data, schema_query)
+    except ValidationError as e:
+        raise e
+    except SchemaError as e:
+        raise e  # we caused this with invalid schema above
+
+    queryset = model.objects.all().values()
+
+    if 'chain' in data and len(data['chain']) > 0:
+        # https://www.laurencegellert.com/2016/09/django-group-by-having-query-example/
+        for i, frag in enumerate(data['chain']):
+            if 'group' not in frag:
+                queryset = queryset.all()
+            if 'filter' in frag:
+                queryset = _filter(queryset, frag['filter'])
+            if 'group' in frag:
+                print("Grouping")
+                queryset = _group(queryset, frag['group'])
+            if 'order' in frag:
+                queryset = _order(queryset, frag['order'])
+    else:
+        queryset = queryset.all()
+
+    queryset = _limit(queryset, data['limit'] if 'limit' in data else {"type": "first", "num": 10})
+
+    return queryset
 
 
 # TODO: check https://github.com/carltongibson/django-filter
@@ -256,33 +286,3 @@ def _limit(queryset: QuerySet, fragment: Dict[str, object]):
 # 		"num": 3
 # 	}
 # }
-
-def parse(model: Type[Model], data: Dict):
-
-    try:
-        validate(data, schema_query)
-    except ValidationError as e:
-        raise e
-    except SchemaError as e:
-        raise e  # we caused this with invalid schema above
-
-    queryset = model.objects.all()
-
-    if 'chain' in data and len(data['chain']) > 0:
-        # https://www.laurencegellert.com/2016/09/django-group-by-having-query-example/
-        for i, frag in enumerate(data['chain']):
-            if 'group' not in frag:
-                queryset = queryset.all()
-            if 'filter' in frag:
-                queryset = _filter(queryset, frag['filter'])
-            if 'group' in frag:
-                print("Grouping")
-                queryset = _group(queryset, frag['group'])
-            if 'order' in frag:
-                queryset = _order(queryset, frag['order'])
-    else:
-        queryset = queryset.all()
-
-    queryset = _limit(queryset, data['limit'] if 'limit' in data else {"type": "first", "num": 10})
-
-    return queryset

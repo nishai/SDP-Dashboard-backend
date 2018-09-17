@@ -112,10 +112,10 @@ class StudentInfo(models.Model):
 # Foreign keys to student_number in StudentInfo
 class CourseStats(models.Model):
     course_code = models.CharField(max_length=8)
-    calendar_instance_year = models.CharField(max_length=4, null=True)
+    calendar_instance_year = models.FloatField(null=True)
     encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
     year_of_study = models.CharField(max_length=5, null=True)    # Refers to YOS student is registered for within this course year
-    final_mark = models.DecimalField(max_digits=6, decimal_places=3, null=True)
+    final_mark = models.FloatField(null=True)
     final_grade = models.CharField(max_length=5, null=True)
     progress_outcome_type = models.CharField(max_length=10, null=True)
     award_grade = models.CharField(max_length=2, null=True)
@@ -127,11 +127,11 @@ class CourseStats(models.Model):
 
 # Average mark for a student in a specific calendar year
 class AverageYearMarks(models.Model):
-    calendar_instance_year = models.CharField(max_length=4, null=True)
+    calendar_instance_year = models.FloatField(null=True)
     year_of_study = models.CharField(max_length=5, null=True)    # Refers to YOS student is registered for within this course year
     encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
-    average_marks = models.DecimalField(max_digits=6, decimal_places=3, null=True)
+    average_marks = models.FloatField(null=True)
 
     class Meta:
         verbose_name = "Average mark for a student in a specific calendar year"
-        unique_together = ('calendar_instance_year', 'encrypted_student_no',)
+        unique_together = ('calendar_instance_year', 'encrypted_student_no', 'year_of_study',)
