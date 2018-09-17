@@ -13,7 +13,7 @@ class ExcelImportTestCase(TestCase):
 	def test_specific_excel(self):
 		args = ['--file=test_db1.xlsx', '--test']
 		opts = {}
-		call_command('excel_import', *args, **opts)
+		self.assertEqual(call_command('excel_import', *args, **opts), 0)
 		self.assertEqual(\
 			StudentInfo.objects.filter(pk="0008F0850D5A573D93162E7F14E46BD1").values().first(),\
 			{'encrypted_student_no': '0008F0850D5A573D93162E7F14E46BD1', 'nationality_short_name': 'South Africa', 'home_language_description': 'Setswana', 'race_description': 'Black', 'gender': 'X', 'age': 29, 'secondary_school_quintile': '3', 'urban_rural_secondary_school': 'URBAN', 'secondary_school_name': 'Phahama Senior School'})
@@ -36,7 +36,7 @@ class ExcelImportTestCase(TestCase):
 	def test_multiple_excel(self):
 		args = ['--file=', '--test']
 		opts = {}
-		call_command('excel_import', *args, **opts)
+		self.assertEqual(call_command('excel_import', *args, **opts), "-1")
 		# asserts for first file
 		self.assertEqual(\
 			StudentInfo.objects.filter(pk="0008F0850D5A573D93162E7F14E46BD1").values()[0],\

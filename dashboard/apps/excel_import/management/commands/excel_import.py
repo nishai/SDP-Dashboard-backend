@@ -3,6 +3,7 @@
 
 # usage python3.6 manage.py excel_import [--file <file_name>]
 
+# lines with "pragma: no cover" comments are intended to not be included in code coverage. these lines are safty measures, mostly to help debug, but if the code works as it should these lines should never run, ni matter the input.
 
 # project imports
 from dashboard.apps.dashboard_api.models import *
@@ -80,7 +81,8 @@ class Command(BaseCommand):
 				logger.error("Error adding data to tables from file " + url + ": " + str(e))
 
 		if file_failure:
-			raise Exception("Some files had problems importing data to database - see logs")
+			logger.info("Some files had problems importing data to database - see logs")
+			return "-1"
 		else:
 			logger.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 			logger.info("All files imported successfully")
@@ -162,13 +164,13 @@ class Command(BaseCommand):
 								for key in unique_keys_fields_arr:
 									unique_keys_dict[key] = _model_dict[key]
 								_model.objects.update_or_create(**unique_keys_dict, defaults=_model_dict)
-					except Exception as e:
-						logger.warning("error inserting to table, ignored and continued. error is: " + str(e))
+					except Exception as e: #pragma: no cover
+						logger.warning("error inserting to table, ignored and continued. error is: " + str(e)) #pragma: no cover
 						pass
 				logger.debug("model values: " + str(_model.objects.values()))
 			return 0
-		except Exception as e:
-			raise Exception("Error inserting data to database with error: " + str(e))
+		except Exception as e: #pragma: no cover
+			raise Exception("Error inserting data to database with error: " + str(e)) #pragma: no cover
 
 	# https://stackoverflow.com/questions/26029095/python-convert-excel-to-csv#26030521
 	# Description:
@@ -205,8 +207,8 @@ class Command(BaseCommand):
 
 				return all_titles, all_data_lists
 
-		except Exception as e:
-			raise Exception("failed loading excel file: " + excel_url + " with error: " + str(e))
+		except Exception as e: #pragma: no cover
+			raise Exception("failed loading excel file: " + excel_url + " with error: " + str(e)) #pragma: no cover
 
 
 	# Description:
@@ -220,10 +222,10 @@ class Command(BaseCommand):
 	#	fail: raise exception
 	def load_file(self, file_url):
 		try:
-			if file_url[-4:] == ".csv":
+			if len(file_url) > 4 and file_url[-4:] == ".csv":
 				# NOT IMPLEMENTED
 				pass
-			elif file_url[-4:] == ".xls" or file_url[-5:] == ".xlsx":
+			elif (len(file_url) > 4 and file_url[-4:] == ".xls") or (len(file_url) > 5 and file_url[-5:] == ".xlsx"):
 				logger.info("----------------------------------------------------------------------------")
 				logger.info(file_url + " Has correct file format for excel files")
 				logger.info("----------------------------------------------------------------------------")
