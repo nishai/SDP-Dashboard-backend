@@ -37,12 +37,12 @@ class CourseStats(models.Model):
 		verbose_name = "Information about a student for a course in a specific calendar year"
 		unique_together = ("course_code", "calendar_instance_year", "encrypted_student_no")
 
-# Maps progress_outcome_type codes to verbos deiscription
+# Maps progress_outcome_type codes to verbos description
 class ProgressDescription(models.Model):
 	progress_outcome_type = models.CharField(max_length=10, primary_key=True)
 	progress_outcome_type_description = models.CharField(max_length=254)
 	class Meta:
-		verbose_name = "Maps progress_outcome_type codes to verbos deiscription"
+		verbose_name = "Maps progress_outcome_type codes to verbos description"
 
 # Average mark for a student in a specific calendar year
 class AverageYearMarks(models.Model):
