@@ -49,6 +49,8 @@ PROD_PORT       := $(shell make echo-prod-port)
 
 # targets from [Makefile]
 # *NB* KEEP THESE VARIABLES UPDATED!
+TARGETS_LOGS    := import # Save docker container logs from `docker logs` command
+						  # to be able to view output and errors from docker container.
 TARGETS_USAGE   := migrate import dev test dist serve
 TARGETS_CLEAN   := clean-migrations clean-data clean-dist clean-logs clean-cov clean-pycache clean
 TARGETS         := $(TARGETS_USAGE) $(TARGETS_CLEAN)
@@ -91,6 +93,9 @@ dev serve  ::
 import     :: rm
 	@make section tag="Copy ./data"
 	docker cp "$(CONTAINER_NAME):/app/data" "$(shell pwd)/imported_data/" || true
+$(TARGETS_LOGS)::
+	@make section tag="Saving docker logs"
+	docker logs $(CONTAINER_NAME) | tee -a logs/docker_logs/$(shell date +%Y%m%d_%H%M%S).log
 $(TARGETS) :: stop
 
 # =========================================================================	#
