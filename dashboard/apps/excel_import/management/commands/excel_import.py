@@ -161,21 +161,22 @@ class Command(BaseCommand):
 					try:
 						if _model_dict != {}:
 							# insert to table
-							#logger.debug("inserting dictionary into table: " + str(_model_dict))
+							logger.debug("inserting dictionary into table: " + str(_model_dict))
 							if len(unique_keys_fields_arr) == 0:
 								_model.objects.update_or_create(**_model_dict)
 							else:
+								# if unique keys combination exists in table - update it, otherwise add the row
 								unique_keys_dict = {}
 								for key in unique_keys_fields_arr:
 									unique_keys_dict[key] = _model_dict[key]
 								_model.objects.update_or_create(**unique_keys_dict, defaults=_model_dict)
-					except Exception as e: #pragma: no cover
-						logger.warning("error inserting to table, ignored and continued. error is: " + str(e)) #pragma: no cover
+					except Exception as e:
+						logger.warning("error inserting to table, ignored and continued. error is: " + str(e))
 						pass
 				logger.debug("model values: " + str(_model.objects.values()))
 			return 0
-		except Exception as e: #pragma: no cover
-			raise Exception("Error inserting data to database with error: " + str(e)) #pragma: no cover
+		except Exception as e:
+			raise Exception("Error inserting data to database with error: " + str(e))
 
 	# https://stackoverflow.com/questions/26029095/python-convert-excel-to-csv#26030521
 	# Description:
@@ -212,8 +213,8 @@ class Command(BaseCommand):
 
 				return all_titles, all_data_lists
 
-		except Exception as e: #pragma: no cover
-			raise Exception("failed loading excel file: " + excel_url + " with error: " + str(e)) #pragma: no cover
+		except Exception as e:
+			raise Exception("failed loading excel file: " + excel_url + " with error: " + str(e))
 
 
 	# Description:
