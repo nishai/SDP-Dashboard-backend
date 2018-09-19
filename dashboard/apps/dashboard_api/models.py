@@ -1,5 +1,14 @@
 from django.db import models
 
+# Table for matching courses to schools and faculties
+class CourseInfo(models.Model):
+	course_code = models.CharField(max_length=5, primary_key=True)
+	school = models.CharField(max_length=255, null=True)
+	faculty = models.CharField(max_length=255, null=True)
+
+	class Meta:
+		verbose_name = "Table for matching courses to schools and faculties"
+
 # Table for program (i.e BSc General) info
 class ProgramInfo(models.Model):
 	program_code = models.CharField(max_length=5, primary_key=True)
@@ -27,7 +36,7 @@ class StudentInfo(models.Model):
 # Stats of a student in a certain course in a certain year
 # Foreign keys to student_number in StudentInfo
 class CourseStats(models.Model):
-	course_code = models.CharField(max_length=8)
+	course_code = models.ForeignKey('CourseInfo', on_delete=models.CASCADE)
 	calendar_instance_year = models.CharField(max_length=4, null=True)
 	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
 	final_mark = models.DecimalField(max_digits=6, decimal_places=3, null=True)
@@ -58,7 +67,7 @@ class AverageYearMarks(models.Model):
 
 # keeps track of which year of study each student is in in each calendar year
 class YearOfStudy(models.Model):
-	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.PROTECT)
+	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
 	calendar_instance_year = models.CharField(max_length=4)
 	year_of_study = models.CharField(max_length=5, null=True)   # Refers to YOS student is registered for
 																# within this course year
@@ -70,8 +79,8 @@ class YearOfStudy(models.Model):
 # Table for program (i.e BSc General) info
 class StudentPrograms(models.Model):
 	calendar_instance_year = models.CharField(max_length=4)
-	program_code = models.ForeignKey('ProgramInfo', on_delete=models.PROTECT, null=True)
-	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.PROTECT)
+	program_code = models.ForeignKey('ProgramInfo', on_delete=models.CASCADE, null=True)
+	encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
 	degree_complete = models.BooleanField(null=True)
 
 	class Meta:

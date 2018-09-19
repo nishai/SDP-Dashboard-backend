@@ -42,3 +42,9 @@ class ProgressDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgressDescription
         fields = '__all__'
+
+# Serializer for CourseInfo table
+class CourseInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseInfo
+        fields = '__all__'

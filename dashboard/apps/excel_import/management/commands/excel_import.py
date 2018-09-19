@@ -136,9 +136,10 @@ class Command(BaseCommand):
 				for row in data:
 					_model_dict = {key: value for key, value in zip(titles, row) if key in _model_field_names}
 					# check if the entire dictionary has values of None - if so skip this data row
+					# foreign key fields don't count, as this model might be empty but the foreign key model might not
 					allNone = True
 					for key in _model_dict:
-						if key != None:
+						if key != None and not(key in foreign_key_fields_dict):
 							allNone = False
 					if allNone:
 						continue
@@ -161,7 +162,7 @@ class Command(BaseCommand):
 					try:
 						if _model_dict != {}:
 							# insert to table
-							logger.debug("inserting dictionary into table: " + str(_model_dict))
+							#logger.debug("inserting dictionary into table: " + str(_model_dict))
 							if len(unique_keys_fields_arr) == 0:
 								_model.objects.update_or_create(**_model_dict)
 							else:
