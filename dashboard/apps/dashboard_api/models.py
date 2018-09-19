@@ -1,13 +1,20 @@
 from django.db import models
 
-# Table for matching courses to schools and faculties
-class CourseInfo(models.Model):
-	course_code = models.CharField(max_length=5, primary_key=True)
-	school = models.CharField(max_length=255, null=True)
+# Table for matching schools to faculties
+class SchoolInfo(models.Model):
+	school = models.CharField(max_length=255, primary_key=True)
 	faculty = models.CharField(max_length=255, null=True)
 
 	class Meta:
-		verbose_name = "Table for matching courses to schools and faculties"
+		verbose_name = "Table for matching schools to faculties"
+
+# Table for matching courses to schools
+class CourseInfo(models.Model):
+	course_code = models.CharField(max_length=5, primary_key=True)
+	school = models.ForeignKey('SchoolInfo', on_delete=models.CASCADE)
+
+	class Meta:
+		verbose_name = "Table for matching courses to schools"
 
 # Table for program (i.e BSc General) info
 class ProgramInfo(models.Model):

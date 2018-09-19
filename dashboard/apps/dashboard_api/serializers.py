@@ -48,3 +48,9 @@ class CourseInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseInfo
         fields = '__all__'
+
+# Serializer for SchoolInfo table
+class SchoolInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolInfo
+        fields = '__all__'

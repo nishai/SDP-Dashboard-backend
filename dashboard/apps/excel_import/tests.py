@@ -11,7 +11,10 @@ class ExcelImportTestCase(TestCase):
 
 	# test excel_import custom command with provided files
 	def test_specific_excel(self):
-		args = ['--file=test_db1.xlsx', '--test']
+		args = ['--file=a_schools_test.xlsx', '--test']
+		opts = {}
+		self.assertEqual(call_command('excel_import', *args, **opts), 0)
+		args = ['--file=b_test_db1.xlsx', '--test']
 		opts = {}
 		self.assertEqual(call_command('excel_import', *args, **opts), 0)
 		self.assertEqual(\
@@ -119,4 +122,5 @@ class ExcelImportTestCase(TestCase):
 			temp_dict,\
 			{'calendar_instance_year': '2016', 'encrypted_student_no_id': '00B197BA7753B1F2CFD57570245D62E3', 'year_of_study': 'YOS 3'})
 		#schools file
-		self.assertEqual(CourseInfo.objects.filter(course_code="AFRL1004").values().first(), {'course_code': 'AFRL1004', 'school': 'Literature, Language and Media', 'faculty': 'Humanities'})
+		self.assertEqual(CourseInfo.objects.filter(course_code="AFRL1004").values().first(), {'course_code': 'AFRL1004', 'school_id': 'Literature, Language and Media'})
+		self.assertEqual(SchoolInfo.objects.filter(school="Literature, Language and Media").values().first(), {'school': 'Literature, Language and Media', 'faculty': 'Humanities'})

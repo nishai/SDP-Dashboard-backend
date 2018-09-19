@@ -57,7 +57,7 @@ class Command(BaseCommand):
 		else:
 			# If no file name is provided take all files in the folder
 			file_urls = [os.path.join(mypath,f) for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
-
+		file_urls.sort()
 		# load data from files file by file
 		file_failure = False
 		for url in file_urls:
