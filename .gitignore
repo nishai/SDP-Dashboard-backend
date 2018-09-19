@@ -15,7 +15,7 @@ coverage/**
 # Excel  Data Files
 *.xls
 *.xlsx
-!test*.xlsx
+!?_test*.xlsx
 
 # Or stuff
 sprint_texts/
