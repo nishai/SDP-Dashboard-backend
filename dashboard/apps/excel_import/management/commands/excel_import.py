@@ -58,6 +58,9 @@ class Command(BaseCommand):
 			# If no file name is provided take all files in the folder
 			file_urls = [os.path.join(mypath,f) for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
 		file_urls.sort()
+		if "README.md" in file_urls:
+			file_urls.remove("README.md")
+
 		# load data from files file by file
 		file_failure = False
 		for url in file_urls:
@@ -149,6 +152,8 @@ class Command(BaseCommand):
 							try:
 								_model_dict[key] = foreign_key_fields_dict[key].objects.get(pk=_model_dict[key])
 							except:
+								logger.warning("foreign key not found for key: " + str(key) + " with value: " + str(_model_dict[key]))
+								logger.warning("the _model_dict is: " + str(_model_dict))
 								_model_dict[key] = None
 
 					if _model.__name__ == "StudentPrograms":
@@ -173,6 +178,7 @@ class Command(BaseCommand):
 								_model.objects.update_or_create(**unique_keys_dict, defaults=_model_dict)
 					except Exception as e:
 						logger.warning("error inserting to table, ignored and continued. error is: " + str(e))
+						logger.warning("row failed to input: " + str(_model_dict))
 						pass
 				logger.debug("model values: " + str(_model.objects.values()))
 			return 0

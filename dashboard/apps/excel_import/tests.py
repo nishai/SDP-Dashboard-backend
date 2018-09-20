@@ -11,7 +11,7 @@ class ExcelImportTestCase(TestCase):
 
 	# test excel_import custom command with provided files
 	def test_specific_excel(self):
-		args = ['--file=a_schools_test.xlsx', '--test']
+		args = ['--file=a_test_schools.xlsx', '--test']
 		opts = {}
 		self.assertEqual(call_command('excel_import', *args, **opts), 0)
 		args = ['--file=b_test_db1.xlsx', '--test']
