@@ -3,6 +3,7 @@
 
 # usage python3.6 manage.py excel_import [--file <file_name>]
 
+# lines with "pragma: no cover" comments are intended to not be included in code coverage. these lines are safty measures, mostly to help debug, but if the code works as it should these lines should never run, ni matter the input.
 
 # project imports
 from dashboard.apps.dashboard_api.models import *
@@ -56,6 +57,9 @@ class Command(BaseCommand):
 		else:
 			# If no file name is provided take all files in the folder
 			file_urls = [os.path.join(mypath,f) for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
+		file_urls.sort()
+		if "README.md" in file_urls:
+			file_urls.remove("README.md")
 
 		# load data from files file by file
 		file_failure = False
@@ -70,14 +74,18 @@ class Command(BaseCommand):
 
 			try:
 				# insert data to database worksheet by worksheet
-				for sheet_titles, sheet_data in zip(all_titles, all_data):
+				for i, (sheet_titles, sheet_data) in enumerate(zip(all_titles, all_data)):
+					logger.info("-----------------------------------------------------------------------")
+					logger.info("adding data for sheet number: " + str(i))
+					logger.info("-----------------------------------------------------------------------")
 					self.add_data_to_tables(sheet_titles, sheet_data)
 			except Exception as e:
 				file_failure = True
 				logger.error("Error adding data to tables from file " + url + ": " + str(e))
 
 		if file_failure:
-			raise Exception("Some files had problems importing data to database - see logs")
+			logger.info("Some files had problems importing data to database - see logs")
+			return "-1"
 		else:
 			logger.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
 			logger.info("All files imported successfully")
@@ -98,7 +106,6 @@ class Command(BaseCommand):
 		logger.info("-----------------------------------------------------------------------")
 		logger.info("Inserting data from table to  models: ")
 		logger.info("-----------------------------------------------------------------------")
-		sys.stdout.flush()
 		try:
 			api_app = apps.get_app_config('dashboard_api')
 			api_models = api_app.models.values()
@@ -107,11 +114,9 @@ class Command(BaseCommand):
 				logger.info("-----------------------------------------------------------------------")
 				logger.info("Inserting data to model: " + _model.__name__)
 				logger.info("-----------------------------------------------------------------------")
-				sys.stdout.flush()
 				_model_field_names = [f.name for f in _model._meta.get_fields()]
 				logger.debug("model fields: " + str(_model_field_names))
 				logger.debug("titles of excel table" + str(titles))
-				sys.stdout.flush()
 
 				# check for foreign keys
 				_model_field_objects = [f for f in _model._meta.get_fields()]
@@ -120,23 +125,62 @@ class Command(BaseCommand):
 					if field.__class__ is ForeignKey:
 						foreign_key_fields_dict[field.name] =  field.related_model
 				logger.debug("Foreign key fields are: " + str(foreign_key_fields_dict))
-				sys.stdout.flush()
 
+				# check for unique keys
+				unique_keys_fields_arr = []
+				for field in _model_field_objects:
+					if field.__class__ is CharField and (field._unique == True or field.primary_key == True):
+						unique_keys_fields_arr.append(field.name)
+				if len(_model._meta.unique_together) > 0:
+					for field in _model._meta.unique_together[0]:
+						unique_keys_fields_arr.append(field)
+				logger.debug("Unique keys fields are: " + str(unique_keys_fields_arr))
+				
 				for row in data:
 					_model_dict = {key: value for key, value in zip(titles, row) if key in _model_field_names}
+					# check if the entire dictionary has values of None - if so skip this data row
+					# foreign key fields don't count, as this model might be empty but the foreign key model might not
+					allNone = True
+					for key in _model_dict:
+						if key != None and not(key in foreign_key_fields_dict):
+							allNone = False
+					if allNone:
+						continue
 					# adjust foreign key to their class
 					for key in _model_dict:
 						if key in foreign_key_fields_dict:
-							_model_dict[key] = foreign_key_fields_dict[key].objects.get(pk=_model_dict[key])
+							try:
+								_model_dict[key] = foreign_key_fields_dict[key].objects.get(pk=_model_dict[key])
+							except:
+								logger.warning("foreign key not found for key: " + str(key) + " with value: " + str(_model_dict[key]))
+								logger.warning("the _model_dict is: " + str(_model_dict))
+								_model_dict[key] = None
+
+					if _model.__name__ == "StudentPrograms":
+						if row[titles.index("year_of_study")] == "YOS 3" and\
+							 row[titles.index("progress_outcome_type")] == "Q":
+
+							_model_dict["degree_complete"] = True
+						else:
+							_model_dict["degree_complete"] = False
 
 					try:
-						# insert to table
-						_model.objects.update_or_create(**_model_dict)
+						if _model_dict != {}:
+							# insert to table
+							#logger.debug("inserting dictionary into table: " + str(_model_dict))
+							if len(unique_keys_fields_arr) == 0:
+								_model.objects.update_or_create(**_model_dict)
+							else:
+								# if unique keys combination exists in table - update it, otherwise add the row
+								unique_keys_dict = {}
+								for key in unique_keys_fields_arr:
+									unique_keys_dict[key] = _model_dict[key]
+								_model.objects.update_or_create(**unique_keys_dict, defaults=_model_dict)
 					except Exception as e:
 						logger.warning("error inserting to table, ignored and continued. error is: " + str(e))
+						logger.warning("row failed to input: " + str(_model_dict))
 						pass
 				logger.debug("model values: " + str(_model.objects.values()))
-				sys.stdout.flush()
 			return 0
 		except Exception as e:
 			raise Exception("Error inserting data to database with error: " + str(e))
@@ -154,7 +198,6 @@ class Command(BaseCommand):
 		logger.info("----------------------------------------------------------------------------")
 		logger.info("Attempting to load excel file:\n" + excel_url)
 		logger.info("----------------------------------------------------------------------------")
-		sys.stdout.flush()
 		try:
 			with xlrd.open_workbook(excel_url) as workbook:
 				worksheet_names = workbook.sheet_names()
@@ -192,19 +235,17 @@ class Command(BaseCommand):
 	#	fail: raise exception
 	def load_file(self, file_url):
 		try:
-			if file_url[-4:] == ".csv":
+			if len(file_url) > 4 and file_url[-4:] == ".csv":
 				# NOT IMPLEMENTED
 				pass
-			elif file_url[-4:] == ".xls" or file_url[-5:] == ".xlsx":
+			elif (len(file_url) > 4 and file_url[-4:] == ".xls") or (len(file_url) > 5 and file_url[-5:] == ".xlsx"):
 				logger.info("----------------------------------------------------------------------------")
 				logger.info(file_url + " Has correct file format for excel files")
 				logger.info("----------------------------------------------------------------------------")
-				sys.stdout.flush()
 				all_titles, all_data = self.load_excel(file_url)
 				logger.info("----------------------------------------------------------------------------")
 				logger.info("Loading succesful of excel file:\n" + file_url)
 				logger.info("----------------------------------------------------------------------------")
-				sys.stdout.flush()				
 
 				# adapt titles to snake case
 				all_titles =\
