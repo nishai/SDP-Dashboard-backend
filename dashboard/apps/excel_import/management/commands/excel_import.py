@@ -156,6 +156,7 @@ class Command(BaseCommand):
 								logger.warning("the _model_dict is: " + str(_model_dict))
 								_model_dict[key] = None
 
+					# identify last years of degrees
 					if _model.__name__ == "StudentPrograms":
 						if row[titles.index("year_of_study")] == "YOS 3" and\
 							 row[titles.index("progress_outcome_type")] == "Q":
@@ -163,7 +164,18 @@ class Command(BaseCommand):
 							_model_dict["degree_complete"] = True
 						else:
 							_model_dict["degree_complete"] = False
-
+					
+					# if a student took a course twice in the same year take the highest mark of the two
+					if _model.__name__ == "CourseStats":
+						stats_row = CourseStats.objects.filter(\
+										encrypted_student_no=_model_dict["encrypted_student_no"],\
+										course_code=_model_dict["course_code"],\
+										calendar_instance_year=_model_dict["calendar_instance_year"])\
+									.values().first()
+						if stats_row != None:
+							if stats_row["final_mark"] > _model_dict["final_mark"]:
+								_model_dict["final_mark"] = stats_row["final_mark"]
+								_model_dict["final_grade"] = stats_row["final_grade"]
 					try:
 						if _model_dict != {}:
 							# insert to table
