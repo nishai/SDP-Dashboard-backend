@@ -12,6 +12,7 @@ class SchoolInfo(models.Model):
 class CourseInfo(models.Model):
 	course_code = models.CharField(max_length=5, primary_key=True)
 	school = models.ForeignKey('SchoolInfo', on_delete=models.CASCADE)
+	course_name = models.CharField(max_length=255, null=True)
 
 	class Meta:
 		verbose_name = "Table for matching courses to schools"

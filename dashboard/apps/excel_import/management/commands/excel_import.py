@@ -58,8 +58,8 @@ class Command(BaseCommand):
 			# If no file name is provided take all files in the folder
 			file_urls = [os.path.join(mypath,f) for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
 		file_urls.sort()
-		if "README.md" in file_urls:
-			file_urls.remove("README.md")
+		if os.path.join(mypath,"README.md") in file_urls:
+			file_urls.remove(os.path.join(mypath,"README.md"))
 
 		# load data from files file by file
 		file_failure = False
