@@ -173,7 +173,9 @@ class Command(BaseCommand):
 										calendar_instance_year=_model_dict["calendar_instance_year"])\
 									.values().first()
 						if stats_row != None:
-							if stats_row["final_mark"] > _model_dict["final_mark"]:
+							if _model_dict["final_mark"] == None:
+								_model_dict["final_mark"] = stats_row["final_mark"]
+							elif stats_row["final_mark"] > _model_dict["final_mark"]:
 								_model_dict["final_mark"] = stats_row["final_mark"]
 								_model_dict["final_grade"] = stats_row["final_grade"]
 					try:
