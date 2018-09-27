@@ -22,7 +22,7 @@ class ExcelImportTestCase(TestCase):
 			{'encrypted_student_no': '0008F0850D5A573D93162E7F14E46BD1', 'nationality_short_name': 'South Africa', 'home_language_description': 'Setswana', 'race_description': 'Black', 'gender': 'X', 'age': 29, 'secondary_school_quintile': '3', 'urban_rural_secondary_school': 'URBAN', 'secondary_school_name': 'Phahama Senior School'})
 		self.assertEqual(\
 			CourseStats.objects.filter(encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1", course_code="ENGL1001", calendar_instance_year="2014").values().first(),\
-			{'id': 1, 'course_code_id': 'ENGL1001', 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'final_mark': Decimal('44.000'), 'final_grade': 'PAS'})
+			{'id': 1, 'course_code_id': 'ENGL1001', 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS'})
 		self.assertEqual(\
 			AverageYearMarks.objects.filter(encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1", calendar_instance_year="2014").values().first(),\
 			{'id': 1, 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'average_marks': Decimal('56.500'), 'progress_outcome_type_id': 'PCD', 'award_grade': None})
@@ -49,7 +49,7 @@ class ExcelImportTestCase(TestCase):
 		del temp_dict['id']
 		self.assertEqual(\
 		temp_dict,\
-			{'course_code_id': 'ENGL1001', 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'final_mark': Decimal('44.000'), 'final_grade': 'PAS'})
+			{'course_code_id': 'ENGL1001', 'calendar_instance_year': '2014', 'encrypted_student_no_id': '0008F0850D5A573D93162E7F14E46BD1', 'final_mark': Decimal('55.000'), 'final_grade': 'PAS'})
 		temp_dict = AverageYearMarks.objects.filter(encrypted_student_no="0008F0850D5A573D93162E7F14E46BD1", calendar_instance_year="2014").values()[0]
 		del temp_dict['id']
 		self.assertEqual(\
@@ -122,5 +122,5 @@ class ExcelImportTestCase(TestCase):
 			temp_dict,\
 			{'calendar_instance_year': '2016', 'encrypted_student_no_id': '00B197BA7753B1F2CFD57570245D62E3', 'year_of_study': 'YOS 3'})
 		#schools file
-		self.assertEqual(CourseInfo.objects.filter(course_code="AFRL1004").values().first(), {'course_code': 'AFRL1004', 'school_id': 'Literature, Language and Media'})
+		self.assertEqual(CourseInfo.objects.filter(course_code="AFRL1004").values().first(), {'course_code': 'AFRL1004', 'course_name': 'AFRL1004','school_id': 'Literature, Language and Media'})
 		self.assertEqual(SchoolInfo.objects.filter(school="Literature, Language and Media").values().first(), {'school': 'Literature, Language and Media', 'faculty': 'Humanities'})
