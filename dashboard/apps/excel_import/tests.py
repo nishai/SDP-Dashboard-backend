@@ -124,3 +124,9 @@ class ExcelImportTestCase(TestCase):
 		#schools file
 		self.assertEqual(CourseInfo.objects.filter(course_code="AFRL1004").values().first(), {'course_code': 'AFRL1004', 'course_name': 'AFRL1004','school_id': 'Literature, Language and Media'})
 		self.assertEqual(SchoolInfo.objects.filter(school="Literature, Language and Media").values().first(), {'school': 'Literature, Language and Media', 'faculty': 'Humanities'})
+
+		temp_dict = CourseStats.objects.filter(encrypted_student_no="00B197BA7753B1F2CFD57570245D6210", course_code="INTR1011", calendar_instance_year="2017").values().first()
+		del temp_dict['id']
+		self.assertEqual(\
+			temp_dict,\
+			{'course_code_id': 'INTR1011', 'calendar_instance_year': '2017', 'encrypted_student_no_id': '00B197BA7753B1F2CFD57570245D6210', 'final_mark': Decimal('61.000'), 'final_grade': 'PAS'})

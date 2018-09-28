@@ -175,6 +175,8 @@ class Command(BaseCommand):
 						if stats_row != None:
 							if _model_dict["final_mark"] == None:
 								_model_dict["final_mark"] = stats_row["final_mark"]
+							elif stats_row["final_mark"] == None:
+								stats_row["final_mark"] = _model_dict["final_mark"]
 							elif stats_row["final_mark"] > _model_dict["final_mark"]:
 								_model_dict["final_mark"] = stats_row["final_mark"]
 								_model_dict["final_grade"] = stats_row["final_grade"]
