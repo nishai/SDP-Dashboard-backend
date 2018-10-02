@@ -12,6 +12,11 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 import datetime
 import logging.config
 import os
+
+import ldap
+from django_auth_ldap.config import LDAPSearch
+
+from settings.ldap.backends import LDAPBackendStudents, LDAPBackendStaff
 from .log.loggers import create_default_logger
 
 # ========================================================================= #
@@ -53,6 +58,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
+    'django_auth_ldap'
 ]
 
 # ========================================================================= #
@@ -70,6 +76,45 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# ========================================================================= #
+# Authentication                                                            #
+# ========================================================================= #
+
+# Password validation
+# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# specifying ldap & local auth,
+# allows us to assign permissions to individual ldap users,
+# or even create a local superuser not present on the ldap
+AUTHENTICATION_BACKENDS = [
+    'dashboard.settings.ldap.backends.LDAPBackendStudents',  # extends 'django_auth_ldap.backend.LDAPBackend'
+    'dashboard.settings.ldap.backends.LDAPBackendStaff',     # extends 'django_auth_ldap.backend.LDAPBackend'
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+# custom prefix 'AUTH_LDAP_SS_' for ldap settings defined in LDAPBackendStudents
+AUTH_LDAP_SS_SERVER_URI = LDAPBackendStudents.SERVER_URI
+AUTH_LDAP_SS_USER_SEARCH = LDAPBackendStudents.USER_SEARCH
+
+# custom prefix 'AUTH_LDAP_DS_' for ldap settings defined in LDAPBackendStaff
+AUTH_LDAP_DS_SERVER_URI = LDAPBackendStaff.SERVER_URI
+AUTH_LDAP_DS_USER_SEARCH = LDAPBackendStaff.USER_SEARCH # TODO: check validity
 
 # ========================================================================= #
 # Templates                                                                 #
@@ -105,24 +150,6 @@ DATABASES = {
         'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
     }
 }
-
-# Password validation
-# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
 
 # ========================================================================== #
 # Languages                                                                  #

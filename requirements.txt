@@ -4,17 +4,19 @@
 # or
 # $ python3.6 -m pip install -r requirements.txt
 
-django==2.1
+django==2.1.2
 djangorestframework==3.8.2
 django-rest-auth==0.9.3
+django-auth-ldap==1.7.0
 
 # Code Coverage
-pytest-django
-coverage
-pytest-cov
+pytest-django==3.4.3
+coverage==4.5.1
+pytest-cov==2.6.0
 
 # Excel File Reader
-xlrd
+xlrd==1.1.0
+pandas==0.23.4
 
 # graph generating
 #django-extensions
