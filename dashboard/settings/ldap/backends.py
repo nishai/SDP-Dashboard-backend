@@ -1,6 +1,5 @@
-import ldap
 from django_auth_ldap.backend import LDAPBackend
-from django_auth_ldap.config import LDAPSearch
+
 
 """
 Shared Settings
@@ -31,13 +30,6 @@ class LDAPBackendStudents(LDAPBackend):
     # ldap settings
     settings_prefix = "AUTH_LDAP_SS_"
 
-    # global vars
-    SERVER_URI = 'ldap://ss.wits.ac.za/:389'
-    USER_SEARCH = LDAPSearch(
-        'ou=students,ou=wits university,dc=ss,dc=wits,dc=ac,dc=za',
-        ldap.SCOPE_SUBTREE,
-        '(uid=students\\%(user)s)',
-    )
 
 class LDAPBackendStaff(LDAPBackend):
     """
@@ -53,11 +45,3 @@ class LDAPBackendStaff(LDAPBackend):
     """
     # ldap settings
     settings_prefix = "AUTH_LDAP_DS_"
-
-    # global vars
-    SERVER_URI = 'ldap://ds.wits.ac.za/:389'
-    USER_SEARCH = LDAPSearch(
-        'ou=wits university,dc=ds,dc=wits,dc=ac,dc=za',
-        ldap.SCOPE_SUBTREE,
-        '(uid=ds\\%(user)s)',  # TODO: Check https://www.wits.ac.za/library/about-us/services/wireless-access-setup/
-    )

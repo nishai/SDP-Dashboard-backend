@@ -16,7 +16,6 @@ import os
 import ldap
 from django_auth_ldap.config import LDAPSearch
 
-from settings.ldap.backends import LDAPBackendStudents, LDAPBackendStaff
 from .log.loggers import create_default_logger
 
 # ========================================================================= #
@@ -108,13 +107,21 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# custom prefix 'AUTH_LDAP_SS_' for ldap settings defined in LDAPBackendStudents
-AUTH_LDAP_SS_SERVER_URI = LDAPBackendStudents.SERVER_URI
-AUTH_LDAP_SS_USER_SEARCH = LDAPBackendStudents.USER_SEARCH
+# .ldap.backends.LDAPBackendStudents
+AUTH_LDAP_SS_SERVER_URI = 'ldap://ss.wits.ac.za/:389'
+AUTH_LDAP_SS_USER_SEARCH = LDAPSearch(
+    'ou=students,ou=wits university,dc=ss,dc=wits,dc=ac,dc=za',
+    ldap.SCOPE_SUBTREE,
+    '(uid=students\\%(user)s)',
+)
 
-# custom prefix 'AUTH_LDAP_DS_' for ldap settings defined in LDAPBackendStaff
-AUTH_LDAP_DS_SERVER_URI = LDAPBackendStaff.SERVER_URI
-AUTH_LDAP_DS_USER_SEARCH = LDAPBackendStaff.USER_SEARCH # TODO: check validity
+# .ldap.backends.LDAPBackendStaff
+AUTH_LDAP_DS_SERVER_URI = 'ldap://ds.wits.ac.za/:389'
+AUTH_LDAP_DS_USER_SEARCH = LDAPSearch(
+    'ou=wits university,dc=ds,dc=wits,dc=ac,dc=za',
+    ldap.SCOPE_SUBTREE,
+    '(uid=ds\\%(user)s)',  # TODO: Check https://www.wits.ac.za/library/about-us/services/wireless-access-setup/
+)
 
 # ========================================================================= #
 # Templates                                                                 #
@@ -232,4 +239,3 @@ def get_or_gen_key(file_url: str, length: int):
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_FILE = os.path.join(DATA_DIR, "secret.token")
 SECRET_KEY = get_or_gen_key(SECRET_FILE, 50)
-
