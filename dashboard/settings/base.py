@@ -206,8 +206,9 @@ STATIC_ROOT = os.path.join(ROOT_DIR, 'dist')
 # https://stackoverflow.com/questions/45972977/django-logging-requests
 
 LOGGING = create_default_logger(
-    os.path.join(ROOT_DIR, "logs"),
-    datetime.datetime.now().strftime("%y-%m-%d_%H-%M-%S")
+    log_path=os.path.join(ROOT_DIR, "logs"),
+    name=datetime.datetime.now().strftime("%y-%m-%d_%H-%M-%S"),
+    console_only=os.getenv("DJANGO_LOG_TO_FILES") is None,
 )
 
 logging.config.dictConfig(LOGGING)

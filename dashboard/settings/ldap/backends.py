@@ -1,6 +1,7 @@
 from django_auth_ldap.backend import LDAPBackend
 
 
+
 """
 Shared Settings
   - LDAP: `v3`
@@ -11,6 +12,8 @@ Shared Settings
     - Surname: `sn`
     - Email: `mail`
     - ID Number: `cn`
+  - Password change url:
+    - https://passwordreset.wits.ac.za/default.aspx
 """
 
 
@@ -23,12 +26,11 @@ class LDAPBackendStudents(LDAPBackend):
       - Context:
         - `･       ou=students,ou=wits university,dc=ss,dc=wits,dc=ac,dc=za` # wits
         - `ou=FSCI,ou=students,ou=wits university,dc=ss,dc=wits,dc=ac,dc=za` # science
-        - `ou=FEBE,ou=students,ou=wits university,dc=ss,dc=wits,dc=ac,dc=za` # engeneering
-      - Password change url:
-        - https://passwordreset.wits.ac.za/default.aspx
+        - `ou=FEBE,ou=students,ou=wits university,dc=ss,dc=wits,dc=ac,dc=za` # engineering
     """
     # ldap settings
     settings_prefix = "AUTH_LDAP_SS_"
+
 
 
 class LDAPBackendStaff(LDAPBackend):
