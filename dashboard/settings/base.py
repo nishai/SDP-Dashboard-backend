@@ -54,10 +54,12 @@ INSTALLED_APPS = [
     'dashboard.apps.dashboard_api',
     'dashboard.apps.excel_import',
     # external apps
-    'rest_framework',
-    'rest_framework.authtoken',
-    'rest_auth',
-    'django_auth_ldap'
+    'rest_framework',               # http://www.django-rest-framework.org
+    'rest_framework_jwt',           # http://getblimp.github.io/django-rest-framework-jwt
+    'django_auth_ldap',             # https://django-auth-ldap.readthedocs.io
+    # 'rest_framework_simplejwt',     # https://github.com/davesque/django-rest-framework-simplejwt
+    # 'rest_framework.authtoken',     # http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
+    # 'rest_auth',                    # https://django-rest-auth.readthedocs.io
 ]
 
 # ========================================================================= #
@@ -107,21 +109,41 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# .ldap.backends.LDAPBackendStudents
-AUTH_LDAP_SS_SERVER_URI = 'ldap://ss.wits.ac.za/:389'
-AUTH_LDAP_SS_USER_SEARCH = LDAPSearch(
-    'ou=students,ou=wits university,dc=ss,dc=wits,dc=ac,dc=za',
-    ldap.SCOPE_SUBTREE,
-    '(uid=students\\%(user)s)',
-)
 
-# .ldap.backends.LDAPBackendStaff
-AUTH_LDAP_DS_SERVER_URI = 'ldap://ds.wits.ac.za/:389'
-AUTH_LDAP_DS_USER_SEARCH = LDAPSearch(
-    'ou=wits university,dc=ds,dc=wits,dc=ac,dc=za',
-    ldap.SCOPE_SUBTREE,
-    '(uid=ds\\%(user)s)',  # TODO: Check https://www.wits.ac.za/library/about-us/services/wireless-access-setup/
-)
+def ldap_backend(prefix, uri, user_search):
+    globals()[f'{prefix}SERVER_URI'] = uri
+    globals()[f'{prefix}USER_SEARCH'] = user_search
+    globals()[f'{prefix}ALWAYS_UPDATE_USER'] = True
+    globals()[f'{prefix}USER_ATTR_MAP'] = {
+        "first_name": "givenName",
+        "last_name": "sn",
+        "email": "mail",
+        "id_number": "cn",
+    }
+
+
+ldap_backend(prefix='AUTH_LDAP_SS_', uri='ldap://ss.wits.ac.za/:389', user_search=LDAPSearch(
+    'ou=students,ou=wits university,dc=ss,dc=wits,dc=ac,dc=za', ldap.SCOPE_SUBTREE, '(uid=students\\%(user)s)'
+))
+
+ldap_backend(prefix='AUTH_LDAP_DS_', uri='ldap://ds.wits.ac.za/:389', user_search=LDAPSearch(
+    'ou=wits university,dc=ds,dc=wits,dc=ac,dc=za', ldap.SCOPE_SUBTREE, '(uid=ds\\%(user)s)'
+))
+
+# ========================================================================= #
+# Rest Framework                                                            #
+# ========================================================================= #
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+    ),
+}
 
 # ========================================================================= #
 # Templates                                                                 #
