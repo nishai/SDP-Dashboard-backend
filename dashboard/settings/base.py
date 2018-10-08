@@ -13,9 +13,6 @@ import datetime
 import logging.config
 import os
 
-import ldap
-from django_auth_ldap.config import LDAPSearch
-
 from .log.loggers import create_default_logger
 
 # ========================================================================= #
