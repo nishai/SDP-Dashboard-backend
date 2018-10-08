@@ -57,9 +57,6 @@ INSTALLED_APPS = [
     'rest_framework',               # http://www.django-rest-framework.org
     'rest_framework_jwt',           # http://getblimp.github.io/django-rest-framework-jwt
     'django_auth_ldap',             # https://django-auth-ldap.readthedocs.io
-    # 'rest_framework_simplejwt',     # https://github.com/davesque/django-rest-framework-simplejwt
-    # 'rest_framework.authtoken',     # http://www.django-rest-framework.org/api-guide/authentication/#tokenauthentication
-    # 'rest_auth',                    # https://django-rest-auth.readthedocs.io
 ]
 
 # ========================================================================= #
@@ -104,31 +101,11 @@ AUTH_PASSWORD_VALIDATORS = [
 # allows us to assign permissions to individual ldap users,
 # or even create a local superuser not present on the ldap
 AUTHENTICATION_BACKENDS = [
-    'dashboard.settings.ldap.backends.LDAPBackendStudents',  # extends 'django_auth_ldap.backend.LDAPBackend'
-    'dashboard.settings.ldap.backends.LDAPBackendStaff',     # extends 'django_auth_ldap.backend.LDAPBackend'
     'django.contrib.auth.backends.ModelBackend',
+    'dashboard.settings.ldap.backends.LDAPBackendWitsStudents',  # extends 'django_auth_ldap.backend.LDAPBackend'
+    'dashboard.settings.ldap.backends.LDAPBackendWitsStaff',     # extends 'django_auth_ldap.backend.LDAPBackend'
+    # 'django_auth_ldap.backend.LDAPBackend',
 ]
-
-
-def ldap_backend(prefix, uri, user_search):
-    globals()[f'{prefix}SERVER_URI'] = uri
-    globals()[f'{prefix}USER_SEARCH'] = user_search
-    globals()[f'{prefix}ALWAYS_UPDATE_USER'] = True
-    globals()[f'{prefix}USER_ATTR_MAP'] = {
-        "first_name": "givenName",
-        "last_name": "sn",
-        "email": "mail",
-        "id_number": "cn",
-    }
-
-
-ldap_backend(prefix='AUTH_LDAP_SS_', uri='ldap://ss.wits.ac.za/:389', user_search=LDAPSearch(
-    'ou=students,ou=wits university,dc=ss,dc=wits,dc=ac,dc=za', ldap.SCOPE_SUBTREE, '(uid=students\\%(user)s)'
-))
-
-ldap_backend(prefix='AUTH_LDAP_DS_', uri='ldap://ds.wits.ac.za/:389', user_search=LDAPSearch(
-    'ou=wits university,dc=ds,dc=wits,dc=ac,dc=za', ldap.SCOPE_SUBTREE, '(uid=ds\\%(user)s)'
-))
 
 # ========================================================================= #
 # Rest Framework                                                            #
