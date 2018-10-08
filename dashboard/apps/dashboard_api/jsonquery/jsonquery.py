@@ -29,12 +29,12 @@ schema_filter = {
             "properties": {
                 "field": {"type": "string"},
                 "operator": {"type": "string"},
-                "value": {"type": "string"},
+                "value": {"type": "array"},
                 "exclude": {"type": "boolean"},  # default to false
             },
             "required": [
                 "field",
-                "comparator",
+                "operator",
                 "value",
             ]
         },
@@ -162,7 +162,8 @@ def _filter(queryset: QuerySet, fragment: List):
         if 'exclude' not in f:
             f['exclude'] = False
         filterer = (queryset.exclude if f['exclude'] else queryset.filter)
-        queryset = filterer(**{f"{f['field']}__{f['operator']}": f['value']})
+        for value in f['value']:
+            queryset = filterer(**{f"{f['field']}__{f['operator']}": value})
         # todo ast for evaluation value with relation to other fields.
     return queryset
 

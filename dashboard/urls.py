@@ -16,13 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from dashboard.apps.dashboard_api.views import StudentInfoList, RawStudentListViewSet, student_query_view
+from dashboard.apps.dashboard_api.views import *
 from django.conf.urls import url, include
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r'student', StudentInfoList)
-router.register(r'raw', RawStudentListViewSet, base_name="raw_query")
+router.register(r'course_info', CourseInfoViewSet, base_name="query")
+router.register(r'school_info', SchoolInfoViewSet, base_name="query")
+router.register(r'course_stats', CourseStatsViewSet, base_name="query")
 
 # admin / auth / debug
 urlpatterns = [
@@ -36,5 +37,7 @@ urlpatterns = [
 # api
 urlpatterns += [
     url(r'^', include(router.urls)),
-    path('raw/query', student_query_view),
+    path('course_stats/query', course_stats_query),
+    path('school_info/query', school_info_query),
+    path('course_info/query', course_info_query),
 ]
