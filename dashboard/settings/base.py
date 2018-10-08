@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     # dashboard apps
     'dashboard.apps.dashboard_api',
     'dashboard.apps.excel_import',
@@ -70,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 # ========================================================================= #
@@ -236,3 +238,37 @@ def get_or_gen_key(file_url: str, length: int):
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_FILE = os.path.join(DATA_DIR, "secret.token")
 SECRET_KEY = get_or_gen_key(SECRET_FILE, 50)
+
+# CORS Settings from - https://github.com/ottoyiu/django-cors-headers
+CORS_ORIGIN_WHITELIST = (
+    'dashboard-dev.ms.wits.ac.za:4080',
+    'dashboard-dev.ms.wits.ac.za:3080'
+)
+
+CORS_ORIGIN_REGEX_WHITELIST = []
+CORS_URLS_REGEX = r'^.*$'
+
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+)
+
+CORS_ALLOW_HEADERS = (
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+)
+CORS_EXPOSE_HEADERS = []
+CORS_PREFLIGHT_MAX_AGE = 86400 # one day
+CORS_ALLOW_CREDENTIALS = False
+CORS_MODEL = None
