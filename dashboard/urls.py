@@ -26,6 +26,9 @@ router.register(r'course_info', CourseInfoViewSet, base_name="query")
 router.register(r'school_info', SchoolInfoViewSet, base_name="query")
 router.register(r'course_stats', CourseStatsViewSet, base_name="query")
 
+router.register(r'report', UserReportViewSet, base_name="report")
+router.register(r'report/chart', ReportChartViewSet, base_name="chart")
+
 # admin / auth / debug
 urlpatterns = [
     # Builtin Django database admin
