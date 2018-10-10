@@ -3,3 +3,4 @@
 
 from .stat_views import *
 from .query_views import *
+from .user_views import *
