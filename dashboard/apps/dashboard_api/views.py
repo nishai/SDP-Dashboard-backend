@@ -14,17 +14,19 @@ from rest_framework import permissions, parsers, viewsets
 # ========================================================================= #
 
 class CourseInfoViewSet(viewsets.ReadOnlyModelViewSet):
-#    queryset = CourseInfo.objects.order_by("course_code")
+    # queryset = CourseInfo.objects.order_by("course_code")
     serializer_class = CourseInfoSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+
 class SchoolInfoViewSet(viewsets.ReadOnlyModelViewSet):
-#    queryset = CourseInfo.objects.order_by("faculty")
+    # queryset = CourseInfo.objects.order_by("faculty")
     serializer_class = SchoolInfoSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+
 class CourseStatsViewSet(viewsets.ReadOnlyModelViewSet):
-#    queryset = CourseStats.objects.order_by("course_code_id", "calendar_instance_year", "encrypted_student_no_id")
+    # queryset = CourseStats.objects.order_by("course_code_id", "calendar_instance_year", "encrypted_student_no_id")
     serializer_class = CourseStatsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -53,6 +55,8 @@ Data Structure:
     Urban / Rural Secondary School            =   URBAN
     Secondary School Name                     =   Forte Secondary School
 """
+
+
 # ========================================================================= #
 # QUERY VIEW                                                                #
 # ========================================================================= #
@@ -112,9 +116,10 @@ def course_stats_query(request):
     except ValidationError as e:
         return JsonResponse({"status": "invalid", "message": str(e)})
     except FieldError as e:
-        return JsonResponse({"status": "invalid", "message":  str(e)})
+        return JsonResponse({"status": "invalid", "message": str(e)})
 
     return JsonResponse({"status": "valid", "results": list(queryset)})
+
 
 @api_view(['GET', 'POST'])
 @parser_classes((parsers.JSONParser,))
@@ -127,9 +132,10 @@ def school_info_query(request):
     except ValidationError as e:
         return JsonResponse({"status": "invalid", "message": str(e)})
     except FieldError as e:
-        return JsonResponse({"status": "invalid", "message":  str(e)})
+        return JsonResponse({"status": "invalid", "message": str(e)})
 
     return JsonResponse({"status": "valid", "results": list(queryset)})
+
 
 @api_view(['GET', 'POST'])
 @parser_classes((parsers.JSONParser,))
@@ -142,6 +148,6 @@ def course_info_query(request):
     except ValidationError as e:
         return JsonResponse({"status": "invalid", "message": str(e)})
     except FieldError as e:
-        return JsonResponse({"status": "invalid", "message":  str(e)})
+        return JsonResponse({"status": "invalid", "message": str(e)})
 
     return JsonResponse({"status": "valid", "results": list(queryset)})
