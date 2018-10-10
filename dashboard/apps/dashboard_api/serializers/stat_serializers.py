@@ -1,8 +1,14 @@
-from .models import *
-from rest_framework import serializers
-
 
 # Serializer for StudentInfo table
+from rest_framework import serializers
+from dashboard.apps.dashboard_api.models import *
+
+
+# ========================================================================= #
+# STAT SERIALIZER - Wits performance data                                        #
+# ========================================================================= #
+
+
 class StudentInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentInfo

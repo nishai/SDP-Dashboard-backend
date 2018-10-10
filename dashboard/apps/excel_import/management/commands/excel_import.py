@@ -9,13 +9,11 @@
 from dashboard.apps.dashboard_api.models import *
 
 #django imports
-from django.core.management.base import BaseCommand, CommandError # for custom manage.py commands
+from django.core.management.base import BaseCommand  # for custom manage.py commands
 from django.apps import apps
 from django.db.models import *
-import django.apps
 
 #system imports
-import sys
 import xlrd # excel file importing
 import os #managing files
 

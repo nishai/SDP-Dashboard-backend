@@ -103,3 +103,29 @@ class StudentPrograms(models.Model):
     class Meta:
         verbose_name = "Table to keep track of which students are enrolled in which programs for which years."
         unique_together = ("calendar_instance_year", "encrypted_student_no", "program_code")
+
+
+# """
+# Raw Database Structure Example:
+# ---------------
+#     Encrypted Student No                      =   0021D31BE03E4AB097DCF9C0C89B13BA
+#     Calendar Instance Year                    =   2013
+#     Program Code                              =   SB000
+#     Program Title                             =   Bachelor of  Science
+#     Year of Study                             =   YOS 2
+#     Nationality Short Name                    =   South Africa
+#     Home Language Description                 =   South Sotho
+#     Race Description                          =   Black
+#     Gender                                    =   F
+#     Age                                       =   25
+#     Course Code                               =   CHEM2003
+#     Final Mark                                =   50
+#     Final Grade                               =   PMP
+#     Progress Outcome Type                     =   PCD
+#     Progress Outcome Type Description         =   Permitted to proceed
+#     Award Grade                               =   Q         # used for 3rd years / degree completion
+#     Average Marks                             =   65,67
+#     Secondary School Quintile                 =   4
+#     Urban / Rural Secondary School            =   URBAN
+#     Secondary School Name                     =   Forte Secondary School
+# """

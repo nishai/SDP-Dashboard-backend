@@ -1,6 +1,5 @@
 from django.test import TestCase
 from django.core.management import call_command
-from dashboard.apps.excel_import.management.commands.excel_import  import Command
 from dashboard.apps.dashboard_api.models import *
 
 from decimal import Decimal
