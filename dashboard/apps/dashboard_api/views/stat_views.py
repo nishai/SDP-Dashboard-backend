@@ -10,7 +10,7 @@ from dashboard.apps.dashboard_api.serializers import *
 # CourseInfo
 
 class CourseInfoViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = CourseInfo.objects.all()
+    queryset = CourseInfo.objects.order_by("course_code")
     serializer_class = CourseInfoSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -18,7 +18,7 @@ class CourseInfoViewSet(viewsets.ReadOnlyModelViewSet):
 # SchoolInfo
 
 class SchoolInfoViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = SchoolInfo.objects.all()
+    queryset = CourseInfo.objects.order_by("faculty")
     serializer_class = SchoolInfoSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -26,7 +26,7 @@ class SchoolInfoViewSet(viewsets.ReadOnlyModelViewSet):
 # CourseStats
 
 class CourseStatsViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = CourseStats.objects.all()
+    queryset = CourseStats.objects.order_by("course_code_id", "calendar_instance_year", "encrypted_student_no_id")
     serializer_class = CourseStatsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 

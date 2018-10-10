@@ -72,6 +72,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -112,6 +113,26 @@ CORS_ALLOW_HEADERS = corsheaders.defaults.default_headers
 
 # cookies will be allowed to be included in cross-site HTTP requests (default: False)
 CORS_ALLOW_CREDENTIALS = False
+
+# ========================================================================= #
+# CSRF (Cross-Site Request Forgery)                                         #
+#                                                                           #
+# Cross-Site Request Forgery (CSRF) is an attack that forces an end user to #
+# execute unwanted actions on a web application in which they're currently  #
+# authenticated. CSRF attacks specifically target state-changing requests,  #
+# not theft of data, since the attacker has no way to see the response to   #
+# the forged request. With a little help of social engineering (such as     #
+# sending a link via email or chat), an attacker may trick the users of a   #
+# web application into executing actions of the attacker's choosing. If the #
+# victim is a normal user, a successful CSRF attack can force the user to   #
+# perform state changing requests like transferring funds, changing their   #
+# email address, and so forth. If the victim is an administrative account,  #
+# CSRF can compromise the entire web application.                           #
+# ========================================================================= #
+
+CSRF_TRUSTED_ORIGINS = (
+    'dashboard-dev.ms.wits.ac.za',
+)
 
 # ========================================================================= #
 # Authentication                                                            #
@@ -277,3 +298,8 @@ def get_or_gen_key(file_url: str, length: int):
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_FILE = os.path.join(DATA_DIR, "secret.token")
 SECRET_KEY = get_or_gen_key(SECRET_FILE, 50)
+
+# ========================================================================== #
+# EOF                                                                        #
+# ========================================================================== #
+
