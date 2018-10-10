@@ -1,6 +1,7 @@
 from typing import Dict, List, Type
 from django.db import models
-from django.db.models import Model, QuerySet
+from django.db.models import Model, QuerySet, Q
+from functools import reduce
 
 # ========================================================================= #
 # AGGREGATE METHODS                                                         #
@@ -36,7 +37,7 @@ schema_filter = {
                 "field",
                 "operator",
                 "value",
-            ]
+            ],
         },
         "uniqueItems": True,
         "minItems": 0,
@@ -162,15 +163,17 @@ def _filter(queryset: QuerySet, fragment: List):
         if 'exclude' not in f:
             f['exclude'] = False
         filterer = (queryset.exclude if f['exclude'] else queryset.filter)
-        for value in f['value']:
-            queryset = filterer(**{f"{f['field']}__{f['operator']}": value})
-        # todo ast for evaluation value with relation to other fields.
+        if len(f['value']) != 0:
+            qValues = [Q(**{f"{f['field']}__{f['operator']}": value}) for value in f['value']]
+            queryset = filterer(reduce(lambda a,b: a | b, qValues))
+        else:
+            print("FUTURE PROBLEMS, FIX ME IN THE JSON VALIDATION ABOVE")
     return queryset
 
 
 def _group(queryset: QuerySet, fragment: Dict):
     # find these unique pairs
-    unique = queryset.values(*fragment['by'])
+    unique = queryset.order_by(*fragment['by']).values_list(*fragment['by'], flat=True).distinct()
     # return early
     if 'yield' not in fragment:
         fragment['yield'] = []
@@ -193,6 +196,9 @@ def _order(queryset: QuerySet, fragment: List[Dict]):
 
 def _limit(queryset: QuerySet, fragment: Dict[str, object]):
     (type, num) = fragment['type'], fragment['num']
+
+    if num == -1:
+        return queryset
 
     if type == 'page':
         i = fragment['index'] if 'index' in fragment else 0
@@ -221,14 +227,13 @@ def parse(model: Type[Model], data: Dict):
             if 'filter' in frag:
                 queryset = _filter(queryset, frag['filter'])
             if 'group' in frag:
-                print("Grouping")
                 queryset = _group(queryset, frag['group'])
             if 'order' in frag:
                 queryset = _order(queryset, frag['order'])
     else:
         queryset = queryset.all()
 
-    queryset = _limit(queryset, data['limit'] if 'limit' in data else {"type": "first", "num": 10})
+    queryset = _limit(queryset, data['limit'] if 'limit' in data else {"type": "first", "num": -1})
 
     return queryset
 
