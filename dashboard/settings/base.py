@@ -241,3 +241,15 @@ CORS_EXPOSE_HEADERS = []
 CORS_PREFLIGHT_MAX_AGE = 86400 # one day
 CORS_ALLOW_CREDENTIALS = False
 CORS_MODEL = None
+
+CSRF_TRUSTED_ORIGINS = (
+    'dashboard-dev.ms.wits.ac.za',
+)
+
+MIDDLEWARE_CLASSES = [
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
+]
+
+
