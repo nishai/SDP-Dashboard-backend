@@ -20,28 +20,36 @@ AGGREGATE_METHODS = {
 
 # ========================================================================= #
 # SCHEMA - https://json-schema.org & https://pypi.org/project/jsonschema    #
+# Defines the scheme that a request must follow.                            #
+# Advantage is the scheme can be validated on both the front and back end.  #
 # ========================================================================= #
 
 schema_filter = {
-    "filter": {
-        "type": "array",
-        "items": {
-            "type": "object",
-            "properties": {
-                "field": {"type": "string"},
-                "operator": {"type": "string"},
-                "value": {"type": "array"},
-                "exclude": {"type": "boolean"},  # default to false
+    "type": "array",
+    "items": {  # list of different filters, each filter is effectively an & operation
+        "type": "object",
+        "properties": {
+            "field": {"type": "string"},
+            "operator": {"type": "string"},
+            "value": {  # single string or list of different values for filters, each is effectively an | operation
+                "anyOf": [{
+                        "type": "array",
+                        "minItems": 1,
+                    }, {
+                        "type": "string"
+                    }
+                ],
             },
-            "required": [
-                "field",
-                "operator",
-                "value",
-            ],
+            "exclude": {"type": "boolean"},  # default to false
         },
-        "uniqueItems": True,
-        "minItems": 0,
-    }
+        "required": [
+            "field",
+            "operator",
+            "value",
+        ],
+    },
+    "uniqueItems": True,
+    "minItems": 0,
 }
 
 schema_group = {
@@ -74,7 +82,6 @@ schema_group = {
                     },
                 },
                 "required": [
-                    # "name",
                     "via",
                     "from",
                 ],
@@ -85,7 +92,6 @@ schema_group = {
     },
     "required": [
         "by",
-        # "yield",
     ],
 }
 
@@ -108,7 +114,7 @@ schema_order = {
 schema_limit = {
     "type": "object",
     "properties": {
-        "type": { # name, not type directive
+        "type": {  # named 'type', not schema type
             "enum": [
                 "first",
                 "last",
@@ -163,11 +169,10 @@ def _filter(queryset: QuerySet, fragment: List):
         if 'exclude' not in f:
             f['exclude'] = False
         filterer = (queryset.exclude if f['exclude'] else queryset.filter)
-        if len(f['value']) != 0:
-            qValues = [Q(**{f"{f['field']}__{f['operator']}": value}) for value in f['value']]
-            queryset = filterer(reduce(lambda a,b: a | b, qValues))
-        else:
-            print("FUTURE PROBLEMS, FIX ME IN THE JSON VALIDATION ABOVE")
+        if type(f['value']) == str:
+            f['value'] = [f['value']]
+        q_values = [Q(**{f"{f['field']}__{f['operator']}": value}) for value in f['value']]
+        queryset = filterer(reduce(lambda a, b: a | b, q_values))  # TODO: Add method of selecting option
     return queryset
 
 
@@ -208,8 +213,8 @@ def _limit(queryset: QuerySet, fragment: Dict[str, object]):
     elif type == 'last':
         return queryset[max(0, len(queryset)-num):]
 
-def parse(model: Type[Model], data: Dict):
 
+def parse(model: Type[Model], data: Dict):
     try:
         validate(data, schema_query)
     except ValidationError as e:
