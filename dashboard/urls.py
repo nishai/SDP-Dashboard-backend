@@ -19,19 +19,24 @@ from django.urls import path
 from dashboard.apps.dashboard_api.views import *
 from django.conf.urls import url, include
 from rest_framework import routers
+from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token
 
 router = routers.DefaultRouter()
 router.register(r'course_info', CourseInfoViewSet, base_name="query")
 router.register(r'school_info', SchoolInfoViewSet, base_name="query")
 router.register(r'course_stats', CourseStatsViewSet, base_name="query")
 
+router.register(r'report', UserReportViewSet, base_name="report")
+router.register(r'report/chart', ReportChartViewSet, base_name="chart")
+
 # admin / auth / debug
 urlpatterns = [
     # Builtin Django database admin
     path('admin/', admin.site.urls),
-    # https://django-rest-auth.readthedocs.io/en/latest/index.html
-    # RESTful Authentication/Login/Logout Api
-    path('rest-auth/', include('rest_auth.urls')),
+    # JWT Authentication Endpoints : http://getblimp.github.io/django-rest-framework-jwt
+    # TODO: THIS IS NOT SECURE UNTIL HTTPS IS USED
+    url(r'^auth/token/obtain', obtain_jwt_token),     # obtain a new token from user + pass
+    url(r'^auth/token/refresh', refresh_jwt_token),   # obtain a new token from an old token : JWT_ALLOW_REFRESH=True
 ]
 
 # api
