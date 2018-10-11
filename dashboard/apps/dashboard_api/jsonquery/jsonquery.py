@@ -1,6 +1,6 @@
 from typing import Dict, List, Type
 from django.db import models
-from django.db.models import Model, QuerySet, Q
+from django.db.models import Model, QuerySet, Q, ForeignKey
 from functools import reduce
 
 # ========================================================================= #
@@ -178,17 +178,33 @@ def _filter(queryset: QuerySet, fragment: List):
 
 def _group(queryset: QuerySet, fragment: Dict):
     # find these unique pairs
-    unique = queryset.order_by(*fragment['by']).values_list(*fragment['by'], flat=True).distinct()
+    print("zzzzzzzzzzzzzzzzzzzzzz " + str(fragment['by']))
+    unique = queryset.order_by(*fragment['by'])
     # return early
     if 'yield' not in fragment:
         fragment['yield'] = []
+
+    if fragment['yield'] == []:
+        print("dfgdfgdfgdfgdfgdfgdfg")
+        unique = unique.values_list(*fragment['by'], flat=True).distinct()
+    else:
+        print("rtoyiryoptirpotiyrpo")
+        unique = unique.values(*fragment['by'])
+    print("xxxxxxxxxxxxxxxxxxxxxx " + str(unique))
     # data generators
     yields = {}
+    print("kkkkkkkkkkkkkkkkkkkkkkkkkkk " + str(fragment['yield']))
+    print("ppppppppppppppppppppppppppp " + str(len(fragment['yield'])))
     for y in fragment['yield']:
+        print("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr " + str(y))
         (_via, _from) = (y['via'], y['from'])
+        print("tttttttttttttttttttttttttttttt " + str(_via) + " " + str(_from))
         name = y['name'] if 'name' in y else f"{_from}_{_via}"
         yields[name] =  AGGREGATE_METHODS[_via](_from)
+        print("mmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmmm " + str(yields[name]))
     # generate
+    print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu " + str(yields) )
+    print("ccccccccccccccccccccccccccc " + str(unique.annotate(**yields)))
     return unique.annotate(**yields)
 
 
@@ -213,6 +229,15 @@ def _limit(queryset: QuerySet, fragment: Dict[str, object]):
     elif type == 'last':
         return queryset[max(0, len(queryset)-num):]
 
+def rename_field(model, name):
+    for field in model._meta.get_fields():
+        if name == field.name:
+            return name
+        elif field.__class__ is ForeignKey:
+            temp = rename_field(field.remote_field.model, name)
+            if temp != "":
+                return field.name + "__" + temp
+    return ""
 
 def parse(model: Type[Model], data: Dict):
     try:
@@ -230,8 +255,14 @@ def parse(model: Type[Model], data: Dict):
             if 'group' not in frag:
                 queryset = queryset.all()
             if 'filter' in frag:
+                for j, f in enumerate(frag['filter']):
+                    frag['filter'][j]['field'] = rename_field(model, f['field'])
                 queryset = _filter(queryset, frag['filter'])
             if 'group' in frag:
+                print("bbbbbbbbbbbbbbbbbbbbbbb " + str(frag['group']))
+                for j, name in enumerate(frag['group']['by']):
+                    frag['group']['by'][j] = rename_field(model, name)
+                print("vvvvvvvvvvvvvvvvvvvvvv " + str(frag['group']['by']))
                 queryset = _group(queryset, frag['group'])
             if 'order' in frag:
                 queryset = _order(queryset, frag['order'])
@@ -239,6 +270,7 @@ def parse(model: Type[Model], data: Dict):
         queryset = queryset.all()
 
     queryset = _limit(queryset, data['limit'] if 'limit' in data else {"type": "first", "num": -1})
+    print("ffffffffffffffffffffffffffff " + str(queryset))
 
     return queryset
 
