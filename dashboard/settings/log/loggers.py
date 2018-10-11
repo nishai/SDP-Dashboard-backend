@@ -1,6 +1,6 @@
 
 
-def create_default_logger(log_path, name):
+def create_default_logger(log_path, name, console_only=False):
 
     # template from django docs:
     # https://docs.djangoproject.com/en/2.1/topics/logging/
@@ -28,13 +28,17 @@ def create_default_logger(log_path, name):
         'handlers': {
             'console': {
                 'level': 'INFO',
-                #            'filters': ['require_debug_true'],
+                'class': 'logging.StreamHandler',
+                'formatter': 'simple'
+            },
+        } if console_only else {
+            'console': {
+                'level': 'INFO',
                 'class': 'logging.StreamHandler',
                 'formatter': 'simple'
             },
             'debug-import-file': {
                 'level': 'DEBUG',
-                #           'filters': ['require_debug_true'],
                 'class': 'logging.handlers.RotatingFileHandler',
                 'formatter': 'verbose',
                 'filename': log_path + '/debug_import/' + name + '.log',
@@ -61,36 +65,40 @@ def create_default_logger(log_path, name):
         },
         'loggers': {
             'django': {
-                'handlers': ['django-record', 'console'],
+                'handlers': ['console'] if console_only else ['django-record', 'console'],
                 'level': 'INFO',
                 'propagate': True,
             },
             'django.request': {
-                'handlers': ['django-request-error', 'console'],
+                'handlers': ['console'] if console_only else ['django-request-error', 'console'],
                 'level': 'DEBUG',
                 'propagate': True,
             },
             'django.db.backends': {
-                'handlers': ['django-db-error', 'console'],
+                'handlers': ['console'] if console_only else ['django-db-error', 'console'],
                 'level': 'ERROR',
                 'propagate': True,
             },
             'debug-import': {
-                'handlers': ['debug-import-file', 'console'],
+                'handlers': ['console'] if console_only else ['debug-import-file', 'console'],
                 'level': 'DEBUG',
-                #            'filters': ['require_debug_true']
-            }
+            },
+            'django_auth_ldap': {
+                'level': 'DEBUG',
+                'handlers': ['console'] if console_only else ['console'],
+            },
         }
     }
 
-    import os
+    if not console_only:
+        import os
 
-    def make_all_dirs(paths):
-        for path in paths:
-            if not os.path.isdir(path):
-                os.makedirs(path)
-                print(f"Made Directory: {path}")
+        def make_all_dirs(paths):
+            for path in paths:
+                if not os.path.isdir(path):
+                    os.makedirs(path)
+                    print(f"Made Directory: {path}")
 
-    make_all_dirs([os.path.dirname(h['filename']) for h in logger['handlers'].values() if 'filename' in h])
+        make_all_dirs([os.path.dirname(h['filename']) for h in logger['handlers'].values() if 'filename' in h])
 
     return logger
