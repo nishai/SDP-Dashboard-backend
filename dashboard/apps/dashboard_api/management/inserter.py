@@ -6,7 +6,7 @@ from django.db import connection, transaction
 from django.db.models import Model, ForeignKey
 from django.db.models.fields.reverse_related import ForeignObjectRel
 from django.forms import model_to_dict
-from dashboard.apps.dashboard_api.management.measure import Timer
+from dashboard.apps.dashboard_api.management.measure import Measure
 
 logger = logging.getLogger('debug-import')
 
@@ -33,7 +33,7 @@ class Inserter(object):
 
     # TODO: efficient, but uses a lot of memory...
     def _group(self, df: pd.DataFrame) -> pd.DataFrame:
-        with Timer("group", logger.debug):
+        with Measure("group", logger.debug):
             logger.info(f"[{self.model.__name__}]: Grouping...")
             # get all data
             table_column_indices = [df.columns.get_loc(c) for c in self.fields.keys()]
@@ -52,8 +52,8 @@ class Inserter(object):
 
     @transaction.atomic
     def _save(self, grouped: pd.DataFrame) -> int:
-        with Timer("save", logger.debug):
-            with Timer("foreign", logger.debug):
+        with Measure("save", logger.debug):
+            with Measure("foreign", logger.debug):
                 # load all foreign key models
                 fk_objects = {k: {model_to_dict(m)[k]: m for m in fk.foreign_related_fields[0].model.objects.all()} for
                               k, fk in self.fks.items()}
@@ -62,12 +62,12 @@ class Inserter(object):
                 for fk in self.fks.keys():
                     for item in grouped:
                         item[fk] = fk_objects[fk][item[fk]]
-            with Timer("normalising", logger.debug):
+            with Measure("normalising", logger.debug):
                 # convert grouped to models
                 grouped = [self.model(**item) for item in grouped]
                 # load existing
                 existed = [m for m in self.model.objects.all()]
-            with Timer("inserting", logger.debug):
+            with Measure("inserting", logger.debug):
                 # find differences
                 grouped = {tuple(v for k, v in model_to_dict(m).items() if k in self.pks): m for m in grouped}
                 existed = {tuple(v for k, v in model_to_dict(m).items() if k in self.pks): m for m in existed}
@@ -78,7 +78,7 @@ class Inserter(object):
             return len(insert)
 
     def insert(self, df: pd.DataFrame) -> int:
-        with Timer(f"{self.model.__name__}", logger.info):
+        with Measure(f"{self.model.__name__}", logger.info):
             logger.info(f"[{self.model.__name__}]: Before {len(self.model.objects.all())} entries")
             grouped = self._group(df)
             imported = self._save(grouped)
