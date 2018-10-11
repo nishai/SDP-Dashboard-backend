@@ -15,7 +15,7 @@
 django==2.1
 djangorestframework==3.8.2
 django-rest-auth==0.9.3
-django-cors-headers=2.4.0
+django-cors-headers==2.4.0
 jsonschema==2.6.0
 
 # Code Coverage
