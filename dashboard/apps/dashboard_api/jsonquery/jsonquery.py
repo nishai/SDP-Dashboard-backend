@@ -1,6 +1,6 @@
 from typing import Dict, List, Type
 from django.db import models
-from django.db.models import Model, QuerySet, Q
+from django.db.models import Model, QuerySet, Q, ForeignKey
 from functools import reduce
 
 # ========================================================================= #
@@ -165,7 +165,8 @@ schema_query = {
 
 
 def _filter(queryset: QuerySet, fragment: List):
-    for f in fragment:
+    for i, f in enumerate(fragment):
+        fragment[i]['field'] = rename_field(queryset.model, f['field'])
         if 'exclude' not in f:
             f['exclude'] = False
         filterer = (queryset.exclude if f['exclude'] else queryset.filter)
@@ -177,17 +178,24 @@ def _filter(queryset: QuerySet, fragment: List):
 
 
 def _group(queryset: QuerySet, fragment: Dict):
-    # find these unique pairs
-    unique = queryset.order_by(*fragment['by']).values_list(*fragment['by'], flat=True).distinct()
+    for j, name in enumerate(fragment['by']):
+        fragment['by'][j] = rename_field(queryset.model, name)
     # return early
     if 'yield' not in fragment:
         fragment['yield'] = []
+
+    # find these unique pairs
+    if fragment['yield'] == []:
+        unique = queryset.order_by(*fragment['by']).values_list(*fragment['by'], flat=True).distinct()
+    else:
+        unique = queryset.values(*fragment['by'])
+        #unique = unique.values(*fragment['by'])
     # data generators
     yields = {}
     for y in fragment['yield']:
         (_via, _from) = (y['via'], y['from'])
         name = y['name'] if 'name' in y else f"{_from}_{_via}"
-        yields[name] =  AGGREGATE_METHODS[_via](_from)
+        yields[name] =  AGGREGATE_METHODS[_via](rename_field(queryset.model, _from))
     # generate
     return unique.annotate(**yields)
 
@@ -213,6 +221,15 @@ def _limit(queryset: QuerySet, fragment: Dict[str, object]):
     elif type == 'last':
         return queryset[max(0, len(queryset)-num):]
 
+def rename_field(model, name):
+    for field in model._meta.get_fields():
+        if name == field.name:
+            return name
+        elif field.__class__ is ForeignKey:
+            temp = rename_field(field.remote_field.model, name)
+            if temp != "":
+                return field.name + "__" + temp
+    return ""
 
 def parse(model: Type[Model], data: Dict):
     try:
