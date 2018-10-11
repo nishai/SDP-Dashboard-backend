@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 import os
 import logging
-from dashboard.apps.dashboard_api.management.data_util import load_table, save_table, load_tables
+from dashboard.apps.dashboard_api.management.data_util import save_table, load_tables
 from dashboard.apps.dashboard_api.models import RawStudentModel
 
 logger = logging.getLogger('debug-import')
@@ -17,7 +17,7 @@ def import_table(df):
 
 
 class Command(BaseCommand):
-    help = 'Imports data from excel_import/excel_files/ into the database'
+    help = 'load (and merge) Wits excel or csv files and convert to a single csv file'
 
     def add_arguments(self, parser):
         parser.add_argument('--files', dest='files', nargs='+', type=str, help='Specify files to be imported')

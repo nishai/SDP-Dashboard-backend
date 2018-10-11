@@ -5,11 +5,10 @@ from dashboard.apps.dashboard_api.management.data_util import load_table
 from dashboard.apps.dashboard_api.models import RawStudentModel
 
 logger = logging.getLogger('debug-import')
-logger.debug("Running excel import code")
 
 
 class Command(BaseCommand):
-    help = 'Imports data from excel_import/excel_files/ into the database'
+    help = 'Imports raw stats from Wits excel stat files into the database'
 
     def add_arguments(self, parser):
         parser.add_argument('--files', dest='files', nargs='+', help='Specify file to be important')
@@ -18,7 +17,9 @@ class Command(BaseCommand):
         imported = 0
         for file in options['files']:
             logger.info(f"Importing: {file}")
-            assert os.path.isfile(file)
+            if not os.path.isfile(file):
+                logger.error(f"Cannot find: {file}")
+                exit(1)
             df = load_table(file, dataframe=True)
             imported += self.import_table(df)
         logger.info(f"Imported: {imported} records from {len(options['files'])} files")
