@@ -6,7 +6,7 @@ from django.db import connection, transaction
 from django.db.models import Model, ForeignKey
 from django.db.models.fields.reverse_related import ForeignObjectRel
 from django.forms import model_to_dict
-from dashboard.apps.dashboard_api.management.measure import Measure
+from dashboard.apps.dashboard_api.management.util.measure import Measure
 
 logger = logging.getLogger('debug-import')
 

@@ -1,11 +1,11 @@
 from django.core.management.base import BaseCommand
 import os
 import logging
-from dashboard.apps.dashboard_api.management.data_util import save_table, load_tables
+
+from dashboard.apps.dashboard_api.management.util.data_util import save_table, load_tables
 from dashboard.apps.dashboard_api.models import RawStudentModel
 
 logger = logging.getLogger('debug-import')
-logger.debug("Running excel import code")
 
 
 def import_table(df):
