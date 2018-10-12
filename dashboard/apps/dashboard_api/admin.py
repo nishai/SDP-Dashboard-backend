@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import *
+from dashboard.apps.dashboard_api.models import *
 
 admin.site.register(StudentInfo)
 admin.site.register(ProgramInfo)

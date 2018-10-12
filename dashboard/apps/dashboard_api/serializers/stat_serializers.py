@@ -1,11 +1,19 @@
-from .models import *
-from rest_framework import serializers
 
 # Serializer for StudentInfo table
+from rest_framework import serializers
+from dashboard.apps.dashboard_api.models import *
+
+
+# ========================================================================= #
+# STAT SERIALIZER - Wits performance data                                        #
+# ========================================================================= #
+
+
 class StudentInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentInfo
         fields = '__all__'
+
 
 # Serializer for ProgramInfo table
 class ProgramInfoSerializer(serializers.ModelSerializer):
@@ -13,17 +21,20 @@ class ProgramInfoSerializer(serializers.ModelSerializer):
         model = ProgramInfo
         fields = '__all__'
 
+
 # Serializer for CourseStats table
 class CourseStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseStats
         fields = '__all__'
 
+
 # Serializer for AverageYearMarks table
 class AverageYearMarksSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = AverageYearMarks
-		fields = '__all__'
+    class Meta:
+        model = AverageYearMarks
+        fields = '__all__'
+
 
 # Serializer for StudentPrograms table
 class StudentProgramsSerializer(serializers.ModelSerializer):
@@ -31,11 +42,13 @@ class StudentProgramsSerializer(serializers.ModelSerializer):
         model = StudentPrograms
         fields = '__all__'
 
+
 # Serializer for YearOfStudy table
 class YearOfStudySerializer(serializers.ModelSerializer):
     class Meta:
         model = YearOfStudy
         fields = '__all__'
+
 
 # Serializer for ProgressDescription table
 class ProgressDescriptionSerializer(serializers.ModelSerializer):
@@ -43,11 +56,13 @@ class ProgressDescriptionSerializer(serializers.ModelSerializer):
         model = ProgressDescription
         fields = '__all__'
 
+
 # Serializer for CourseInfo table
 class CourseInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseInfo
         fields = '__all__'
+
 
 # Serializer for SchoolInfo table
 class SchoolInfoSerializer(serializers.ModelSerializer):

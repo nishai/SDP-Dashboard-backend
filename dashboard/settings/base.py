@@ -9,9 +9,13 @@ https://docs.djangoproject.com/en/2.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
+
 import datetime
 import logging.config
 import os
+
+import corsheaders.defaults
+
 from .log.loggers import create_default_logger
 
 # ========================================================================= #
@@ -46,30 +50,136 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     # dashboard apps
     'dashboard.apps.dashboard_api',
     'dashboard.apps.excel_import',
     # external apps
-    'rest_framework',
-    'rest_framework.authtoken',
-    'rest_auth',
+    'rest_framework',               # http://www.django-rest-framework.org
+    'rest_framework_jwt',           # http://getblimp.github.io/django-rest-framework-jwt
+    'django_auth_ldap',             # https://django-auth-ldap.readthedocs.io
 ]
 
 # ========================================================================= #
 # Requests                                                                  #
 # ========================================================================= #
 
+# Whitelist of trusted domains you can serve your app on
 ALLOWED_HOSTS = []
 
+# intercept and handle requests before our app.
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsPostCsrfMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# ========================================================================== #
+# CORS Policy (Cross-Origin Resource Sharing)                                #
+#                                                                            #
+# SETTINGS: https://github.com/ottoyiu/django-cors-headers                   #
+#                                                                            #
+# INFO: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS               #
+#                                                                            #
+# Cross-Origin Resource Sharing (CORS) is a mechanism that uses additional   #
+# HTTP headers to tell a browser to let a web application running at one     #
+# origin (domain) have permission to access selected resources from a server #
+# at a different origin. A web application makes a cross-origin HTTP request #
+# when it requests a resource that has a different origin                    #
+# (domain, protocol, and port) than its own origin.                          #
+#                                                                            #
+# An example of a cross-origin request: The frontend JavaScript code for a   #
+# web application served from http://domain-a.com uses XMLHttpRequest to     #
+# make a request for http://api.domain-b.com/data.json.                      #
+# ========================================================================== #
+
+# A list of origin hostnames that are authorized to make cross-site HTTP requests (default: [])
+CORS_ORIGIN_WHITELIST = (
+    'dashboard-dev.ms.wits.ac.za:4080',
+    'dashboard-dev.ms.wits.ac.za:3080'
+)
+
+# GET, POST, etc (default: corsheaders.defaults.default_methods)
+CORS_ALLOW_METHODS = corsheaders.defaults.default_methods
+
+# accept, accept-encoding, authorization, content-type, etc (default: corsheaders.defaults.default_headers)
+CORS_ALLOW_HEADERS = corsheaders.defaults.default_headers
+
+# cookies will be allowed to be included in cross-site HTTP requests (default: False)
+CORS_ALLOW_CREDENTIALS = False
+
+# ========================================================================= #
+# CSRF (Cross-Site Request Forgery)                                         #
+#                                                                           #
+# Cross-Site Request Forgery (CSRF) is an attack that forces an end user to #
+# execute unwanted actions on a web application in which they're currently  #
+# authenticated. CSRF attacks specifically target state-changing requests,  #
+# not theft of data, since the attacker has no way to see the response to   #
+# the forged request. With a little help of social engineering (such as     #
+# sending a link via email or chat), an attacker may trick the users of a   #
+# web application into executing actions of the attacker's choosing. If the #
+# victim is a normal user, a successful CSRF attack can force the user to   #
+# perform state changing requests like transferring funds, changing their   #
+# email address, and so forth. If the victim is an administrative account,  #
+# CSRF can compromise the entire web application.                           #
+# ========================================================================= #
+
+CSRF_TRUSTED_ORIGINS = (
+    'dashboard-dev.ms.wits.ac.za',
+)
+
+# ========================================================================= #
+# Authentication                                                            #
+# ========================================================================= #
+
+# Password validation
+# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
+
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# specifying ldap & local auth,
+# allows us to assign permissions to individual ldap users,
+# or even create a local superuser not present on the ldap
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'dashboard.settings.ldap.backends.LDAPBackendWitsStudents',  # extends 'django_auth_ldap.backend.LDAPBackend'
+    'dashboard.settings.ldap.backends.LDAPBackendWitsStaff',     # extends 'django_auth_ldap.backend.LDAPBackend'
+]
+
+# ========================================================================= #
+# Rest Framework                                                            #
+# ========================================================================= #
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+        # 'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication', # TODO: UNCOMMENT TO ENABLE JWT AUTHENTICATION
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+    ),
+}
 
 # ========================================================================= #
 # Templates                                                                 #
@@ -105,24 +215,6 @@ DATABASES = {
         'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
     }
 }
-
-# Password validation
-# https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
 
 # ========================================================================== #
 # Languages                                                                  #
@@ -172,8 +264,9 @@ STATIC_ROOT = os.path.join(ROOT_DIR, 'dist')
 # https://stackoverflow.com/questions/45972977/django-logging-requests
 
 LOGGING = create_default_logger(
-    os.path.join(ROOT_DIR, "logs"),
-    datetime.datetime.now().strftime("%y-%m-%d_%H-%M-%S")
+    log_path=os.path.join(ROOT_DIR, "logs"),
+    name=datetime.datetime.now().strftime("%y-%m-%d_%H-%M-%S"),
+    console_only=os.getenv("DJANGO_LOG_TO_FILES") is None,
 )
 
 logging.config.dictConfig(LOGGING)
@@ -205,4 +298,8 @@ def get_or_gen_key(file_url: str, length: int):
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_FILE = os.path.join(DATA_DIR, "secret.token")
 SECRET_KEY = get_or_gen_key(SECRET_FILE, 50)
+
+# ========================================================================== #
+# EOF                                                                        #
+# ========================================================================== #
 
