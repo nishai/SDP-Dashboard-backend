@@ -2,7 +2,7 @@
 # dashboard     #
 # ============= #
 
-FROM python:3.7-alpine as dashboard
+FROM python:3.7 as dashboard
 
 # same as bash's cd
 WORKDIR /app
@@ -14,7 +14,7 @@ COPY requirements.txt ./
 #     set this with $ docker build --build-arg http_proxy="..." --build-arg https_proxy="..." ...
 #   - *NB* apk does not work well when escape codes are used instead of special values
 #     in the username and password, for example "%5C" instead of "\" does not work.
-RUN apk add --no-cache --update make && \
+RUN apt-get update && apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev make && \
     pip install --no-cache-dir -r requirements.txt
 
 #RUN addgroup -g 1003 -S dockeruser && \
