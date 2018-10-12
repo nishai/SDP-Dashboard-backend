@@ -100,10 +100,9 @@ MIDDLEWARE = [
 # ========================================================================== #
 
 # A list of origin hostnames that are authorized to make cross-site HTTP requests (default: [])
-CORS_ORIGIN_WHITELIST = (
+CORS_ORIGIN_WHITELIST = [
     'dashboard-dev.ms.wits.ac.za:4080',
-    'dashboard-dev.ms.wits.ac.za:3080'
-)
+]
 
 # GET, POST, etc (default: corsheaders.defaults.default_methods)
 CORS_ALLOW_METHODS = corsheaders.defaults.default_methods
