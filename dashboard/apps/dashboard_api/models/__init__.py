@@ -3,3 +3,4 @@
 
 from .stat_models import *
 from .user_models import *
+from .wits_models import *

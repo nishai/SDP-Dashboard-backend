@@ -104,6 +104,64 @@ class StudentPrograms(models.Model):
         verbose_name = "Table to keep track of which students are enrolled in which programs for which years."
         unique_together = ("calendar_instance_year", "encrypted_student_no", "program_code")
 
+"""
+
+[NO FACULTY TABLE]
+
+SCHOOL
+  * School Description
+    Faculty Description
+
+$ COURSE
+  * Course Code                               =   CHEM2003
+    Course Description
+    > SCHOOL (School Code)
+
+$ PROGRAM
+  * Program Code                              =   SB000
+    Program Title                             =   Bachelor of  Science
+
+$ PROGRESS_DESCRIPTION
+  * Progress Outcome Type                     =   PCD
+    Progress Outcome Type Description         =   Permitted to proceed
+
+$ STUDENT
+  * Encrypted Student No                      =   0021D31BE03E4AB097DCF9C0C89B13BA
+    Nationality Short Name                    =   South Africa
+    Home Language Description                 =   South Sotho
+    Race Description                          =   Black
+    Gender                                    =   F
+    Age                                       =   25
+    Secondary School Quintile                 =   4
+    Urban / Rural Secondary School            =   URBAN
+    Secondary School Name                     =   Forte Secondary School
+
+COURSE_STATS
+  * > STUDENT (Encrypted Student No)
+  * Calendar Instance Year                    =   2013
+  * Course Code                               =   CHEM2003
+    Final Mark                                =   50
+    Final Grade                               =   PMP
+
+AVERAGE_YEAR_MARKS
+  * > STUDENT (Encrypted Student No)
+  * Calendar Instance Year                    =   2013
+    > PROGRESS_DESCRIPTION (Progress Outcome Type)
+    Average Marks                             =   65,67
+    Award Grade                               =   Q         # used for 3rd years / degree completion
+
+YEAR_OF_STUDY
+  * > STUDENT (Encrypted Student No)
+  * Calendar Instance Year                    =   2013
+    Year of Study                             =   YOS 2
+
+STUDENT_PROGRAMS
+  * > STUDENT (Encrypted Student No)
+  * Calendar Instance Year                    =   2013
+  * > PROGRAM (Program Code)
+    Degree Complete                           =   `(Year of Study == "YOS 3") and (Progress Outcome Type == "Q")`
+"""
+
 
 # """
 # Raw Database Structure Example:
