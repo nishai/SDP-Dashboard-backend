@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
 
@@ -35,8 +36,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # JWT Authentication Endpoints : http://getblimp.github.io/django-rest-framework-jwt
     # TODO: THIS IS NOT SECURE UNTIL HTTPS IS USED
-    url(r'^auth/token/obtain', obtain_jwt_token),     # obtain a new token from user + pass
-    url(r'^auth/token/refresh', refresh_jwt_token),   # obtain a new token from an old token : JWT_ALLOW_REFRESH=True
+    url(r'^api/token/obtain', obtain_jwt_token),     # obtain a new token from user + pass
+    url(r'^api/token/refresh', refresh_jwt_token),   # obtain a new token from an old token : JWT_ALLOW_REFRESH=True
+    # Status
+    url(r'^api/status', status_view),   # Returns an empty body with status code 200 to check that the server is alive.
 ]
 
 # api
