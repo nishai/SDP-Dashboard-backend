@@ -14,9 +14,9 @@ class Faculty(models.Model):
 
 # not in excel
 class School(models.Model):
-    faculty_code = models.ForeignKey('Faculty', related_name='schools', on_delete=models.CASCADE)
-    school_code = models.CharField(max_length=5, primary_key=True)
+    school_code = models.CharField(primary_key=True, max_length=5)
     school_title = models.CharField(max_length=255, null=True)
+    faculty_code = models.ForeignKey('Faculty', related_name='schools', on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name = "Wits Schools"
@@ -25,17 +25,17 @@ class School(models.Model):
 
 # partially in excel
 class Course(models.Model):
-    school_code = models.ForeignKey('School', related_name='courses', on_delete=models.CASCADE)
-    course_code = models.CharField(max_length=5, primary_key=True)
+    course_code = models.CharField(primary_key=True, max_length=5)
     course_title = models.CharField(max_length=255, null=True)
+    school_code = models.ForeignKey('School', related_name='courses', on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name = "Wits Courses"
-        unique_together = ("school_code", "course_code")
+        # unique_together = ("school_code", "course_code")
 
 
 class Program(models.Model):
-    program_code = models.CharField(max_length=5, primary_key=True)
+    program_code = models.CharField(primary_key=True, max_length=5)
     program_title = models.CharField(max_length=255, null=True)
 
     class Meta:
@@ -44,7 +44,7 @@ class Program(models.Model):
 
 
 class ProgressOutcome(models.Model):
-    progress_outcome_type = models.CharField(max_length=10, primary_key=True)
+    progress_outcome_type = models.CharField(primary_key=True, max_length=10)
     progress_outcome_type_description = models.CharField(max_length=254)
 
     class Meta:
@@ -53,8 +53,7 @@ class ProgressOutcome(models.Model):
 
 
 class SecondarySchool(models.Model):
-    secondary_school_id = models.AutoField(primary_key=True)
-    secondary_school_name = models.CharField(max_length=255, null=True)
+    secondary_school_name = models.CharField(primary_key=True, max_length=255)
     secondary_school_quintile = models.CharField(max_length=5, null=True)
     urban_rural_secondary_school = models.CharField(max_length=10, null=True)
 
@@ -64,13 +63,13 @@ class SecondarySchool(models.Model):
 
 
 class Student(models.Model):
-    encrypted_student_no = models.CharField(max_length=40, primary_key=True)
+    encrypted_student_no = models.CharField(primary_key=True, max_length=40)
     nationality_short_name = models.CharField(max_length=255, null=True)
     home_language_description = models.CharField(max_length=30, null=True)
     race_description = models.CharField(max_length=30, null=True)
     gender = models.CharField(max_length=1, null=True)
     age = models.IntegerField(null=True)
-    secondary_school_id = models.ForeignKey('SecondarySchool', related_name='students', on_delete=models.CASCADE)
+    secondary_school_name = models.ForeignKey('SecondarySchool', related_name='students', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Wits Student Personal Information"
@@ -92,14 +91,18 @@ class EnrolledYear(models.Model):
 
 
 class EnrolledCourse(models.Model):
-    encrypted_year_id = models.ForeignKey('EnrolledYear', related_name='enrolled_courses', on_delete=models.CASCADE)
+    encrypted_student_no = models.ForeignKey('Student', related_name='enrolled_courses', on_delete=models.CASCADE)
+    program_code = models.ForeignKey('Program', related_name='enrolled_courses', on_delete=models.CASCADE)
+    calendar_instance_year = models.CharField(max_length=4, null=True)
+    # fk_enrolled_year = models.ForeignKey('EnrolledYear', related_name='enrolled_courses', on_delete=models.CASCADE, null=True)
     course_code = models.ForeignKey('Course', related_name='enrolled_courses', on_delete=models.CASCADE)
     final_mark = models.FloatField(null=True, validators=[DecimalValidator(max_digits=6, decimal_places=3)])
     final_grade = models.CharField(max_length=5, null=True)
 
     class Meta:
         verbose_name = "Information about a student for a course in a specific calendar year"
-        unique_together = ("encrypted_year_id", "course_code")
+        # unique_together = ("enrolled_year_id", "course_code")
+        unique_together = ("encrypted_student_no", "program_code", "calendar_instance_year", "course_code")
 
 
 """
