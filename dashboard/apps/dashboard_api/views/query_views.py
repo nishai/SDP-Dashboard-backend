@@ -15,6 +15,7 @@ from rest_framework import parsers
 # HELPER                                                                    #
 # ========================================================================= #
 
+
 def _perform_query(model: Type[Model], request):
     try:
         queryset = jsonquery.parse(
@@ -32,6 +33,7 @@ def _perform_query(model: Type[Model], request):
 # ========================================================================= #
 # QUERY VIEWS                                                               #
 # ========================================================================= #
+
 
 # CourseStats
 

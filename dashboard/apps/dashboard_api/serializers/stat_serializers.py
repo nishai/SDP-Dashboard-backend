@@ -1,71 +1,69 @@
-
-# Serializer for StudentInfo table
 from rest_framework import serializers
-from dashboard.apps.dashboard_api.models import *
-
+from dashboard.apps.dashboard_api.models.stat_models import *
 
 # ========================================================================= #
-# STAT SERIALIZER - Wits performance data                                        #
+# STAT SERIALIZER - Wits performance data                                   #
 # ========================================================================= #
 
+
+# School Info
+
+class SchoolInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SchoolInfo
+
+
+# Course Info
+
+class CourseInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseInfo
+
+
+# Program Info
+
+class ProgramInfoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProgramInfo
+
+
+# Student Info
 
 class StudentInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentInfo
-        fields = '__all__'
 
 
-# Serializer for ProgramInfo table
-class ProgramInfoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ProgramInfo
-        fields = '__all__'
+# Course Stats
 
-
-# Serializer for CourseStats table
 class CourseStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseStats
-        fields = '__all__'
 
 
-# Serializer for AverageYearMarks table
-class AverageYearMarksSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AverageYearMarks
-        fields = '__all__'
+# Progress Description
 
-
-# Serializer for StudentPrograms table
-class StudentProgramsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StudentPrograms
-        fields = '__all__'
-
-
-# Serializer for YearOfStudy table
-class YearOfStudySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = YearOfStudy
-        fields = '__all__'
-
-
-# Serializer for ProgressDescription table
 class ProgressDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgressDescription
-        fields = '__all__'
 
 
-# Serializer for CourseInfo table
-class CourseInfoSerializer(serializers.ModelSerializer):
+# Average Year Marks
+
+class AverageYearMarksSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CourseInfo
-        fields = '__all__'
+        model = AverageYearMarks
 
 
-# Serializer for SchoolInfo table
-class SchoolInfoSerializer(serializers.ModelSerializer):
+# Year Of Study
+
+class YearOfStudySerializer(serializers.ModelSerializer):
     class Meta:
-        model = SchoolInfo
-        fields = '__all__'
+        model = YearOfStudy
+
+
+# Student Programs
+
+class StudentProgramsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentPrograms

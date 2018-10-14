@@ -2,9 +2,11 @@ from django.http import HttpResponse, JsonResponse
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.permissions import AllowAny
 
+
 # ========================================================================= #
 # UTIL VIEWS                                                                #
 # ========================================================================= #
+
 
 @api_view(['GET'])
 @permission_classes([AllowAny])

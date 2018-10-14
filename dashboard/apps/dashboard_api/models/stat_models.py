@@ -2,6 +2,8 @@ from django.core.validators import MinValueValidator, MaxValueValidator, Decimal
 from django.db import models
 
 
+# School Info
+
 # Table for matching schools to faculties
 class SchoolInfo(models.Model):
     school = models.CharField(max_length=255, primary_key=True)
@@ -10,6 +12,8 @@ class SchoolInfo(models.Model):
     class Meta:
         verbose_name = "Table for matching schools to faculties"
 
+
+# Course Info
 
 # Table for matching courses to schools
 class CourseInfo(models.Model):
@@ -21,6 +25,8 @@ class CourseInfo(models.Model):
         verbose_name = "Table for matching courses to schools"
 
 
+# Program Info
+
 # Table for program (i.e BSc General) info
 class ProgramInfo(models.Model):
     program_code = models.CharField(max_length=5, primary_key=True)
@@ -29,6 +35,8 @@ class ProgramInfo(models.Model):
     class Meta:
         verbose_name = "Program information (i.e information about BSc General Program)"
 
+
+# Student Info
 
 # Table for student personal information
 # Foreign key to program_code in ProgramInfo
@@ -47,6 +55,8 @@ class StudentInfo(models.Model):
         verbose_name = "Student personal information"
 
 
+# Course Stats
+
 # Stats of a student in a certain course in a certain year
 # Foreign keys to student_number in StudentInfo
 class CourseStats(models.Model):
@@ -61,6 +71,8 @@ class CourseStats(models.Model):
         unique_together = ("course_code", "calendar_instance_year", "encrypted_student_no")
 
 
+# Progress Description
+
 # Maps progress_outcome_type codes to verbos description
 class ProgressDescription(models.Model):
     progress_outcome_type = models.CharField(max_length=10, primary_key=True)
@@ -68,6 +80,9 @@ class ProgressDescription(models.Model):
 
     class Meta:
         verbose_name = "Maps progress_outcome_type codes to verbos description"
+
+
+# Average Year Marks
 
 # Average mark for a student in a specific calendar year
 class AverageYearMarks(models.Model):
@@ -82,6 +97,8 @@ class AverageYearMarks(models.Model):
         unique_together = ("calendar_instance_year", "encrypted_student_no")
 
 
+# Year Of Study
+
 # keeps track of which year of study each student is in in each calendar year
 class YearOfStudy(models.Model):
     encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
@@ -92,6 +109,8 @@ class YearOfStudy(models.Model):
         verbose_name = "keeps track of which year of study each student is in in each calendar year"
         unique_together = ("calendar_instance_year", "encrypted_student_no")
 
+
+# Student Programs
 
 # Table for program (i.e BSc General) info
 class StudentPrograms(models.Model):

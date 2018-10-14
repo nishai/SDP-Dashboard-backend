@@ -14,7 +14,7 @@ class Faculty(models.Model):
 
 # not in excel
 class School(models.Model):
-    faculty_code = models.ForeignKey('Faculty', on_delete=models.CASCADE)
+    faculty_code = models.ForeignKey('Faculty', related_name='schools', on_delete=models.CASCADE)
     school_code = models.CharField(max_length=5, primary_key=True)
     school_title = models.CharField(max_length=255, null=True)
 
@@ -25,7 +25,7 @@ class School(models.Model):
 
 # partially in excel
 class Course(models.Model):
-    school_code = models.ForeignKey('School', on_delete=models.CASCADE)
+    school_code = models.ForeignKey('School', related_name='courses', on_delete=models.CASCADE)
     course_code = models.CharField(max_length=5, primary_key=True)
     course_title = models.CharField(max_length=255, null=True)
 
@@ -53,7 +53,7 @@ class ProgressOutcome(models.Model):
 
 
 class SecondarySchool(models.Model):
-    secondary_school_id = author_id = models.AutoField(primary_key=True)
+    secondary_school_id = models.AutoField(primary_key=True)
     secondary_school_name = models.CharField(max_length=255, null=True)
     secondary_school_quintile = models.CharField(max_length=5, null=True)
     urban_rural_secondary_school = models.CharField(max_length=10, null=True)
@@ -70,7 +70,7 @@ class Student(models.Model):
     race_description = models.CharField(max_length=30, null=True)
     gender = models.CharField(max_length=1, null=True)
     age = models.IntegerField(null=True)
-    secondary_school_id = models.ForeignKey('SecondarySchool', on_delete=models.CASCADE)
+    secondary_school_id = models.ForeignKey('SecondarySchool', related_name='students', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Wits Student Personal Information"
@@ -78,13 +78,13 @@ class Student(models.Model):
 
 
 class EnrolledYear(models.Model):
-    encrypted_student_no = models.ForeignKey('Student', on_delete=models.CASCADE)
-    program_code = models.ForeignKey('Program', on_delete=models.CASCADE)
+    encrypted_student_no = models.ForeignKey('Student', related_name='enrolled_years', on_delete=models.CASCADE)
+    program_code = models.ForeignKey('Program', related_name='enrolled_years', on_delete=models.CASCADE)
     calendar_instance_year = models.CharField(max_length=4, null=True)
     year_of_study = models.CharField(max_length=5, null=True)  # Refers to YOS student is registered for within this course year
     award_grade = models.CharField(max_length=2, null=True)    # used for 3rd years / degree completion
     average_marks = models.FloatField(null=True, validators=[DecimalValidator(max_digits=6, decimal_places=3)])
-    progress_outcome_type = models.ForeignKey('ProgressOutcome', on_delete=models.CASCADE, null=True)
+    progress_outcome_type = models.ForeignKey('ProgressOutcome', related_name='enrolled_years', on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name = "keeps track of which year of study each student is in in each calendar year"
@@ -92,8 +92,8 @@ class EnrolledYear(models.Model):
 
 
 class EnrolledCourse(models.Model):
-    encrypted_year_id = models.ForeignKey('EnrolledYear', on_delete=models.CASCADE)
-    course_code = models.ForeignKey('Course', on_delete=models.CASCADE)
+    encrypted_year_id = models.ForeignKey('EnrolledYear', related_name='enrolled_courses', on_delete=models.CASCADE)
+    course_code = models.ForeignKey('Course', related_name='enrolled_courses', on_delete=models.CASCADE)
     final_mark = models.FloatField(null=True, validators=[DecimalValidator(max_digits=6, decimal_places=3)])
     final_grade = models.CharField(max_length=5, null=True)
 
