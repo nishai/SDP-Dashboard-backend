@@ -48,15 +48,15 @@ urlpatterns += [
 ]
 
 # School Info
-router.register(r'info/schools', SchoolInfo)
-router.register(r'info/courses', CourseInfo)
-router.register(r'info/programs', ProgramInfo)
-router.register(r'info/students', StudentInfo)
-router.register(r'info/courses/stats', CourseStats)
-router.register(r'info/outcomes', ProgressDescription)
-router.register(r'info/average-year-marks', AverageYearMarks)
-router.register(r'info/year-of-study', YearOfStudy)
-router.register(r'info/student-programs', StudentPrograms)
+router.register(r'info/schools', SchoolInfoViewSet)
+router.register(r'info/courses', CourseInfoViewSet)
+router.register(r'info/programs', ProgramInfoViewSet)
+router.register(r'info/students', StudentInfoViewSet)
+router.register(r'info/courses/stats', CourseStatsViewSet)
+router.register(r'info/outcomes', ProgressDescriptionViewSet)
+router.register(r'info/average-year-marks', AverageYearMarksViewSet)
+router.register(r'info/year-of-study', YearOfStudyViewSet)
+router.register(r'info/student-programs', StudentProgramsViewSet)
 
 # User Viewsets
 router.register(r'user', UserReportViewSet)
