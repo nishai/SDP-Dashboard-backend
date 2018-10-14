@@ -11,6 +11,7 @@ from dashboard.apps.dashboard_api.models.stat_models import *
 class SchoolInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = SchoolInfo
+        fields = '__all__'
 
 
 # Course Info
@@ -18,6 +19,7 @@ class SchoolInfoSerializer(serializers.ModelSerializer):
 class CourseInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseInfo
+        fields = '__all__'
 
 
 # Program Info
@@ -25,6 +27,7 @@ class CourseInfoSerializer(serializers.ModelSerializer):
 class ProgramInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgramInfo
+        fields = '__all__'
 
 
 # Student Info
@@ -32,6 +35,7 @@ class ProgramInfoSerializer(serializers.ModelSerializer):
 class StudentInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentInfo
+        fields = '__all__'
 
 
 # Course Stats
@@ -39,6 +43,7 @@ class StudentInfoSerializer(serializers.ModelSerializer):
 class CourseStatsSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseStats
+        fields = '__all__'
 
 
 # Progress Description
@@ -46,6 +51,7 @@ class CourseStatsSerializer(serializers.ModelSerializer):
 class ProgressDescriptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgressDescription
+        fields = '__all__'
 
 
 # Average Year Marks
@@ -53,6 +59,7 @@ class ProgressDescriptionSerializer(serializers.ModelSerializer):
 class AverageYearMarksSerializer(serializers.ModelSerializer):
     class Meta:
         model = AverageYearMarks
+        fields = '__all__'
 
 
 # Year Of Study
@@ -60,6 +67,7 @@ class AverageYearMarksSerializer(serializers.ModelSerializer):
 class YearOfStudySerializer(serializers.ModelSerializer):
     class Meta:
         model = YearOfStudy
+        fields = '__all__'
 
 
 # Student Programs
@@ -67,3 +75,4 @@ class YearOfStudySerializer(serializers.ModelSerializer):
 class StudentProgramsSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentPrograms
+        fields = '__all__'
