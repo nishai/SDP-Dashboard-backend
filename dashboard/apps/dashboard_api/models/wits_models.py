@@ -4,34 +4,34 @@ from django.db import models
 
 # not in excel
 class Faculty(models.Model):
-    faculty_code = models.CharField(max_length=5, primary_key=True)
+    faculty_id = models.AutoField(primary_key=True)
     faculty_title = models.CharField(max_length=255, null=True)
 
     class Meta:
         verbose_name = "Wits Faculties"
-        unique_together = ("faculty_code",)
+        unique_together = ("faculty_title",)
 
 
 # not in excel
 class School(models.Model):
-    school_code = models.CharField(primary_key=True, max_length=5)
+    school_id = models.AutoField(primary_key=True)
     school_title = models.CharField(max_length=255, null=True)
-    faculty_code = models.ForeignKey('Faculty', related_name='schools', on_delete=models.CASCADE, null=True)
+    faculty_id = models.ForeignKey('Faculty', related_name='schools', on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name = "Wits Schools"
-        unique_together = ("faculty_code", "school_code")
+        unique_together = ("school_title",)
 
 
 # partially in excel
 class Course(models.Model):
     course_code = models.CharField(primary_key=True, max_length=5)
     course_title = models.CharField(max_length=255, null=True)
-    school_code = models.ForeignKey('School', related_name='courses', on_delete=models.CASCADE, null=True)
+    school_id = models.ForeignKey('School', related_name='courses', on_delete=models.CASCADE, null=True)
 
     class Meta:
         verbose_name = "Wits Courses"
-        # unique_together = ("school_code", "course_code")
+        unique_together = ("course_code",)
 
 
 class Program(models.Model):
@@ -79,7 +79,7 @@ class Student(models.Model):
 class EnrolledYear(models.Model):
     encrypted_student_no = models.ForeignKey('Student', related_name='enrolled_years', on_delete=models.CASCADE)
     program_code = models.ForeignKey('Program', related_name='enrolled_years', on_delete=models.CASCADE)
-    calendar_instance_year = models.CharField(max_length=4, null=True)
+    calendar_instance_year = models.IntegerField(max_length=4, null=True)
     year_of_study = models.CharField(max_length=5, null=True)  # Refers to YOS student is registered for within this course year
     award_grade = models.CharField(max_length=2, null=True)    # used for 3rd years / degree completion
     average_marks = models.FloatField(null=True, validators=[DecimalValidator(max_digits=6, decimal_places=3)])
@@ -91,18 +91,14 @@ class EnrolledYear(models.Model):
 
 
 class EnrolledCourse(models.Model):
-    encrypted_student_no = models.ForeignKey('Student', related_name='enrolled_courses', on_delete=models.CASCADE)
-    program_code = models.ForeignKey('Program', related_name='enrolled_courses', on_delete=models.CASCADE)
-    calendar_instance_year = models.CharField(max_length=4, null=True)
-    # fk_enrolled_year = models.ForeignKey('EnrolledYear', related_name='enrolled_courses', on_delete=models.CASCADE, null=True)
+    enrolled_year_id = models.ForeignKey('EnrolledYear', related_name='enrolled_courses', on_delete=models.CASCADE, null=True)
     course_code = models.ForeignKey('Course', related_name='enrolled_courses', on_delete=models.CASCADE)
     final_mark = models.FloatField(null=True, validators=[DecimalValidator(max_digits=6, decimal_places=3)])
     final_grade = models.CharField(max_length=5, null=True)
 
     class Meta:
         verbose_name = "Information about a student for a course in a specific calendar year"
-        # unique_together = ("enrolled_year_id", "course_code")
-        unique_together = ("encrypted_student_no", "program_code", "calendar_instance_year", "course_code")
+        unique_together = ("enrolled_year_id", "course_code")
 
 
 """

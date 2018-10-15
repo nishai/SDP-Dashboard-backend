@@ -6,8 +6,10 @@ from dashboard.apps.dashboard_api.management.util.data_util import load_table
 logger = logging.getLogger('debug-import')
 
 
-class FileImportCommand(BaseCommand):
+class DataImportCommand(BaseCommand):
     help = 'help should be overridden'
+
+    # set class variable 'header_row' to change import options
 
     def add_arguments(self, parser):
         parser.add_argument('--files', dest='files', nargs='+', help='Specify file to be important')
@@ -19,7 +21,8 @@ class FileImportCommand(BaseCommand):
             if not os.path.isfile(file):
                 logger.error(f"Cannot find: {file}")
                 exit(1)
-            df = load_table(file, dataframe=True)
+            df = load_table(file, header=self.header_row if hasattr(self, 'header_row') else 0, dataframe=True)
+            logger.info(f'File Columns Found - {", ".join(df.columns)}')
             imported += self.import_table(df)
         logger.info(f"Imported: {imported} records from {len(options['files'])} files")
 

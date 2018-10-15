@@ -7,11 +7,11 @@ import pandas as pd
 logger = logging.getLogger('debug-import')
 
 
-def load_table(file: str, dataframe=False):
+def load_table(file: str, header=5, dataframe=False):
     ext = os.path.splitext(file)[1].lower()
 
     if ext == ".xlsx":
-        df = pd.read_excel(file, index_col=None, header=5)
+        df = pd.read_excel(file, index_col=None, header=header)
     elif ext == ".csv":
         df = pd.read_csv(file, index_col=None)
     else:
@@ -24,13 +24,13 @@ def load_table(file: str, dataframe=False):
     return df if dataframe else df.to_dict()
 
 
-def load_tables(files: List[str], merged=False, dataframe=False):
+def load_tables(files: List[str], merged=False, header=5, dataframe=False):
     # load and merge/append tables together
     records, total = None if merged else [], 0
     for file in files:
         logger.info(f"Loading: {file}")
         assert os.path.isfile(file)
-        temp = load_table(file, dataframe=dataframe)
+        temp = load_table(file, header=header, dataframe=dataframe)
         total += len(temp)
         records = temp if records is None and merged else records.append(temp)  # merge/append
 
