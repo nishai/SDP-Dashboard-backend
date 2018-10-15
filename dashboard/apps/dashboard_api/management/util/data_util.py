@@ -7,10 +7,12 @@ import pandas as pd
 logger = logging.getLogger('debug-import')
 
 
-def load_table(file: str, header=5, dataframe=False):
+def load_table(file: str, header=0, dataframe=False):
     ext = os.path.splitext(file)[1].lower()
 
     if ext == ".xlsx":
+        if header is None:
+            raise Exception(f"Header Row needs to be specified with excel files!")
         df = pd.read_excel(file, index_col=None, header=header)
     elif ext == ".csv":
         df = pd.read_csv(file, index_col=None)
@@ -21,10 +23,15 @@ def load_table(file: str, header=5, dataframe=False):
     df = df.filter(regex='^(?!Unnamed:).*', axis=1)
     df = df.rename(lambda s: s.lower().replace(" ", "_").replace("_/_", "_"), axis='columns')
 
+    if ext == '.xlsx':
+        logger.info(f"Header Row ({header}): {list(str(c) for c in df.columns)}")
+
+    logger.info(f"Loaded: {len(df)} records from {file}")
+
     return df if dataframe else df.to_dict()
 
 
-def load_tables(files: List[str], merged=False, header=5, dataframe=False):
+def load_tables(files: List[str], merged=False, header=0, dataframe=False):
     # load and merge/append tables together
     records, total = None if merged else [], 0
     for file in files:

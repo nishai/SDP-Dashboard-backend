@@ -79,7 +79,7 @@ class Student(models.Model):
 class EnrolledYear(models.Model):
     encrypted_student_no = models.ForeignKey('Student', related_name='enrolled_years', on_delete=models.CASCADE)
     program_code = models.ForeignKey('Program', related_name='enrolled_years', on_delete=models.CASCADE)
-    calendar_instance_year = models.IntegerField(max_length=4, null=True)
+    calendar_instance_year = models.IntegerField(null=True)
     year_of_study = models.CharField(max_length=5, null=True)  # Refers to YOS student is registered for within this course year
     award_grade = models.CharField(max_length=2, null=True)    # used for 3rd years / degree completion
     average_marks = models.FloatField(null=True, validators=[DecimalValidator(max_digits=6, decimal_places=3)])
