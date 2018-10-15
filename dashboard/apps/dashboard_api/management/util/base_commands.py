@@ -29,6 +29,7 @@ class DataImportCommand(BaseCommand):
             # skip
             if kwargs[option] is None:
                 continue
+            print(f"\n{'=' * 100}\n")
             # check contents
             assert 'header_row' in import_options
             assert 'models' in import_options
@@ -46,9 +47,14 @@ class DataImportCommand(BaseCommand):
                 df = df.rename(columns=import_options['header_to_field'] if 'header_to_field' in import_options else {})
                 # import table
                 logger.info(f"[{option}] Importing file with {len(df)} records")
-                imported += sum([Inserter(model).insert(df) for model in import_options['models']])
+                for i, model in enumerate(import_options['models']):
+                    if i > 0:
+                        print(f"\n{'- '*50}\n")
+                    imported += Inserter(model).insert(df)
             # print results
             logger.info(f"[{option}] Imported: {imported} records from {len(kwargs[option])} files")
+
+            print(f"\n{'='*100}\n")
 
 
 

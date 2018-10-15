@@ -61,7 +61,7 @@ class StudentInfo(models.Model):
 # Foreign keys to student_number in StudentInfo
 class CourseStats(models.Model):
     course_code = models.ForeignKey('CourseInfo', on_delete=models.CASCADE)
-    calendar_instance_year = models.FloatField(null=True, validators=[MinValueValidator(1900), MaxValueValidator(2100), DecimalValidator(max_digits=4, decimal_places=0)])
+    calendar_instance_year = models.IntegerField(null=True, validators=[MinValueValidator(1900), MaxValueValidator(2100)])
     encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
     final_mark = models.FloatField(null=True, validators=[DecimalValidator(max_digits=6, decimal_places=3)])
     final_grade = models.CharField(max_length=5, null=True)
@@ -85,8 +85,9 @@ class ProgressDescription(models.Model):
 # Average Year Marks
 
 # Average mark for a student in a specific calendar year
+# TODO: this should be merged with YearOfStudy, as the uniqueness constraints are the same
 class AverageYearMarks(models.Model):
-    calendar_instance_year = models.CharField(max_length=4, null=True)
+    calendar_instance_year = models.IntegerField(max_length=4)
     encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
     average_marks = models.FloatField(null=True, validators=[DecimalValidator(max_digits=6, decimal_places=3)])
     progress_outcome_type = models.ForeignKey('ProgressDescription', on_delete=models.CASCADE, null=True)
@@ -100,9 +101,10 @@ class AverageYearMarks(models.Model):
 # Year Of Study
 
 # keeps track of which year of study each student is in in each calendar year
+# TODO: this should be merged with AverageYearMarks, as the uniqueness constraints are the same
 class YearOfStudy(models.Model):
     encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
-    calendar_instance_year = models.CharField(max_length=4)
+    calendar_instance_year = models.IntegerField(max_length=4)
     year_of_study = models.CharField(max_length=5, null=True)  # Refers to YOS student is registered for within this course year
 
     class Meta:
@@ -114,8 +116,8 @@ class YearOfStudy(models.Model):
 
 # Table for program (i.e BSc General) info
 class StudentPrograms(models.Model):
-    calendar_instance_year = models.CharField(max_length=4)
-    program_code = models.ForeignKey('ProgramInfo', on_delete=models.CASCADE, null=True)
+    calendar_instance_year = models.IntegerField(max_length=4)
+    program_code = models.ForeignKey('ProgramInfo', on_delete=models.CASCADE)
     encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
     degree_complete = models.BooleanField(null=True)
 
@@ -234,3 +236,25 @@ class RawStudentModel(models.Model):
 
     class Meta:
         verbose_name = "Raw student data as recievied from Wits"
+        unique_together = ((
+            'encrypted_student_no',
+            'calendar_instance_year',
+            'program_code',
+            'program_title',
+            'year_of_study',
+            'nationality_short_name',
+            'home_language_description',
+            'race_description',
+            'gender',
+            'age',
+            'course_code',
+            'final_mark',
+            'final_grade',
+            'progress_outcome_type',
+            'progress_outcome_type_description',
+            'award_grade',
+            'average_marks',
+            'secondary_school_quintile',
+            'urban_rural_secondary_school',
+            'secondary_school_name',
+        ),)

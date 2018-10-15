@@ -1,4 +1,5 @@
 import logging
+from pprint import pprint
 from typing import Type
 import pandas as pd
 from django.db import connection, transaction
@@ -28,7 +29,15 @@ class ModelInfo(object):
         self.foreign_field_map = {n: f for n, f in self.field_map.items() if isinstance(f, ForeignKey)}
         self.foreign_models_map = {n: ModelInfo(f.related_model) for n, f in self.foreign_field_map.items()}
         # unique
-        self.unique_map = {n: self.field_map[n] for n in self.meta.unique_together[0]} if (len(self.meta.unique_together) > 0) else {}
+        if len(self.meta.unique_together) > 0:
+            self.unique_map = {n: self.field_map[n] for n in self.meta.unique_together[0]}
+        else:
+            logger.warning(f"[{self.model.__name__}]: No Uniqueness Constraints Specified, defaulting to primary key '{self.meta.pk.name}'")
+            if not isinstance(self.meta.pk, AutoField) and self.meta.pk.name != 'id':
+                self.unique_map = {self.meta.pk.name: self.meta.pk}
+            else:
+                raise VisibleError(f"Defaulting to primary key '{self.meta.pk.name}' failed, try specifying a uniqueness constraint on '{self.name}'")
+        # uniqueness map
         self.unique_flat_map = {itemn: itemf for n, f in self.unique_map.items() for itemn, itemf in (self.foreign_models_map[n].unique_flat_map.items() if (n in self.foreign_models_map) else {n: f}.items())}
         # foreign
         self.foreign_unique_map = {n: self.foreign_models_map[n].unique_flat_map for n in self.foreign_field_map}
@@ -37,10 +46,14 @@ class ModelInfo(object):
         self.dependent = set(self.foreign_flat) | (set(self.field_map) - set(self.foreign_field_map))
         self.dependent_non_null = {n for n in self.dependent if n in self.foreign_flat or (n in self.field_map and not self.field_map[n].null)}
 
-    def print_hierarchy(self, depth=0, stack=[]):
+    def print_hierarchy(self, depth=0, stack=None):
+        if stack is None:
+            stack = []
+        # generate path
         s = ''
         for index, length in stack:
             s += '│   ' if index+1 < length else '    '
+        # print strings
         print(f"{s}[\033[91m{self.name}\033[00m]")
         for i, (n, m) in enumerate(self.foreign_models_map.items()):
             print(f"{s}{'├─' if i+1 < len(self.foreign_models_map) else '└─'}\033[93m{n}\033[00m" + ('' if len(self.foreign_unique_map[n]) <= 1 else f" -> ({', '.join(sorted(self.foreign_unique_map[n]))})"))
@@ -103,8 +116,11 @@ class Inserter(object):
                         fk_unique_to_object = [(entry, model_to_dict(entry)) for entry in self.info.foreign_models_map[fk].model.objects.all()]
                         fk_unique_to_object = {tuple(item[k] for k in fk_unique_cols): entry for entry, item in fk_unique_to_object}
                         # replace
-                        for item in grouped:
-                            item[fk] = fk_unique_to_object[tuple(item[k] for k in fk_unique_cols)]
+                        try:
+                            for item in grouped:
+                                item[fk] = fk_unique_to_object[tuple(item[k] for k in fk_unique_cols)]
+                        except KeyError as e:
+                            raise VisibleError(f"Failed to retrieve foreign items for '{fk}' ({sorted(self.info.foreign_unique_map[fk])}), are you sure you have imported all the data's decencies, and that the data does not contain nulls/blanks?").with_traceback(e.__traceback__)
                 # replace - present
                 with Measure("present", logger.debug):
                     for fk in fks_present:
@@ -115,7 +131,7 @@ class Inserter(object):
                             for item in grouped:
                                 item[fk] = pk_to_object[item[fk]]
                         except KeyError as e:
-                            raise VisibleError(f"Failed to retrieve foreign items for '{fk}', are you sure you have imported all the data's decencies?").with_traceback(e.__traceback__)
+                            raise VisibleError(f"Failed to retrieve foreign items for '{fk}', are you sure you have imported all the data's decencies, and that the data does not contain nulls/blanks?").with_traceback(e.__traceback__)
             with Measure("normalising", logger.debug):
                 # remove flat fields, then convert or load model rows
                 grouped = [{k: v for k, v in item.items() if k in self.info.field_map} for item in grouped]
@@ -125,6 +141,10 @@ class Inserter(object):
                 # map tuple keys to objects, and find differences between sets
                 grouped = {tuple(model_to_dict(m, fields=self.info.unique_map).values()): m for m in grouped}
                 existed = {tuple(model_to_dict(m, fields=self.info.unique_map).values()): m for m in existed}
+                if len(grouped) > 0 and len(existed) > 0:
+                    types_grouped, types_existed = tuple(type(val) for val in list(grouped.keys())[0]), tuple(type(val) for val in list(existed.keys())[0])
+                    if types_grouped != types_existed:
+                        logger.warning(f"Types of imported keys differ from database. Are you sure the model field types are appropriate? {[t.__name__ for t in types_existed]} not {[t.__name__ for t in types_grouped]} for {list(self.info.unique_map)}")
                 insert = [grouped[key] for key in grouped.keys() - existed.keys()]
                 # insert unique elements
                 self.log(logger.info, f"Inserting {len(insert)}")
@@ -132,10 +152,9 @@ class Inserter(object):
             return len(insert)
 
     def insert(self, df: pd.DataFrame) -> int:
-
+        print()
         self.info.print_hierarchy()
         print()
-
         with Measure(f"{self.model.__name__}", logger.info):
             try:
                 self.log(logger.info, f"BEFORE        - {len(self.model.objects.all())} entries")
@@ -155,5 +174,4 @@ class Inserter(object):
             except Exception as e:
                 self.log(logger.error, f"\033[91mERROR\033[0m")
                 raise e
-        print()
         return imported
