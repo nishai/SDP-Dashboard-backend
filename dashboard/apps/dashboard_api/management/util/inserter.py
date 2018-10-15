@@ -1,8 +1,6 @@
 import logging
-from pprint import pprint
 from typing import Type
 import pandas as pd
-import numpy as np
 from django.db import connection, transaction
 from django.db.models import Model, ForeignKey, Field, AutoField
 from django.db.models.fields.reverse_related import ForeignObjectRel
@@ -39,11 +37,14 @@ class ModelInfo(object):
         self.dependent = set(self.foreign_flat) | (set(self.field_map) - set(self.foreign_field_map))
         self.dependent_non_null = {n for n in self.dependent if n in self.foreign_flat or (n in self.field_map and not self.field_map[n].null)}
 
-    def print_hierarchy(self, depth=0):
-        print(f"{'│   ' * depth}[\033[91m{self.name}\033[00m]")
-        for n, m in self.foreign_models_map.items():
-            print(f"{'│   ' * depth}├ {n}")
-            m.print_hierarchy(depth=depth+1)
+    def print_hierarchy(self, depth=0, stack=[]):
+        s = ''
+        for index, length in stack:
+            s += '│   ' if index+1 < length else '    '
+        print(f"{s}[\033[91m{self.name}\033[00m]")
+        for i, (n, m) in enumerate(self.foreign_models_map.items()):
+            print(f"{s}{'├─' if i+1 < len(self.foreign_models_map) else '└─'}\033[93m{n}\033[00m" + ('' if len(self.foreign_unique_map[n]) <= 1 else f" -> ({', '.join(sorted(self.foreign_unique_map[n]))})"))
+            m.print_hierarchy(depth=depth+1, stack=stack+[(i, len(self.foreign_models_map))])
 
 
 class Inserter(object):
@@ -61,32 +62,24 @@ class Inserter(object):
         Inserter._assert_table_exists(model)
         self.model = model
         self.info = ModelInfo(model)
-        self.fields = self.info.field_map
-        self.foreign_models = self.info.foreign_models_map
-        self.foreign = self.info.foreign_field_map
-        self.foreign_flat = self.info.foreign_flat
-        self.unique = self.info.unique_flat_map
-        self.dependent = self.info.dependent
-        self.dependent_non_null = self.info.dependent_non_null
-        self.foreign_unique = self.info.foreign_unique_map
 
     def log(self, log_func, message):
         log_func(f"[{self.model.__name__}]: {message}")
 
     # TODO: efficient, but uses a lot of memory...
     def _group(self, df: pd.DataFrame, cols=None) -> pd.DataFrame:
-        cols = self.unique if cols is None else cols
+        cols = self.info.unique_flat_map if cols is None else cols
         with Measure("group", logger.debug):
             self.log(logger.info, "Grouping Started...")
             # list of fields present in table
-            if len(self.a_not_in_b(self.dependent_non_null, df.columns)) > 0:
-                raise VisibleError(f"Error, dependent fields '{sorted(self.a_not_in_b(self.dependent_non_null, df.columns))}' not present in table!")
-            elif len(self.a_not_in_b(self.dependent, df.columns)) > 0:
-                self.log(logger.warning, f"Some nullable fields '{sorted(self.a_not_in_b(self.dependent, df.columns))}' are missing from the table")
+            if len(self.a_not_in_b(self.info.dependent_non_null, df.columns)) > 0:
+                raise VisibleError(f"Error, dependent fields '{sorted(self.a_not_in_b(self.info.dependent_non_null, df.columns))}' not present in table!")
+            elif len(self.a_not_in_b(self.info.dependent, df.columns)) > 0:
+                self.log(logger.warning, f"Some nullable fields '{sorted(self.a_not_in_b(self.info.dependent, df.columns))}' are missing from the table")
             if len(self.a_not_in_b(cols, df.columns)) > 0:
                 raise VisibleError(f"Error, group by cols '{sorted(self.a_not_in_b(cols, df.columns))}' not present in table")
             # effective group by (just drop columns)
-            group_by = [c for c in cols if c in self.dependent]
+            group_by = [c for c in cols if c in self.info.dependent]
             self.log(logger.info, f"Grouping By: {group_by}")
             grouped = df.drop_duplicates(group_by)
             self.log(logger.info, f"Grouped! Found {len(grouped)} unique entries")
@@ -97,17 +90,17 @@ class Inserter(object):
         with Measure("save", logger.info):
             with Measure("foreign", logger.info):
                 # lists of fields
-                fks_virtual = set(self.foreign) - set(grouped)
-                fks_present = set(self.foreign) - fks_virtual
+                fks_virtual = set(self.info.foreign_field_map) - set(grouped)
+                fks_present = set(self.info.foreign_field_map) - fks_virtual
                 # convert grouping to dictionaries
                 grouped = [dict(item) for item in grouped.to_dict('records')]
                 # replace - missing
                 with Measure("virtual", logger.debug):
                     for fk in fks_virtual:  # fks that are links, and therefore not in the table
                         # get fk meta
-                        fk_unique_cols = tuple(sorted(self.foreign_unique[fk]))
+                        fk_unique_cols = tuple(sorted(self.info.foreign_unique_map[fk]))
                         # load data & map unique fields to objects
-                        fk_unique_to_object = [(entry, model_to_dict(entry)) for entry in self.foreign_models[fk].model.objects.all()]
+                        fk_unique_to_object = [(entry, model_to_dict(entry)) for entry in self.info.foreign_models_map[fk].model.objects.all()]
                         fk_unique_to_object = {tuple(item[k] for k in fk_unique_cols): entry for entry, item in fk_unique_to_object}
                         # replace
                         for item in grouped:
@@ -116,7 +109,7 @@ class Inserter(object):
                 with Measure("present", logger.debug):
                     for fk in fks_present:
                         # load data
-                        pk_to_object = {m.pk: m for m in self.foreign[fk].related_model.objects.all()}
+                        pk_to_object = {m.pk: m for m in self.info.foreign_field_map[fk].related_model.objects.all()}
                         # replace
                         try:
                             for item in grouped:
@@ -139,17 +132,21 @@ class Inserter(object):
             return len(insert)
 
     def insert(self, df: pd.DataFrame) -> int:
+
+        self.info.print_hierarchy()
+        print()
+
         with Measure(f"{self.model.__name__}", logger.info):
             try:
                 self.log(logger.info, f"BEFORE        - {len(self.model.objects.all())} entries")
-                self.log(logger.info, f"FIELDS        - {sorted(self.fields)}")
+                self.log(logger.info, f"FIELDS        - {sorted(self.info.field_map)}")
                 self.log(logger.info, f"UNIQUE        - {sorted(self.info.unique_map.keys())}")
                 self.log(logger.info, f"UNIQUE (FLAT) - {sorted(self.info.unique_flat_map.keys())}")
                 # drop bad cols
-                df_old = df.where((pd.notnull(df)), None) # replace nan with none (side effect: everything is now an object)
-                df = df_old.dropna(how='any', subset=self.dependent_non_null)
+                df_old = df.where((pd.notnull(df)), None)  # replace nan with none (side effect: everything is now an object)
+                df = df_old.dropna(how='any', subset=self.info.dependent_non_null)
                 if len(df_old) - len(df) > 0:
-                    self.log(logger.info, f"Dropped {len(df_old) - len(df)} rows! Columns '{sorted(self.dependent_non_null)}' Break non-null requirement:\n{df_old[~df_old.isin(df)].dropna(how='all')}")
+                    self.log(logger.info, f"Dropped {len(df_old) - len(df)} rows! Columns '{sorted(self.info.dependent_non_null)}' Break non-null requirement:\n{df_old[~df_old.isin(df)].dropna(how='all')}")
                 del df_old
                 # import
                 grouped = self._group(df)
