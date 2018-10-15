@@ -5,7 +5,7 @@ from django.db import models
 # not in excel
 class Faculty(models.Model):
     faculty_id = models.AutoField(primary_key=True)
-    faculty_title = models.CharField(max_length=255, null=True)
+    faculty_title = models.CharField(max_length=255)
 
     class Meta:
         verbose_name = "Wits Faculties"
@@ -15,8 +15,8 @@ class Faculty(models.Model):
 # not in excel
 class School(models.Model):
     school_id = models.AutoField(primary_key=True)
-    school_title = models.CharField(max_length=255, null=True)
-    faculty_id = models.ForeignKey('Faculty', related_name='schools', on_delete=models.CASCADE, null=True)
+    school_title = models.CharField(max_length=255)
+    faculty_id = models.ForeignKey('Faculty', related_name='schools', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Wits Schools"
@@ -26,8 +26,8 @@ class School(models.Model):
 # partially in excel
 class Course(models.Model):
     course_code = models.CharField(primary_key=True, max_length=5)
-    course_title = models.CharField(max_length=255, null=True)
-    school_id = models.ForeignKey('School', related_name='courses', on_delete=models.CASCADE, null=True)
+    # course_title = models.CharField(max_length=255, null=True) # TODO fix import
+    school_id = models.ForeignKey('School', related_name='courses', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Wits Courses"

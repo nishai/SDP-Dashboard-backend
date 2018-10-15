@@ -2,29 +2,53 @@ from django.core.management.base import BaseCommand
 import os
 import logging
 from dashboard.apps.dashboard_api.management.util.data_util import load_table
+from dashboard.apps.dashboard_api.management.util.inserter import Inserter
 
 logger = logging.getLogger('debug-import')
 
 
 class DataImportCommand(BaseCommand):
     help = 'help should be overridden'
+    options = None
 
     # set class variable 'header_row' to change import options
 
     def add_arguments(self, parser):
-        parser.add_argument('--files', dest='files', nargs='+', help='Specify file to be important')
+        if not type(self.options) == dict:
+            raise Exception("DataImportCommand must have options defined")
+        for name in self.options:
+            parser.add_argument(f'--{name}', dest=f'{name}', nargs='*', help='Specify files to be imported')
 
-    def handle(self, *args, **options):
-        imported = 0
-        for file in options['files']:
-            logger.info(f"Importing: {file}")
-            if not os.path.isfile(file):
-                logger.error(f"Cannot find: {file}")
-                exit(1)
-            df = load_table(file, header=self.header_row if hasattr(self, 'header_row') else 0, dataframe=True)
-            logger.info(f'File Columns Found - {", ".join(df.columns)}')
-            imported += self.import_table(df)
-        logger.info(f"Imported: {imported} records from {len(options['files'])} files")
+    def handle(self, *args, **kwargs):
+        if not type(self.options) == dict:
+            raise Exception("DataImportCommand must have options defined")
+        # for each custom option
+        for option, import_options in self.options.items():
+            # count number of records imported
+            imported = 0
+            # skip
+            if kwargs[option] is None:
+                continue
+            # check contents
+            assert 'header_row' in import_options
+            assert 'models' in import_options
+            # for each file per custom option
+            for file in kwargs[option]:
+                if os.path.isfile(file):
+                    logger.info(f"[{option}] Importing: {file}")
+                else:
+                    logger.error(f"[{option}] Cannot find: {file}")
+                    exit(1)
+                # read table
+                df = load_table(file, header=import_options['header_row'], dataframe=True)
+                logger.info(f'[{option}] Importing file with columns: {sorted(df.columns)}')
+                # rename columns
+                df = df.rename(columns=import_options['header_to_field'] if 'header_to_field' in import_options else {})
+                # import table
+                logger.info(f"[{option}] Importing file with {len(df)} records")
+                imported += sum([Inserter(model).insert(df) for model in import_options['models']])
+            # print results
+            logger.info(f"[{option}] Imported: {imported} records from {len(kwargs[option])} files")
 
-    def import_table(self, df):
-        raise NotImplementedError("Override me")
+
+
