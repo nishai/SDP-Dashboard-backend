@@ -27,7 +27,7 @@ class Command(DataImportCommand):
             'models': [                 # -NEW-     # -OLD-
                 ProgramInfo,            # 14        # 14
                 StudentInfo,            # 16487     # 16487
-                CourseStats,            # 206135    # 206139    (diff)
+                CourseStats,            # 206139    # 206139
                 ProgressDescription,    # 26        # 26
                 AverageYearMarks,       # 34270     # 34270
                 YearOfStudy,            # 34270     # 34270
@@ -36,7 +36,7 @@ class Command(DataImportCommand):
         },
         'schools': {
             'header_row': 0,
-            'models': [
+            'models': [                 # -NEW-
                 Faculty,                # 5
                 School,                 # 26
                 Course                  # 1031
@@ -49,13 +49,13 @@ class Command(DataImportCommand):
         'wits': {
             'header_row': 5,
             'depends_on': ['schools'],
-            'models': [
+            'models': [                 # -NEW-
                 Program,                # 14
                 ProgressOutcome,        # 26
                 SecondarySchool,        # 2720
                 Student,                # 16487
-                EnrolledYear,           # 34272
-                EnrolledCourse,         # 206135
+                EnrolledYear,           # 34272     # Replaces: AverageYearMarks, YearOfStudy, StudentPrograms
+                EnrolledCourse,         # 206139
             ],
         },
         'raw': {

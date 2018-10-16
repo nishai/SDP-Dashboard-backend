@@ -27,18 +27,37 @@ class Command(BaseCommand):
         parser.add_argument('--files', dest='files', nargs='+', type=str, help='Specify files to be imported')
         parser.add_argument('--limit', dest='limit', nargs='+', type=int, help='Truncate the outputs')
         parser.add_argument('--out', dest='out', nargs=1, type=str, help='Specify the output')
-        parser.add_argument('--header_row', dest='header_row', nargs=1, type=int, help='Specify the header row if it is an excel file')
+        parser.add_argument('--type', dest='type', nargs=1, type=str, help='Specify the header row if it is an excel file')
 
     def handle(self, *args, **options):
+
+        types = {
+            'wits': {
+                'header': 5,
+                'width': 20,
+            },
+            'schools': {
+                'header': 0,
+                'width': 3,
+            },
+        }
+
         if options['out'] is None:
             print("--out not specified")
             exit(1)
         if options['files'] is None:
             print("--file not specified")
             exit(1)
+        if options['type'] is None or options['type'][0] not in types:
+            print("--type not specified, must be 'wits' or 'schools'")
+            exit(1)
 
         # load and merge/append tables together
-        df = load_tables(options['files'], header=options['header_row'][0] if (options['header_row'] is not None) else None, merged=True, dataframe=True)
+        df = load_tables(options['files'], header=types[options['type'][0]]['header'], merged=True, dataframe=True)
+
+        if len(df.columns) != types[options['type'][0]]['width']:
+            # TODO, infer type based off width, and thus obtain column names after this.
+            raise Exception(f"Are you sure you specified the correct type? The number of columns found is {len(df.columns)}, there should be {types[options['type'][0]]['width']}")
 
         # default value - save everything
         if not options['limit']:
@@ -52,4 +71,6 @@ class Command(BaseCommand):
         for limit in {min(max(-1, l), len(df)) for l in options['limit']}:
             path = f"{partial}{ext}" if limit < 0 else f"{partial}_{limit}{ext}"
             logger.info(f"Saving: {path}")
-            save_table(path, df[:limit])
+            if limit >= 0:
+                df = df[:limit]
+            save_table(path, df)
