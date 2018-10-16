@@ -33,6 +33,9 @@ class DataImportCommand(BaseCommand):
             # check contents
             assert 'header_row' in import_options
             assert 'models' in import_options
+            logger.info(f"[{option}] Importing '{option}' models: {[model.__name__ for model in import_options['models']]}")
+            if 'depends_on' in import_options:
+                logger.warning(f"[{option}] This stage depends on {import_options['depends_on']}, make sure to import it first.")
             # for each file per custom option
             for file in kwargs[option]:
                 if os.path.isfile(file):
