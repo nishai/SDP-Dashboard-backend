@@ -16,6 +16,7 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
+from rest_framework_swagger.views import get_swagger_view
 
 from dashboard.apps.dashboard_api.views import *
 from django.conf.urls import url, include
@@ -90,6 +91,12 @@ urlpatterns += [
 # ========================================================================= #
 # DEFAULT ROUTES                                                            #
 # ========================================================================= #
+
+
+# Documentation Views
+urlpatterns += [
+    url(r'^swag/', get_swagger_view(title='Wits Dashboard Api'))
+]
 
 
 # Builtin Django database admin

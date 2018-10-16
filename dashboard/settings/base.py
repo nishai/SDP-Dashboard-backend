@@ -58,6 +58,8 @@ INSTALLED_APPS = [
     'rest_framework',               # http://www.django-rest-framework.org
     'rest_framework_jwt',           # http://getblimp.github.io/django-rest-framework-jwt
     'django_auth_ldap',             # https://django-auth-ldap.readthedocs.io
+    # alternative documentation views
+    'rest_framework_swagger',
 ]
 
 # ========================================================================= #

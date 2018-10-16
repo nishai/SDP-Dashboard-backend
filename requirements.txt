@@ -20,6 +20,7 @@ django-cors-headers==2.4.0
 djangorestframework-jwt==1.11.0
 django-auth-ldap==1.7.0
 drf-nested-routers==0.91
+django-rest-swagger==2.2.0
 jsonschema==2.6.0
 uuid==1.30
 
