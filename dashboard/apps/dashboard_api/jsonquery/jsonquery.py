@@ -217,7 +217,6 @@ def _group(queryset: QuerySet, fragment: Dict):
                                     distinct=True)
             else:
                 yields[name] =  AGGREGATE_METHODS[_via](rename_field(queryset.model, _from))
-    print(list(unique))
 
     # generate
     return unique.annotate(**yields)
