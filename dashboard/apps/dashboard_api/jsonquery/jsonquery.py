@@ -89,9 +89,13 @@ schema_group = {
             "uniqueItems": True,
             "minItems": 0,
         },
+        "distinctGrouping": {"type":"boolean"},
+        "removeDuplicateCountings": {"type":"boolean"},
     },
     "required": [
         "by",
+        "distinctGrouping",
+        "removeDuplicateCountings",
     ],
 }
 
@@ -178,24 +182,43 @@ def _filter(queryset: QuerySet, fragment: List):
 
 
 def _group(queryset: QuerySet, fragment: Dict):
+    # group by student number to remove duplicates
+    # (i.e. student takes 2 courses being grouped shouldnt be counted twice)
+
     for j, name in enumerate(fragment['by']):
         fragment['by'][j] = rename_field(queryset.model, name)
+
     # return early
     if 'yield' not in fragment:
         fragment['yield'] = []
 
     # find these unique pairs
     if fragment['yield'] == []:
-        unique = queryset.order_by(*fragment['by']).values_list(*fragment['by'], flat=True).distinct()
+        if len(fragment['by']) == 1:
+            unique = queryset.order_by(*fragment['by']).values_list(*fragment['by'], flat=True)
+        else:
+            unique = queryset.order_by(*fragment['by']).values_list(*fragment['by'])
     else:
-        unique = queryset.values(*fragment['by'])
-        #unique = unique.values(*fragment['by'])
+        unique = queryset.order_by(*fragment['by']).values(*fragment['by'])
+
+    if fragment['distinctGrouping'] == True:
+        unique = unique.distinct()
+
     # data generators
     yields = {}
     for y in fragment['yield']:
-        (_via, _from) = (y['via'], y['from'])
-        name = y['name'] if 'name' in y else f"{_from}_{_via}"
-        yields[name] =  AGGREGATE_METHODS[_via](rename_field(queryset.model, _from))
+        if y['from'] != '':
+            (_via, _from) = (y['via'], y['from'])
+            name = y['name'] if 'name' in y else f"{_from}_{_via}"
+            if fragment['removeDuplicateCountings'] == True:
+                #https://stackoverflow.com/questions/52907276/django-queryset-aggregation-count-counting-wrong-thing#52907353
+                yields[name] =  AGGREGATE_METHODS[_via](\
+                                    rename_field(queryset.model, 'encrypted_student_no'),\
+                                    distinct=True)
+            else:
+                yields[name] =  AGGREGATE_METHODS[_via](rename_field(queryset.model, _from))
+    print(list(unique))
+
     # generate
     return unique.annotate(**yields)
 
