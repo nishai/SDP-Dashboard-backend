@@ -60,6 +60,9 @@ INSTALLED_APPS = [
     'django_auth_ldap',             # https://django-auth-ldap.readthedocs.io
     # alternative documentation views
     'rest_framework_swagger',
+    # views & routing
+    # 'dynamic_rest',  # https://github.com/AltSchool/dynamic-rest # 'rest_framework_filters' may be better alternative: https://github.com/philipn/django-rest-framework-filters # combined with https://github.com/alanjds/drf-nested-routers
+
 ]
 
 # ========================================================================= #

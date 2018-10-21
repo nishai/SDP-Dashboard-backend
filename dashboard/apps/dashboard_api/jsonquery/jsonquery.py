@@ -1,6 +1,6 @@
 from typing import Dict, List, Type
 from django.db import models
-from django.db.models import Model, QuerySet, Q, ForeignKey
+from django.db.models import Model, QuerySet, Q, ForeignKey, F
 from functools import reduce
 
 # ========================================================================= #
@@ -53,6 +53,24 @@ schema_filter = {
     "uniqueItems": True,
     "minItems": 0,
 }
+schema_annotate = {
+    "type": "array",
+    "items": {  # list of different filters, each filter is effectively an & operation
+        "type": "object",
+        "properties": {
+            "field": {"type": "string"},
+            "operator": {"type": "string"},
+            "value": {"type": "string"},
+        },
+        "required": [
+            "field",
+            "operator",
+            "value",
+        ],
+    },
+    "uniqueItems": True,
+    "minItems": 0,
+}
 
 schema_group = {
     "type": "object",
@@ -65,7 +83,7 @@ schema_group = {
             "uniqueItems": True,
             "minItems": 1,
         },
-        "yield": {
+        "yield": {  # TODO, change to reuse annotate
             "type": "array",
             "items": {
                 "type": "object",
@@ -84,7 +102,6 @@ schema_group = {
                     },
                 },
                 "required": [
-                    "via",
                     "from",
                 ],
             },
@@ -146,6 +163,7 @@ schema_subquery = {
     "type": "object",
     "properties": {
         "filter": schema_filter,
+        "annotate": schema_annotate,
         "group": schema_group,
         "order": schema_order,
     },
@@ -172,7 +190,7 @@ schema_query = {
 
 def _filter(queryset: QuerySet, fragment: List):
     for i, f in enumerate(fragment):
-        fragment[i]['field'] = _rename_field(queryset.model, f['field'])
+        # fragment[i]['field'] = _rename_field(queryset.model, f['field'])
         if 'exclude' not in f:
             f['exclude'] = False
         filterer = (queryset.exclude if f['exclude'] else queryset.filter)
@@ -182,20 +200,25 @@ def _filter(queryset: QuerySet, fragment: List):
         queryset = filterer(reduce(lambda a, b: a | b, q_values))  # TODO: Add method of selecting option
     return queryset
 
+def _annotate(queryset: QuerySet, fragment: List):
+    for i, f in enumerate(fragment):
+        queryset = queryset.annotate(**{f['field']: AGGREGATE_METHODS[f['operator']](f['value'])})
+    return queryset
+
 
 def _group(queryset: QuerySet, fragment: Dict):
     # group by student number to remove duplicates
     # (i.e. student takes 2 courses being grouped shouldnt be counted twice)
 
-    for j, name in enumerate(fragment['by']):
-        fragment['by'][j] = _rename_field(queryset.model, name)
+    # for j, name in enumerate(fragment['by']):
+    #     fragment['by'][j] = _rename_field(queryset.model, name)
 
     # return early
     if 'yield' not in fragment:
         fragment['yield'] = []
 
     # find these unique pairs
-    if fragment['yield'] == []:
+    if len(fragment['yield']) == 0:
         if len(fragment['by']) == 1:
             unique = queryset.order_by(*fragment['by']).values_list(*fragment['by'], flat=True)
         else:
@@ -209,16 +232,21 @@ def _group(queryset: QuerySet, fragment: Dict):
     # data generators
     yields = {}
     for y in fragment['yield']:
-        if y['from'] != '':
-            (_via, _from) = (y['via'], y['from'])
-            name = y['name'] if 'name' in y else f"{_from}_{_via}"
-            if fragment['removeDuplicateCountings'] == True:
-                #https://stackoverflow.com/questions/52907276/django-queryset-aggregation-count-counting-wrong-thing#52907353
-                yields[name] =  AGGREGATE_METHODS[_via](\
-                                    _rename_field(queryset.model, 'encrypted_student_no'),\
-                                    distinct=True)
-            else:
-                yields[name] =  AGGREGATE_METHODS[_via](_rename_field(queryset.model, _from))
+        if 'via' in y:
+            if y['from'] != '':
+                (_via, _from) = (y['via'], y['from'])
+                name = y['name'] if 'name' in y else f"{_from}_{_via}"
+                if fragment['removeDuplicateCountings'] == True:
+                    #https://stackoverflow.com/questions/52907276/django-queryset-aggregation-count-counting-wrong-thing#52907353
+                    yields[name] = AGGREGATE_METHODS[_via](
+                                        # _rename_field(queryset.model, 'encrypted_student_no'),\
+                                        'encrypted_student_no',
+                                        distinct=True)
+                else:
+                    # yields[name] = AGGREGATE_METHODS[_via](_rename_field(queryset.model, _from))
+                    yields[name] = AGGREGATE_METHODS[_via](_from)
+        else:
+            yields[y['name'] if 'name' in y else y['from']] = F(y['from'])
 
     # generate
     return unique.annotate(**yields)
@@ -254,10 +282,10 @@ def _rename_field(model, name):
             temp = _rename_field(field.remote_field.model, name)
             if temp != "":
                 return field.name + "__" + temp
-    return ""
+    return name
 
 
-def parse(model: Type[Model], data: Dict):
+def parse_request(model: Type[Model], data: Dict):
     try:
         validate(data, schema_query)
     except ValidationError as e:
@@ -274,6 +302,8 @@ def parse(model: Type[Model], data: Dict):
                 queryset = queryset.all()
             if 'filter' in frag:
                 queryset = _filter(queryset, frag['filter'])
+            if 'annotate' in frag:
+                queryset = _annotate(queryset, frag['annotate'])
             if 'group' in frag:
                 queryset = _group(queryset, frag['group'])
             if 'order' in frag:

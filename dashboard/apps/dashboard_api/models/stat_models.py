@@ -18,7 +18,7 @@ class SchoolInfo(models.Model):
 # Table for matching courses to schools
 class CourseInfo(models.Model):
     course_code = models.CharField(max_length=5, primary_key=True)
-    school = models.ForeignKey('SchoolInfo', on_delete=models.CASCADE, null=True)
+    school = models.ForeignKey('SchoolInfo', on_delete=models.CASCADE, null=True, related_name="courses")
     course_name = models.CharField(max_length=255, null=True)
 
     class Meta:
@@ -60,9 +60,9 @@ class StudentInfo(models.Model):
 # Stats of a student in a certain course in a certain year
 # Foreign keys to student_number in StudentInfo
 class CourseStats(models.Model):
-    course_code = models.ForeignKey('CourseInfo', on_delete=models.CASCADE)
+    course_code = models.ForeignKey('CourseInfo', on_delete=models.CASCADE, related_name="course_stats")
     calendar_instance_year = models.IntegerField(null=True, validators=[MinValueValidator(1900), MaxValueValidator(2100)])
-    encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
+    encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE, related_name="course_stats")
     final_mark = models.FloatField(null=True, validators=[DecimalValidator(max_digits=6, decimal_places=3)])
     final_grade = models.CharField(max_length=5, null=True)
 
@@ -88,9 +88,9 @@ class ProgressDescription(models.Model):
 # TODO: this should be merged with YearOfStudy, as the uniqueness constraints are the same
 class AverageYearMarks(models.Model):
     calendar_instance_year = models.IntegerField()
-    encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
+    encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE, related_name="average_year_marks")
     average_marks = models.FloatField(null=True, validators=[DecimalValidator(max_digits=6, decimal_places=3)])
-    progress_outcome_type = models.ForeignKey('ProgressDescription', on_delete=models.CASCADE, null=True)
+    progress_outcome_type = models.ForeignKey('ProgressDescription', on_delete=models.CASCADE, null=True, related_name="average_year_marks")
     award_grade = models.CharField(max_length=2, null=True)
 
     class Meta:
@@ -103,7 +103,7 @@ class AverageYearMarks(models.Model):
 # keeps track of which year of study each student is in in each calendar year
 # TODO: this should be merged with AverageYearMarks, as the uniqueness constraints are the same
 class YearOfStudy(models.Model):
-    encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
+    encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE, related_name="years_of_study")
     calendar_instance_year = models.IntegerField()
     year_of_study = models.CharField(max_length=5, null=True)  # Refers to YOS student is registered for within this course year
 
@@ -117,8 +117,8 @@ class YearOfStudy(models.Model):
 # Table for program (i.e BSc General) info
 class StudentPrograms(models.Model):
     calendar_instance_year = models.IntegerField()
-    program_code = models.ForeignKey('ProgramInfo', on_delete=models.CASCADE)
-    encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE)
+    program_code = models.ForeignKey('ProgramInfo', on_delete=models.CASCADE, related_name="student_programs")
+    encrypted_student_no = models.ForeignKey('StudentInfo', on_delete=models.CASCADE, related_name="student_programs")
     degree_complete = models.BooleanField(null=True)
 
     class Meta:
