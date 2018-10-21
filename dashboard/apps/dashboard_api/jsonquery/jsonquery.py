@@ -8,6 +8,8 @@ from functools import reduce
 # ========================================================================= #
 from jsonschema import validate, ValidationError, SchemaError
 
+from dashboard.apps.dashboard_api.management.util.modelinfo import ModelInfo
+
 AGGREGATE_METHODS = {
     "max": models.Max,
     "min": models.Min,
@@ -170,7 +172,7 @@ schema_query = {
 
 def _filter(queryset: QuerySet, fragment: List):
     for i, f in enumerate(fragment):
-        fragment[i]['field'] = rename_field(queryset.model, f['field'])
+        fragment[i]['field'] = _rename_field(queryset.model, f['field'])
         if 'exclude' not in f:
             f['exclude'] = False
         filterer = (queryset.exclude if f['exclude'] else queryset.filter)
@@ -186,7 +188,7 @@ def _group(queryset: QuerySet, fragment: Dict):
     # (i.e. student takes 2 courses being grouped shouldnt be counted twice)
 
     for j, name in enumerate(fragment['by']):
-        fragment['by'][j] = rename_field(queryset.model, name)
+        fragment['by'][j] = _rename_field(queryset.model, name)
 
     # return early
     if 'yield' not in fragment:
@@ -213,10 +215,10 @@ def _group(queryset: QuerySet, fragment: Dict):
             if fragment['removeDuplicateCountings'] == True:
                 #https://stackoverflow.com/questions/52907276/django-queryset-aggregation-count-counting-wrong-thing#52907353
                 yields[name] =  AGGREGATE_METHODS[_via](\
-                                    rename_field(queryset.model, 'encrypted_student_no'),\
+                                    _rename_field(queryset.model, 'encrypted_student_no'),\
                                     distinct=True)
             else:
-                yields[name] =  AGGREGATE_METHODS[_via](rename_field(queryset.model, _from))
+                yields[name] =  AGGREGATE_METHODS[_via](_rename_field(queryset.model, _from))
 
     # generate
     return unique.annotate(**yields)
@@ -243,15 +245,17 @@ def _limit(queryset: QuerySet, fragment: Dict[str, object]):
     elif type == 'last':
         return queryset[max(0, len(queryset)-num):]
 
-def rename_field(model, name):
+
+def _rename_field(model, name):
     for field in model._meta.get_fields():
         if name == field.name:
             return name
         elif field.__class__ is ForeignKey:
-            temp = rename_field(field.remote_field.model, name)
+            temp = _rename_field(field.remote_field.model, name)
             if temp != "":
                 return field.name + "__" + temp
     return ""
+
 
 def parse(model: Type[Model], data: Dict):
     try:
@@ -280,6 +284,22 @@ def parse(model: Type[Model], data: Dict):
     queryset = _limit(queryset, data['limit'] if 'limit' in data else {"type": "first", "num": -1})
 
     return queryset
+
+
+def parse_options(model: Type[Model], data: Dict):
+    try:
+        validate(data, schema_query)
+    except ValidationError as e:
+        return False
+    except SchemaError as e:
+        raise e  # we caused this with invalid schema above
+
+    try:
+        # TODO, dynamically change based on query.
+        return ModelInfo.static_generate_query_tree(model)
+    except:
+        print("FAILED IN parse_options")
+        return {}
 
 
 # TODO: check https://github.com/carltongibson/django-filter
