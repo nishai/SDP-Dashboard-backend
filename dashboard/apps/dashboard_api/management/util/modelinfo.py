@@ -64,15 +64,17 @@ class ModelInfo(object):
             print(f"{s}{'├─' if index+1 < len(self.foreign_models_map) else '└─'}\033[93m{n}\033[00m" + ('' if len(self.foreign_unique_map[n]) <= 1 else f" -> ({', '.join(sorted(self.foreign_unique_map[n]))})"))
             m.print_hierarchy(index_stack=index_stack + [(index, len(self.foreign_models_map))])
 
-    def _generate_query_tree(self, model=None, field_stack=None, dictionary=None):
+    def _generate_query_tree(self):
+        return self.static_generate_query_tree(self.model)
+
+    @staticmethod
+    def static_generate_query_tree(self, model: Type[Model], field_stack=None, dictionary=None):
         """
         Generate a dictionary of all the fields accessible from this model,
         including via foreign keys.
         """
         if dictionary is None:
             dictionary = dict()
-        if model is None:
-            model = self.model
         if field_stack is None:
             field_stack = []
         for field in model._meta.get_fields():
@@ -81,16 +83,18 @@ class ModelInfo(object):
                 raise RuntimeError("Path already in dictionary, is something wrong with your model?")
             dictionary[path] = field
             if isinstance(field, ForeignKey):
-                self._generate_query_tree(field.related_model, field_stack=field_stack + [field.name], dictionary=dictionary)
+                ModelInfo.static_generate_query_tree(field.related_model, field_stack=field_stack + [field.name], dictionary=dictionary)
         return dictionary
 
-    def print_query_tree(self, model=None, index_stack=None):
+    def print_query_tree(self):
+        self.static_print_query_tree(self.model)
+
+    @staticmethod
+    def static_print_query_tree(model: Type[Model], index_stack=None):
         """
         Print the hierarchy of the current model based on foreign keys,
         listing the full query name for each field under the model.
         """
-        if model is None:
-            model = self.model
         if index_stack is None:
             index_stack = []
         # generate path
@@ -103,5 +107,5 @@ class ModelInfo(object):
             path = '__'.join([n for i, l, n in index_stack] + [f'\033[93m{field.name}\033[00m'])
             print(f"{s}{'├─' if index+1 < len(model._meta.get_fields()) else '└─'}\033[90m{path}\033[00m")
             if isinstance(field, ForeignKey):
-                self.print_query_tree(field.related_model, index_stack=index_stack + [(index, len(model._meta.get_fields()), field.name)])
+                ModelInfo.static_print_query_tree(field.related_model, index_stack=index_stack + [(index, len(model._meta.get_fields()), field.name)])
 
