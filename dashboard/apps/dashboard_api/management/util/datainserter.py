@@ -1,66 +1,22 @@
 import logging
-from pprint import pprint
 from typing import Type
 import pandas as pd
 from django.db import connection, transaction
-from django.db.models import Model, ForeignKey, Field, AutoField
-from django.db.models.fields.reverse_related import ForeignObjectRel
+from django.db.models import Model
 from django.forms import model_to_dict
+
+from dashboard.apps.dashboard_api.management.util.errors import VisibleError
 from dashboard.apps.dashboard_api.management.util.measure import Measure
+from dashboard.apps.dashboard_api.management.util.modelinfo import ModelInfo
 
 logger = logging.getLogger('debug-import')
 
 
-class VisibleError(RuntimeError):
-    def __init__(self, desc):
-        super(VisibleError, self).__init__(f"\n{'=' * 80}\n\033[91m{desc}\n\033[00m{'=' * 80}")
-
-
-class ModelInfo(object):
-
-    def __init__(self, model: Type[Model]):
-        # model
-        self.model = model
-        self.meta = self.model._meta
-        self.name = self.meta.object_name  # self.meta.model_name
-        # maps
-        self.field_map = {f.name: f for f in self.meta.get_fields() if not isinstance(f, ForeignObjectRel) and not isinstance(f, AutoField) and f.name != 'id'}
-        # hierarchy
-        self.foreign_field_map = {n: f for n, f in self.field_map.items() if isinstance(f, ForeignKey)}
-        self.foreign_models_map = {n: ModelInfo(f.related_model) for n, f in self.foreign_field_map.items()}
-        # unique
-        if len(self.meta.unique_together) > 0:
-            self.unique_map = {n: self.field_map[n] for n in self.meta.unique_together[0]}
-        else:
-            logger.warning(f"[{self.model.__name__}]: No Uniqueness Constraints Specified, defaulting to primary key '{self.meta.pk.name}'")
-            if not isinstance(self.meta.pk, AutoField) and self.meta.pk.name != 'id':
-                self.unique_map = {self.meta.pk.name: self.meta.pk}
-            else:
-                raise VisibleError(f"Defaulting to primary key '{self.meta.pk.name}' failed, try specifying a uniqueness constraint on '{self.name}'")
-        # uniqueness map
-        self.unique_flat_map = {itemn: itemf for n, f in self.unique_map.items() for itemn, itemf in (self.foreign_models_map[n].unique_flat_map.items() if (n in self.foreign_models_map) else {n: f}.items())}
-        # foreign
-        self.foreign_unique_map = {n: self.foreign_models_map[n].unique_flat_map for n in self.foreign_field_map}
-        self.foreign_flat = {n: f for uk, uv in self.foreign_unique_map.items() for n, f in uv.items()}
-        # all fields needed to generate a record for this model, including finding dependencies by their unique values and record data
-        self.dependent = set(self.foreign_flat) | (set(self.field_map) - set(self.foreign_field_map))
-        self.dependent_non_null = {n for n in self.dependent if n in self.foreign_flat or (n in self.field_map and not self.field_map[n].null)}
-
-    def print_hierarchy(self, depth=0, stack=None):
-        if stack is None:
-            stack = []
-        # generate path
-        s = ''
-        for index, length in stack:
-            s += '│   ' if index+1 < length else '    '
-        # print strings
-        print(f"{s}[\033[91m{self.name}\033[00m]")
-        for i, (n, m) in enumerate(self.foreign_models_map.items()):
-            print(f"{s}{'├─' if i+1 < len(self.foreign_models_map) else '└─'}\033[93m{n}\033[00m" + ('' if len(self.foreign_unique_map[n]) <= 1 else f" -> ({', '.join(sorted(self.foreign_unique_map[n]))})"))
-            m.print_hierarchy(depth=depth+1, stack=stack+[(i, len(self.foreign_models_map))])
-
-
 class Inserter(object):
+    """
+    Helper class to transform, normalize data found in a flat table.
+    Then in memory find duplicates and loading dependencies from necessary Models if foreign keys exist.
+    """
 
     @staticmethod
     def _assert_table_exists(model):
@@ -79,8 +35,14 @@ class Inserter(object):
     def log(self, log_func, message):
         log_func(f"[{self.model.__name__}]: {message}")
 
-    # TODO: efficient, but uses a lot of memory...
+
     def _group(self, df: pd.DataFrame, cols=None) -> pd.DataFrame:
+        """
+        Groups a flat table by the specified columns/composite keys,
+        by dropping repeated data by placing a unique constraint on those columns.
+        TODO: add function to resolve repeated data after grouping.
+        TODO: Might use a lot of memory.
+        """
         cols = self.info.unique_flat_map if cols is None else cols
         with Measure("group", logger.debug):
             self.log(logger.info, "Grouping Started...")
@@ -100,6 +62,10 @@ class Inserter(object):
 
     @transaction.atomic
     def _save(self, grouped: pd.DataFrame) -> int:
+        """
+        Insert data, loading foreign key data if necessary.
+        Finds and removes duplicates in memory.
+        """
         with Measure("save", logger.info):
             with Measure("foreign", logger.info):
                 # lists of fields
