@@ -15,8 +15,5 @@ GRAPH_MODELS = {
     'group_models': True,
 }
 
-CORS_ORIGIN_WHITELIST += [
-    'dashboard-dev.ms.wits.ac.za:3080',
-    'localhost:4080',
-    'localhost:3080',
-]
+# dangerous on production
+CORS_ORIGIN_ALLOW_ALL = True
