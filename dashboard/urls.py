@@ -43,12 +43,23 @@ router = routers.DefaultRouter()
 
 # Query Views
 urlpatterns += [
+    # Stat Queries
     path('query/course-stats', CourseStatsQuery.as_view()),
     path('query/school-info', SchoolInfoQuery.as_view()),
     path('query/course-info', CourseInfoQuery.as_view()),
+    # Wits Queries
+    path('query/faculties', FacultyQuery.as_view()),
+    path('query/schools', SchoolQuery.as_view()),
+    path('query/courses', CourseQuery.as_view()),
+    path('query/programs', ProgramQuery.as_view()),
+    path('query/outcomes', ProgressOutcomeQuery.as_view()),
+    path('query/high-schools', SecondarySchoolQuery.as_view()),
+    path('query/students', StudentQuery.as_view()),
+    path('query/year-enrollment', EnrolledYearQuery.as_view()),
+    path('query/course-enrollment', EnrolledCourseQuery.as_view()),
 ]
 
-# School Info
+# Stat Viewsets
 router.register(r'info/schools', SchoolInfoViewSet)
 router.register(r'info/courses', CourseInfoViewSet)
 router.register(r'info/programs', ProgramInfoViewSet)

@@ -32,7 +32,7 @@ class QueryApiView(APIView):
 
 
 # ========================================================================= #
-# QUERY VIEWS                                                               #
+# OLD - QUERY VIEWS                                                         #
 # ========================================================================= #
 
 
@@ -52,3 +52,64 @@ class SchoolInfoQuery(QueryApiView):
 
 class CourseInfoQuery(QueryApiView):
     query_model = CourseInfo
+
+
+
+# ========================================================================= #
+# NEW - QUERY VIEWS                                                         #
+# ========================================================================= #
+
+
+# Faculty
+
+class FacultyQuery(QueryApiView):
+    query_model = Faculty
+
+
+# School
+
+class SchoolQuery(QueryApiView):
+    query_model = School
+
+
+# Course
+
+class CourseQuery(QueryApiView):
+    query_model = Course
+
+
+# Program
+
+class ProgramQuery(QueryApiView):
+    query_model = Program
+
+
+# Progress
+
+class ProgressOutcomeQuery(QueryApiView):
+    query_model = ProgressOutcome
+
+
+# Secondary School
+
+class SecondarySchoolQuery(QueryApiView):
+    query_model = SecondarySchool
+
+
+# Student
+
+class StudentQuery(QueryApiView):
+    query_model = Student
+
+
+# Enrolled Year
+
+class EnrolledYearQuery(QueryApiView):
+    query_model = EnrolledYear
+
+
+# Enrolled Course
+
+class EnrolledCourseQuery(QueryApiView):
+    query_model = EnrolledCourse
+
