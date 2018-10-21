@@ -1,14 +1,10 @@
-from typing import Type
-
 from django.core.exceptions import FieldError
-from django.db.models import Model
 from django.http import JsonResponse
 from jsonschema import ValidationError
-from rest_framework.decorators import parser_classes, api_view
+from rest_framework.views import APIView
 
 from dashboard.apps.dashboard_api.jsonquery import jsonquery
 from dashboard.apps.dashboard_api.models import *
-from rest_framework import parsers
 
 
 # ========================================================================= #
@@ -16,18 +12,23 @@ from rest_framework import parsers
 # ========================================================================= #
 
 
-def _perform_query(model: Type[Model], request):
-    try:
-        queryset = jsonquery.parse(
-            model,
-            request.data
-        )
-    except ValidationError as e:
-        return JsonResponse({"status": "invalid", "message": str(e)})
-    except FieldError as e:
-        return JsonResponse({"status": "invalid", "message": str(e)})
+class QueryApiView(APIView):
 
-    return JsonResponse({"status": "valid", "results": list(queryset)})
+    query_model = None
+
+    def post(self,  request, *args, **kwargs):
+        try:
+            queryset = jsonquery.parse_request(self.query_model, request.data)
+        except ValidationError as e:
+            return JsonResponse({"status": "invalid", "message": str(e)})   # received json is wrong
+        except FieldError as e:
+            return JsonResponse({"status": "invalid", "message": str(e)})   # received field name is wrong / does not exist
+        # valid result
+        return JsonResponse({"status": "valid", "results": list(queryset)})
+
+    def options(self, request, *args, **kwargs):
+        print(request, args, kwargs)
+        return JsonResponse({'status': 'active'})
 
 
 # ========================================================================= #
@@ -37,23 +38,17 @@ def _perform_query(model: Type[Model], request):
 
 # CourseStats
 
-@api_view(['GET', 'POST'])  # TODO: add OPTIONS support to retrieve possible options for the request
-@parser_classes((parsers.JSONParser,))
-def course_stats_query(request):
-    return _perform_query(CourseStats, request)
+class CourseStatsQuery(QueryApiView):
+    query_model = CourseStats
 
 
 # SchoolInfo
 
-@api_view(['GET', 'POST'])  # TODO: add OPTIONS support to retrieve possible options for the request
-@parser_classes((parsers.JSONParser,))
-def school_info_query(request):
-    return _perform_query(SchoolInfo, request)
+class SchoolInfoQuery(QueryApiView):
+    query_model = SchoolInfo
 
 
 # CourseInfo
 
-@api_view(['GET', 'POST'])  # TODO: add OPTIONS support to retrieve possible options for the request
-@parser_classes((parsers.JSONParser,))
-def course_info_query(request):
-    return _perform_query(CourseInfo, request)
+class CourseInfoQuery(QueryApiView):
+    query_model = CourseInfo

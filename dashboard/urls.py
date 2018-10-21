@@ -43,9 +43,9 @@ router = routers.DefaultRouter()
 
 # Query Views
 urlpatterns += [
-    path('query/course-stats', course_stats_query),
-    path('query/school-info', school_info_query),
-    path('query/course-info', course_info_query),
+    path('query/course-stats', CourseStatsQuery.as_view()),
+    path('query/school-info', SchoolInfoQuery.as_view()),
+    path('query/course-info', CourseInfoQuery.as_view()),
 ]
 
 # School Info
