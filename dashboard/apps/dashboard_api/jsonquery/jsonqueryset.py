@@ -69,16 +69,17 @@ def schema_array(items=None, unique=True, min_size=0):
     }
 
 
-def schema_action(type_name, data=None):
+def schema_action(type_name, data=None, not_required=None):
+    assert (type(data) == dict and 'action' not in data) or (data is None)
     if data is None:
         return schema_object({
-            'type': {"const": type_name}
+            'action': {"const": type_name}
         })
     else:
         return schema_object({
-            'type': {"const": type_name},
-            'data': data
-        })
+            'action': {"const": type_name},
+            **data
+        }, not_required=set([] if not_required is None else not_required) - {'action'})
 
 # Methods that return new QuerySets: https://docs.djangoproject.com/en/2.1/ref/models/querysets/
 #   o   filter()
@@ -96,28 +97,38 @@ def schema_action(type_name, data=None):
 schema_queryset = schema_object({
     "query": schema_array(schema_any(
         # data based actions
-        schema_action('filter', {"type": "string"}),
-        schema_action('exclude', {"type": "string"}),
-        schema_action('annotate', schema_array(
-            schema_object({
-                "field": {"type": "string"},
-                "value": {"type": "string"},
-            })
-        )),
-        schema_action('values', schema_array(
-            {"type": "string"}
-        )),
-        schema_action('order_by', schema_array(
-            schema_object({
-                "field": {"type": "string"},
-                "descending": {"type": "boolean"},
-            }, not_required=['descending'])
-        )),
-        schema_action('limit', schema_object({
-            "type": {"enum": ["first", "last", "page"]},
+        schema_action('filter', {
+            "expr": {"type": "string"}
+        }),
+        schema_action('exclude', {
+            "expr": {"type": "string"}
+        }),
+        schema_action('annotate', {
+            "fields": schema_array(
+                schema_object({
+                    "field": {"type": "string"},
+                    "expr": {"type": "string"},
+                })
+            )
+        }),
+        schema_action('values', {
+            "fields": schema_array(
+                {"type": "string"}
+            )
+        }),
+        schema_action('order_by', {
+            "fields": schema_array(
+                schema_object({
+                    "field": {"type": "string"},
+                    "descending": {"type": "boolean"},
+                }, not_required=['descending'])
+            )
+        }),
+        schema_action('limit', {
+            "method": {"enum": ["first", "last", "page"]},
             "num": {"type": "integer"},
             "index": {"type": "integer"},
-        }, not_required=['index'])),
+        }, not_required=['index']),
         # # # singular actions
         schema_action('reverse'),
         schema_action('distinct'),
@@ -127,15 +138,13 @@ schema_queryset = schema_object({
 })
 
 
-pprint(schema_queryset)
-
 # ========================================================================= #
 # PARSERS                                                                   #
 # ========================================================================= #
 
 def _filter(queryset: QuerySet, fragment: str, exclude=False):
-    fragment = re.sub("[\n \t]", " ", fragment)
-    if "Q(" not in fragment:
+    expr = re.sub("[\n \t]", " ", fragment['expr'])
+    if "Q(" not in expr:
         raise Exception("expression does not contain Q(...)")
     # interpreter
     _aeval = asteval.Interpreter(
@@ -145,7 +154,7 @@ def _filter(queryset: QuerySet, fragment: str, exclude=False):
         builtins_readonly=True
     )
     # filter
-    expr = _aeval(fragment)
+    expr = _aeval(expr)
     if not isinstance(expr, models.Q):
         raise Exception("expression must produce an instance of models.Q")
     return (queryset.exclude if exclude else queryset.filter)(expr)
@@ -161,10 +170,10 @@ def _annotate(queryset: QuerySet, fragment: List):
     )
     # annotate
     annotate = {}
-    for f in fragment:
-        (field, value) = f['field'], f['value']
-        value = re.sub("[\n \t]", " ", value)
-        expr = value if not "'" in value and not '"' in value else _aeval(value)
+    for f in fragment['fields']:
+        (field, expr) = f['field'], f['expr']
+        expr = re.sub("[\n \t]", " ", expr)
+        expr = expr if not "'" in expr and not '"' in expr else _aeval(expr)
         annotate[field] = expr
     return queryset.annotate(**annotate)
 
@@ -172,21 +181,21 @@ def _annotate(queryset: QuerySet, fragment: List):
 def _order_by(queryset: QuerySet, fragment: List[Dict]):
     return queryset.order_by(*[
         (("-" + order['field']) if ('descending' in order and order['descending']) else order['field'])
-        for order in fragment
+        for order in fragment['fields']
     ])
 
 
 def _limit(queryset: QuerySet, fragment: Dict[str, object]):
-    (type, num) = fragment['type'], fragment['num']
+    (method, num) = fragment['method'], fragment['num']
 
     if num == -1:
         return queryset
 
-    if type == 'page':
+    if method == 'page':
         i = fragment['index'] if 'index' in fragment else 0
         return queryset[max(0, i * num):min((i + 1) * num, len(queryset))]
     else:
-        if type == 'last':
+        if method == 'last':
             queryset.reverse()
         return queryset[:min(num, len(queryset))]
 
@@ -204,19 +213,19 @@ def parse_request(model: Type[Model], data: Dict):
 
     if 'query' in data and len(data['query']) > 0:
         for i, fragment in enumerate(data['query']):
-            ftype = fragment['type']
+            ftype = fragment['action']
             if ftype == 'filter':
-                queryset = _filter(queryset, fragment['data'], exclude=False)
+                queryset = _filter(queryset, fragment, exclude=False)
             elif ftype == 'exclude':
-                queryset = _filter(queryset, fragment['data'], exclude=True)
+                queryset = _filter(queryset, fragment, exclude=True)
             elif ftype == 'annotate':
-                queryset = _annotate(queryset, fragment['data'])
+                queryset = _annotate(queryset, fragment)
             elif ftype == 'values':
-                queryset = queryset.values(*fragment['data'])
+                queryset = queryset.values(*fragment['fields'])
             elif ftype == 'order_by':
-                queryset = _order_by(queryset, fragment['data'])
+                queryset = _order_by(queryset, fragment)
             elif ftype == 'limit':
-                queryset = _limit(queryset, fragment['data'])
+                queryset = _limit(queryset, fragment)
             elif ftype == "reverse":
                 queryset = queryset.reverse()
             elif ftype == "distinct":
