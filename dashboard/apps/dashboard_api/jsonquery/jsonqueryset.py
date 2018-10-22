@@ -97,19 +97,22 @@ schema_queryset = schema_object({
     "query": schema_array(schema_any(
         # data based actions
         schema_action('filter', {"type": "string"}),
-        # schema_action('exclude', {"type": "string"}),
-        # schema_action('annotate', schema_array(
-        #     schema_object({
-        #         "field": {"type": "string"},
-        #         "value": {"type": "string"},
-        #     })
-        # )),
-        # schema_action('order_by', schema_array(
-        #     schema_object({
-        #         "field": {"type": "string"},
-        #         "descending": {"type": "boolean"},
-        #     }, not_required=['descending'])
-        # )),
+        schema_action('exclude', {"type": "string"}),
+        schema_action('annotate', schema_array(
+            schema_object({
+                "field": {"type": "string"},
+                "value": {"type": "string"},
+            })
+        )),
+        schema_action('values', schema_array(
+            {"type": "string"}
+        )),
+        schema_action('order_by', schema_array(
+            schema_object({
+                "field": {"type": "string"},
+                "descending": {"type": "boolean"},
+            }, not_required=['descending'])
+        )),
         schema_action('limit', schema_object({
             "type": {"enum": ["first", "last", "page"]},
             "num": {"type": "integer"},
@@ -208,6 +211,8 @@ def parse_request(model: Type[Model], data: Dict):
                 queryset = _filter(queryset, fragment['data'], exclude=True)
             elif ftype == 'annotate':
                 queryset = _annotate(queryset, fragment['data'])
+            elif ftype == 'values':
+                queryset = queryset.values(*fragment['data'])
             elif ftype == 'order_by':
                 queryset = _order_by(queryset, fragment['data'])
             elif ftype == 'limit':
@@ -219,7 +224,7 @@ def parse_request(model: Type[Model], data: Dict):
             elif ftype == "all":
                 queryset = queryset.all()
             elif ftype == "none":
-                queryset = queryset.values()
+                queryset = queryset.none()
 
     return queryset
 
