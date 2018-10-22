@@ -68,7 +68,7 @@ class ModelInfo(object):
         return self.static_generate_query_tree(self.model)
 
     @staticmethod
-    def static_generate_query_tree(self, model: Type[Model], field_stack=None, dictionary=None):
+    def static_generate_query_tree(model: Type[Model], field_stack=None, dictionary=None):
         """
         Generate a dictionary of all the fields accessible from this model,
         including via foreign keys.

@@ -3,7 +3,7 @@ from django.http import JsonResponse
 from jsonschema import ValidationError
 from rest_framework.views import APIView
 
-from dashboard.apps.dashboard_api.jsonquery import jsonquery
+from dashboard.apps.dashboard_api.jsonquery import jsonquery, jsonqueryset
 from dashboard.apps.dashboard_api.models import *
 
 
@@ -18,7 +18,7 @@ class QueryApiView(APIView):
 
     def post(self,  request, *args, **kwargs):
         try:
-            queryset = jsonquery.parse_request(self.query_model, request.data)
+            queryset = jsonqueryset.parse_request(self.query_model, request.data)
         except ValidationError as e:
             return JsonResponse({"status": "invalid", "message": str(e)})   # received json is wrong
         except FieldError as e:
