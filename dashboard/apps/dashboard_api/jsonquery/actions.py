@@ -375,3 +375,27 @@ class NoneAction(QuerysetAction):
 
     def handle(self, queryset: QuerySet, fragment: dict):
         return queryset.none()
+
+
+# ========================================================================= #
+# NON-STANDARD ACTIONS                                                      #
+# ========================================================================= #
+
+# @register_action
+# class GroupByAction(QuerysetAction):
+#     name = "group_by"
+#     properties = {
+#         "values": ValuesAction.properties['fields'],
+#         "yield": AnnotateAction.properties['fields']
+#     }
+#     not_required = ['yield']
+#
+#     def handle(self, queryset: QuerySet, fragment: dict):
+#         queryset = ACTIONS['values'].handle(queryset, {"fields": fragment['values']})
+#         queryset = ACTIONS['annotate'].handle(queryset, {"fields": fragment['yield'] if 'yield' in fragment else []})
+#         return queryset
+#
+#     def fake(self, fakeset: dict, fragment: dict):
+#         fakeset = ACTIONS['values'].fake(fakeset, {"fields": fragment['values']})
+#         fakeset = ACTIONS['annotate'].fake(fakeset, {"fields": fragment['yield'] if 'yield' in fragment else []})
+#         return fakeset
