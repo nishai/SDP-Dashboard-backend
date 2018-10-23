@@ -19,6 +19,15 @@ class QueryApiView(APIView):
     def post(self,  request, *args, **kwargs):
         try:
             queryset = jsonqueryset.parse_request(self.query_model, request.data)
+            try:
+                if len(queryset) > 0:
+                    item = list(queryset[:1])[0]
+                    if type(item) is dict:
+                        names = tuple(item)
+                        fakes = tuple(jsonqueryset.parse_options(self.query_model, request.data))
+                        print(f"\n{'='*30}\nNAMES vs FAKES - equal: {names == fakes}\nnames: {names}\nfakes: {fakes}\n{'='*30}\n")
+            except:
+                print(f"\n{'=' * 30}\nNAMES vs FAKES - failed\n{'=' * 30}\n")
         except ValidationError as e:
             return JsonResponse({"status": "invalid", "message": str(e)})   # received json is wrong
         except FieldError as e:
@@ -27,8 +36,14 @@ class QueryApiView(APIView):
         return JsonResponse({"status": "valid", "results": list(queryset)})
 
     def options(self, request, *args, **kwargs):
-        print(request, args, kwargs)
-        return JsonResponse({'status': 'active'})
+        try:
+            queryset = jsonqueryset.parse_options(self.query_model, request.data)
+        except ValidationError as e:
+            return JsonResponse({"status": "invalid", "message": str(e)})   # received json is wrong
+        except FieldError as e:
+            return JsonResponse({"status": "invalid", "message": str(e)})   # received field name is wrong / does not exist
+        # valid result
+        return JsonResponse({"status": "valid", "results": list(queryset)})
 
 
 # ========================================================================= #
