@@ -100,7 +100,8 @@ clean-data:
 
 clean-migrations:
 	@make section tag="Cleaning Migrations"
-	make -C "./dashboard/apps/dashboard_api/migrations" clean-migrations
+	@#make -C "./dashboard/apps/dashboard_api/migrations" clean-migrations
+	@find ./dashboard/apps/*/migrations/* -not -name "README.md" -a -not -name ".gitignore" -a -not -name "Makefile" -a -not -name "__init__.py" -print -exec rm -rf {} \; || true
 
 clean-dist:
 	@make section tag="Cleaning Dist Folder"
