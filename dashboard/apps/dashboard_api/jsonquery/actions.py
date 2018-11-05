@@ -326,11 +326,12 @@ class LimitAction(QuerysetAction):
             return queryset
         if method == 'page':
             i = fragment['index'] if 'index' in fragment else 0
-            return queryset[max(0, i * num):min((i + 1) * num, len(queryset))]
+            offset = i * num
+            return queryset[max(0, offset):min(offset + num, queryset.count())]
         else:
             if method == 'last':
                 queryset.reverse()
-            return queryset[:min(num, len(queryset))]
+            return queryset[0:min(num, queryset.count())]
 
 
 @register_action
