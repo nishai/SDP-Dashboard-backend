@@ -17,3 +17,11 @@ GRAPH_MODELS = {
 
 # dangerous on production
 CORS_ORIGIN_ALLOW_ALL = True
+
+# makes life easier sometimes
+REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] += [
+    'rest_framework.authentication.SessionAuthentication',
+    'rest_framework.authentication.BasicAuthentication',
+]
+
+
