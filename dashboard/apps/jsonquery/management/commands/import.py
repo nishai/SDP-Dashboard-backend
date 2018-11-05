@@ -1,5 +1,5 @@
-from dashboard.apps.dashboard_api.management.util.base_commands import DataImportCommand
-from dashboard.apps.dashboard_api.models import *
+from dashboard.apps.jsonquery.management.util.base_commands import DataImportCommand
+from dashboard.apps.jsonquery.models import *
 import logging
 
 logger = logging.getLogger('debug-import')

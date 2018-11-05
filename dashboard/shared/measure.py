@@ -2,6 +2,14 @@ import time
 
 
 class Measure:
+    """
+    This class is intended to measure the runtime of a section of code, using the 'with' statement.
+    eg.
+
+    with Measure("My Timer"):
+        print("I am being timed")
+    """
+
     _call_stack = []
     _default_printer = print
 

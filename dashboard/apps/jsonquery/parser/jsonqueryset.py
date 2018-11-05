@@ -1,6 +1,5 @@
 import copy
 import datetime
-from pprint import pprint
 from typing import Type
 
 from asteval import asteval
@@ -9,10 +8,10 @@ from django.db.models import QuerySet, Model, When, Case, Value
 from datetime import timedelta
 from django.utils import timezone
 
-from dashboard.apps.dashboard_api.jsonquery.schema import Schema
+from dashboard.apps.jsonquery.parser.schema import Schema
 
 from jsonschema import validate, ValidationError, SchemaError
-from dashboard.apps.dashboard_api.management.util.modelinfo import ModelInfo
+from dashboard.apps.jsonquery.management.util.modelinfo import ModelInfo
 
 
 # ========================================================================= #
@@ -51,6 +50,7 @@ def register_action(cls: Type['QuerysetAction']):
 
 # ========================================================================= #
 # REQUEST HANDLERS                                                          #
+# TODO: check https://github.com/carltongibson/django-filter                #
 # ========================================================================= #
 
 

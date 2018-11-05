@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from dashboard.apps.dashboard_api.models.user_models import *
+from dashboard.apps.dashapi.models import *
+
 
 # ========================================================================= #
 # USER SERIALIZER                                                           #

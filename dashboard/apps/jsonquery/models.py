@@ -1,8 +1,15 @@
 from django.core.validators import DecimalValidator
 from django.db import models
+from dashboard.shared.admin import admin_site_register
+
+
+# ========================================================================= #
+# WITS Models - Modeled after the Wits Self-Service                         #
+# ========================================================================= #
 
 
 # not in excel
+@admin_site_register
 class Faculty(models.Model):
     faculty_id = models.AutoField(primary_key=True)
     faculty_title = models.CharField(max_length=255)
@@ -13,6 +20,7 @@ class Faculty(models.Model):
 
 
 # not in excel
+@admin_site_register
 class School(models.Model):
     school_id = models.AutoField(primary_key=True)
     school_title = models.CharField(max_length=255)
@@ -24,6 +32,7 @@ class School(models.Model):
 
 
 # partially in excel
+@admin_site_register
 class Course(models.Model):
     course_code = models.CharField(primary_key=True, max_length=5)
     # course_title = models.CharField(max_length=255, null=True) # TODO fix import
@@ -34,6 +43,7 @@ class Course(models.Model):
         unique_together = ("course_code",)
 
 
+@admin_site_register
 class Program(models.Model):
     program_code = models.CharField(primary_key=True, max_length=5)
     program_title = models.CharField(max_length=255, null=True)
@@ -43,6 +53,7 @@ class Program(models.Model):
         unique_together = ("program_code",)
 
 
+@admin_site_register
 class ProgressOutcome(models.Model):
     progress_outcome_type = models.CharField(primary_key=True, max_length=10)
     progress_outcome_type_description = models.CharField(max_length=254)
@@ -52,6 +63,7 @@ class ProgressOutcome(models.Model):
         unique_together = ("progress_outcome_type",)
 
 
+@admin_site_register
 class SecondarySchool(models.Model):
     secondary_school_name = models.CharField(primary_key=True, max_length=255)
     secondary_school_quintile = models.CharField(max_length=5, null=True)
@@ -62,6 +74,7 @@ class SecondarySchool(models.Model):
         unique_together = ("secondary_school_name",)
 
 
+@admin_site_register
 class Student(models.Model):
     encrypted_student_no = models.CharField(primary_key=True, max_length=40)
     nationality_short_name = models.CharField(max_length=255, null=True)
@@ -76,6 +89,7 @@ class Student(models.Model):
         unique_together = ("encrypted_student_no",)
 
 
+@admin_site_register
 class EnrolledYear(models.Model):
     encrypted_student_no = models.ForeignKey('Student', related_name='enrolled_years', on_delete=models.CASCADE)
     program_code = models.ForeignKey('Program', related_name='enrolled_years', on_delete=models.CASCADE)
@@ -90,6 +104,7 @@ class EnrolledYear(models.Model):
         unique_together = ("encrypted_student_no", "program_code", "calendar_instance_year")
 
 
+@admin_site_register
 class EnrolledCourse(models.Model):
     enrolled_year_id = models.ForeignKey('EnrolledYear', related_name='enrolled_courses', on_delete=models.CASCADE, null=True)
     course_code = models.ForeignKey('Course', related_name='enrolled_courses', on_delete=models.CASCADE)
@@ -99,6 +114,74 @@ class EnrolledCourse(models.Model):
     class Meta:
         verbose_name = "Information about a student for a course in a specific calendar year"
         unique_together = ("enrolled_year_id", "course_code")
+
+
+# ========================================================================= #
+# Database Description - Legacy                                             #
+# ========================================================================= #
+
+
+"""
+[NO FACULTY TABLE]
+
+SCHOOL
+  * School Description
+    Faculty Description
+
+$ COURSE
+  * Course Code                               =   CHEM2003
+    Course Description
+    > SCHOOL (School Code)
+
+$ PROGRAM
+  * Program Code                              =   SB000
+    Program Title                             =   Bachelor of  Science
+
+$ PROGRESS_DESCRIPTION
+  * Progress Outcome Type                     =   PCD
+    Progress Outcome Type Description         =   Permitted to proceed
+
+$ STUDENT
+  * Encrypted Student No                      =   0021D31BE03E4AB097DCF9C0C89B13BA
+    Nationality Short Name                    =   South Africa
+    Home Language Description                 =   South Sotho
+    Race Description                          =   Black
+    Gender                                    =   F
+    Age                                       =   25
+    Secondary School Quintile                 =   4
+    Urban / Rural Secondary School            =   URBAN
+    Secondary School Name                     =   Forte Secondary School
+
+COURSE_STATS
+  * > STUDENT (Encrypted Student No)
+  * Calendar Instance Year                    =   2013
+  * Course Code                               =   CHEM2003
+    Final Mark                                =   50
+    Final Grade                               =   PMP
+
+AVERAGE_YEAR_MARKS
+  * > STUDENT (Encrypted Student No)
+  * Calendar Instance Year                    =   2013
+    > PROGRESS_DESCRIPTION (Progress Outcome Type)
+    Average Marks                             =   65,67
+    Award Grade                               =   Q         # used for 3rd years / degree completion
+
+YEAR_OF_STUDY
+  * > STUDENT (Encrypted Student No)
+  * Calendar Instance Year                    =   2013
+    Year of Study                             =   YOS 2
+
+STUDENT_PROGRAMS
+  * > STUDENT (Encrypted Student No)
+  * Calendar Instance Year                    =   2013
+  * > PROGRAM (Program Code)
+    Degree Complete                           =   `(Year of Study == "YOS 3") and (Progress Outcome Type == "Q")`
+"""
+
+
+# ========================================================================= #
+# Database Description - New                                                #
+# ========================================================================= #
 
 
 """

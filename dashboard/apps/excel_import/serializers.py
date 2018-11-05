@@ -1,8 +1,11 @@
 from rest_framework import serializers
-from dashboard.apps.dashboard_api.models.stat_models import *
+
+from dashboard.apps.excel_import.models import *
+
 
 # ========================================================================= #
-# STAT SERIALIZER - Wits performance data                                   #
+# STAT SERIALIZERS - Wits performance data                                  #
+# Legacy Views - TODO: REMOVE                                               #
 # ========================================================================= #
 
 

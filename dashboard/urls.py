@@ -18,7 +18,10 @@ from django.contrib import admin
 from django.urls import path
 from rest_framework_swagger.views import get_swagger_view
 
-from dashboard.apps.dashboard_api.views import *
+from dashboard.apps.dashapi.views import *
+from dashboard.apps.excel_import.views import *
+from dashboard.apps.jsonquery.serializers import *
+from dashboard.apps.jsonquery.views import *
 from django.conf.urls import url, include
 from rest_framework import routers
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token, verify_jwt_token

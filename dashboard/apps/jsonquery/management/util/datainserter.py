@@ -5,9 +5,9 @@ from django.db import connection, transaction
 from django.db.models import Model
 from django.forms import model_to_dict
 
-from dashboard.apps.dashboard_api.management.util.errors import VisibleError
-from dashboard.apps.dashboard_api.management.util.measure import Measure
-from dashboard.apps.dashboard_api.management.util.modelinfo import ModelInfo
+from dashboard.shared.errors import VisibleError
+from dashboard.shared.measure import Measure
+from dashboard.apps.jsonquery.management.util.modelinfo import ModelInfo
 
 logger = logging.getLogger('debug-import')
 

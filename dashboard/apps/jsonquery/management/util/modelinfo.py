@@ -2,7 +2,7 @@ import logging
 from typing import Type
 from django.db.models import Model, AutoField, ForeignKey
 from django.db.models.fields.reverse_related import ForeignObjectRel
-from dashboard.apps.dashboard_api.management.util.errors import VisibleError
+from dashboard.shared.errors import VisibleError
 
 logger = logging.getLogger('debug-import')
 

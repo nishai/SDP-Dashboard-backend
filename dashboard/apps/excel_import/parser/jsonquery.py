@@ -8,7 +8,7 @@ from functools import reduce
 # ========================================================================= #
 from jsonschema import validate, ValidationError, SchemaError
 
-from dashboard.apps.dashboard_api.management.util.modelinfo import ModelInfo
+from dashboard.apps.jsonquery.management.util.modelinfo import ModelInfo
 
 AGGREGATE_METHODS = {
     "max": models.Max,

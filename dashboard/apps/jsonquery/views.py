@@ -1,12 +1,10 @@
-from pprint import pprint
-
 from django.core.exceptions import FieldError
 from django.http import JsonResponse
 from jsonschema import ValidationError
 from rest_framework.views import APIView
 
-from dashboard.apps.dashboard_api.jsonquery import jsonquery, jsonqueryset
-from dashboard.apps.dashboard_api.models import *
+from dashboard.apps.jsonquery.parser import jsonqueryset
+from dashboard.apps.jsonquery.models import *
 
 
 # ========================================================================= #
@@ -56,32 +54,6 @@ class QueryApiView(APIView):
             return JsonResponse({"status": "invalid", "message": str(e)})   # received field name is wrong / does not exist
         # valid result
         return JsonResponse({"status": "valid", "results": list(queryset)})
-
-
-# ========================================================================= #
-# OLD - QUERY VIEWS                                                         #
-# ========================================================================= #
-
-
-# CourseStats
-
-class CourseStatsQuery(QueryApiView):
-    query_model = CourseStats
-    querier = jsonquery
-
-
-# SchoolInfo
-
-class SchoolInfoQuery(QueryApiView):
-    query_model = SchoolInfo
-    querier = jsonquery
-
-
-# CourseInfo
-
-class CourseInfoQuery(QueryApiView):
-    query_model = CourseInfo
-    querier = jsonquery
 
 
 # ========================================================================= #

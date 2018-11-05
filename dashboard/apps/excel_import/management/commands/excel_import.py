@@ -6,7 +6,7 @@
 # lines with "pragma: no cover" comments are intended to not be included in code coverage. these lines are safty measures, mostly to help debug, but if the code works as it should these lines should never run, ni matter the input.
 
 # project imports
-from dashboard.apps.dashboard_api.models import *
+from dashboard.apps.jsonquery.models import *
 
 # django imports
 from django.core.management.base import BaseCommand  # for custom manage.py commands

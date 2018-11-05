@@ -52,8 +52,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     # dashboard apps
-    'dashboard.apps.dashboard_api',
-    'dashboard.apps.excel_import',
+    'dashboard.apps.dashapi',       # user related
+    'dashboard.apps.excel_import',  # wits related - legacy
+    'dashboard.apps.jsonquery',     # wits related
     # external apps
     'rest_framework',               # http://www.django-rest-framework.org
     'rest_framework_jwt',           # http://getblimp.github.io/django-rest-framework-jwt

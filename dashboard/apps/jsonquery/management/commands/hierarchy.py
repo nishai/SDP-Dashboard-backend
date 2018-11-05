@@ -3,8 +3,8 @@ import sys
 from django.core.management import BaseCommand
 from django.db import models
 
-from dashboard.apps.dashboard_api.management.util.errors import VisibleError
-from dashboard.apps.dashboard_api.management.util.modelinfo import ModelInfo
+from dashboard.apps.jsonquery.management.util.errors import VisibleError
+from dashboard.apps.jsonquery.management.util.modelinfo import ModelInfo
 
 
 class Command(BaseCommand):

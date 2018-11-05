@@ -2,8 +2,8 @@ from django.core.management.base import BaseCommand
 import os
 import logging
 
-from dashboard.apps.dashboard_api.management.util.data_util import save_table, load_tables
-from dashboard.apps.dashboard_api.models import RawStudentModel
+from dashboard.apps.jsonquery.management.util.data_util import save_table, load_tables
+from dashboard.apps.jsonquery.models import RawStudentModel
 
 logger = logging.getLogger('debug-import')
 
