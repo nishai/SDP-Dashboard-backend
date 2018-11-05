@@ -24,6 +24,14 @@ class DataImportCommand(BaseCommand):
     def handle(self, *args, **kwargs):
         if not type(self.options) == dict:
             raise Exception("DataImportCommand must have options defined")
+        # exit if nothing specified
+        if all(kwargs[option] is None for option in self.options):
+            print(f"Please specify one or more of: {', '.join(f'--{option} <file>' for option in self.options)}")
+            exit()
+        # exit if one of the options has no files specified
+        if any(kwargs[option] is not None and len(kwargs[option]) < 1 for option in self.options):
+            print(f"No file arguments found for: {', '.join(f'--{option} <file>' for option in self.options if kwargs[option] is not None and len(kwargs[option]) < 1)}")
+            exit()
         # for each custom option
         for option, import_options in self.options.items():
             # count number of records imported

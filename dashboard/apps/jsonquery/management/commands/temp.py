@@ -2,7 +2,7 @@ from pprint import pprint
 from django.core.management import BaseCommand
 from django.db import models
 
-from dashboard.apps.jsonquery.models import EnrolledCourse, CourseInfo
+from dashboard.apps.excel_import.models import CourseInfo
 
 
 class Command(BaseCommand):

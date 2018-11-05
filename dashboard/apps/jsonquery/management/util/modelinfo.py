@@ -20,7 +20,7 @@ class ModelInfo(object):
 
         # QUERIES
         # =======
-        self.query_field_map = self._generate_query_tree(model)
+        self.query_field_map = self._generate_query_tree()
 
         # HIERARCHY - TODO: find unnecessary data and remove, or create data structure for fields too.
         # =========

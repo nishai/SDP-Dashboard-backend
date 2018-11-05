@@ -2,8 +2,8 @@ from django.core.management.base import BaseCommand
 import os
 import logging
 
-from dashboard.apps.jsonquery.management.util.data_util import save_table, load_tables
-from dashboard.apps.jsonquery.models import RawStudentModel
+from dashboard.apps.excel_import.models import RawStudentModel
+from dashboard.apps.jsonquery.management.util.dataimport import DataImportCommand
 
 logger = logging.getLogger('debug-import')
 
@@ -53,7 +53,7 @@ class Command(BaseCommand):
             exit(1)
 
         # load and merge/append tables together
-        df = load_tables(options['files'], header=types[options['type'][0]]['header'], merged=True, dataframe=True)
+        df = DataImportCommand.load_tables(options['files'], header=types[options['type'][0]]['header'], merged=True, dataframe=True)
 
         if len(df.columns) != types[options['type'][0]]['width']:
             # TODO, infer type based off width, and thus obtain column names after this.
@@ -73,4 +73,4 @@ class Command(BaseCommand):
             logger.info(f"Saving: {path}")
             if limit >= 0:
                 df = df[:limit]
-            save_table(path, df)
+            DataImportCommand.save_table(path, df)
