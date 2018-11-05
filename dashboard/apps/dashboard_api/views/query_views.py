@@ -28,7 +28,7 @@ class QueryApiView(APIView):
                     item = None
                 if type(item) is dict:
                     names = tuple(item)
-                    fakes = tuple(self.querier.parse_options(self.query_model, request.data))
+                    fakes = tuple(self.querier.parse_request(self.query_model, request.data, fake=True))
                     print(
                         f"\n{'=' * 30}\nNAMES vs FAKES - equal: {names == fakes}\nnames: {names}\nfakes: {fakes}\n{'=' * 30}\n")
         except:
@@ -38,7 +38,7 @@ class QueryApiView(APIView):
         try:
             fake = ('fake' in request.query_params) and (request.query_params['fake'] in ['True', 'true', '1'])
             queryset = self.querier.parse_request(self.query_model, request.data, fake=fake)
-            if not fake:
+            if not fake: # check that fields are the same, for debugging purposes
                 self._debug_check_fields(request, queryset)
         except ValidationError as e:
             return JsonResponse({"status": "invalid", "message": "json error", "description": str(e)})   # received json is wrong
