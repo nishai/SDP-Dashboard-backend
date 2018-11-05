@@ -3,14 +3,33 @@ branch = True
 source = dashboard-backend
 
 [report]
+
 exclude_lines =
-    if self.debug:
+    # Have to re-enable the standard pragma
     pragma: no cover
+    # Don't complain about missing debug-only code:
+    def __repr__
+    if self\.debug
+    if self.debug:
+    # Don't complain if tests don't hit defensive assertion code:
+    raise AssertionError
     raise NotImplementedError
+    # Don't complain if non-runnable code isn't run:
+    if 0:
     if __name__ == .__main__.:
     pass
+
 ignore_errors = True
+
 omit =
     */__init__.py
-    dashboard/apps/*/migrations/*
     */tests.py
+    */test_*.py
+    */.local/*
+    manage.py
+    # project specific files
+    dashboard/apps/*/migrations/*
+    dashboard/settings/*
+
+include =
+    dashboard/*

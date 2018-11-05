@@ -17,7 +17,8 @@ if __name__ == '__main__':
 
     # default settings to use
     os.environ.setdefault('DJANGO_DEVELOP', 'false')
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', "dashboard.settings.dev" if os.environ.get("DJANGO_DEVELOP") == "true" else "dashboard.settings.prod")
+    os.environ.setdefault('DJANGO_TEST', 'false')
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', "dashboard.settings.test" if os.environ.get("DJANGO_TEST") == "true" else ("dashboard.settings.dev" if os.environ.get("DJANGO_DEVELOP") == "true" else "dashboard.settings.prod"))
 
     # check if django is installed
     try:

@@ -6,3 +6,7 @@ all:
 clean-data:
 	@echo "[Cleaning: ./data]"
 	@find ./* -not -name "README.md" -a -not -name ".gitignore" -a -not -name "Makefile" -exec rm -rf {} \; || true
+
+clean-test-data:
+	@echo "[Cleaning (Tests): ./data]"
+	@find ./* -not -name "README.md" -a -not -name ".gitignore" -a -not -name "Makefile" -a -not -name "db.sqlite3" -exec rm -rf {} \; || true

@@ -3,33 +3,6 @@ from django.urls import resolve
 
 _DEPRECATED_VIEWS = {}
 
-
-# TODO
-# def parametrized(dec):
-#     """
-#     decorator for decorators.
-#     Allows arguments to be passed to the intended decorator.
-#     """
-#     # import inspect
-#     # default_kwargs = {
-#     #     k: v.default
-#     #     for k, v in inspect.signature(dec).parameters.items()
-#     #     if v.default is not inspect.Parameter.empty
-#     # }
-#     def layer(*args, **kwargs):
-#         def repl(f):
-#             return dec(f, *args, **kwargs)
-#         return repl
-#     return layer
-
-# def WARN_view_deprecated(obj):
-
-#     func_path = obj.__module__ + "." + obj.__name__
-#     if func_path in _DEPRECATED_VIEWS:
-#         raise Exception(f"{func_path}: Already registered as deprecated.")
-#     _DEPRECATED_VIEWS[func_path] = ''
-#     return obj
-
 def WARN_view_deprecated(reason=''):
     """
     Register a view as deprecated.
