@@ -5,7 +5,9 @@ from typing import Type
 
 from asteval import asteval
 from django.db import models
-from django.db.models import QuerySet, Model
+from django.db.models import QuerySet, Model, When, Case, Value
+from datetime import timedelta
+from django.utils import timezone
 
 from dashboard.apps.dashboard_api.jsonquery.schema import Schema
 
@@ -51,7 +53,14 @@ _AGGREGATE_METHODS = {
 
 _ANNOTATE_METHODS = {
     "F": models.F,  # An object capable of resolving references to existing query objects or fields (ex. F(my_field) + 1).
-    "date": datetime.date
+    # sql generators - https://docs.djangoproject.com/en/2.0/ref/models/conditional-expressions/#conditional-aggregation
+    "When": When,
+    "Case": Case,
+    "Value": Value,
+    # util packages
+    "date": datetime.date,
+    "timedelta": timedelta,
+    "timezone": timezone,
 }
 
 _FILTER_METHODS = {
@@ -221,10 +230,9 @@ class ValuesAction(QuerysetAction):
             })
         ), min_size=1)
     }
-    not_required = ['fields']
 
     def _extract(self, fragment: dict):
-        if 'fields' not in fragment or len(fragment['fields']) < 1:
+        if len(fragment['fields']) < 1:
             raise Exception("'fields' must contain values - this limitation will hopefully be removed in future")
         (fields, expressions, names) = [], {}, []  # names exists so the fields dont go out of order.
         for field in fragment['fields']:
@@ -287,6 +295,48 @@ class ValuesListAction(QuerysetAction):
 class OrderByAction(QuerysetAction):
     """
     Action version of a QuerySet.order_by(...)
+
+    NOTE: order_by does not necessarily need to be placed at the end of a queryset.
+    For example slices do not support ordering, and so this needs to be called before hand, even though values may not yet exist for this.
+
+    {
+        "query": [
+            {
+                "action": "order_by",                                                                   <<< take note
+                "fields": [
+                    {
+                        "field": "asdf",                                                                <<< take note
+                        "descending": true
+                    }
+                ]
+            },
+            {
+                "action": "limit",                                                                      <<< take note
+                "method": "first",
+                "num": 2
+            },
+            {
+                "action": "values",
+                "fields": [
+                      "course_code",
+                        "enrolled_year_id__progress_outcome_type"
+                ]
+            },
+            {
+                "action": "annotate",                                                                   <<< take note
+                "fields": [
+                    {
+                        "field": "asdf",                                                                <<< take note
+                        "expr": "max('final_mark')"
+                    },
+                    {
+                        "field": "year",
+                        "expr": "F('enrolled_year_id__calendar_instance_year')"
+                    }
+                ]
+            }
+        ]
+    }
     """
 
     name = 'order_by'

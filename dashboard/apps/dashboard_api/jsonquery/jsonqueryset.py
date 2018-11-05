@@ -31,3 +31,58 @@ def parse_request(model: Type[Model], data: dict, fake=False):
 
 def parse_options(model: Type[Model], data: dict):
     return set(ModelInfo.static_generate_query_tree(model)) | set(parse_request(model, data, fake=True))
+
+
+
+# Valid Query Example:
+# Intended to more directly mimic a queryset.
+# Check 'actions' for query structure.
+# for example:
+#   ExampleModel.objects.all()
+#   .values('course_code', 'enrolled_year_id__progress_outcome_type')
+#   .annotate(asdf=Maximum('final_mark'), year=F('enrolled_year_id__calendar_instance_year'))
+#   .order_by('asdf')
+#
+# """
+# {
+# 	"query": [
+# 		{
+# 			"action": "values",
+# 			"fields": [
+# 				  "course_code",
+# 					"enrolled_year_id__progress_outcome_type"
+# 			]
+# 		},
+# 		{
+# 			"action": "annotate",
+# 			"fields": [
+# 				{
+# 					"field": "asdf",
+# 					"expr": "max('final_mark')"
+# 				},
+# 				{
+# 					"field": "year",
+# 					"expr": "F('enrolled_year_id__calendar_instance_year')"
+# 				}
+# 			]
+# 		},
+# 		{
+# 			"action": "order_by",
+# 			"fields": [
+# 				{
+# 					"field": "asdf",
+# 					"descending": true
+# 				}
+# 			]
+# 		},
+# 		{
+# 			"action": "values"
+# 		},
+# 		{
+# 			"action": "limit",
+# 			"method": "first",
+# 			"num": 100
+# 		}
+# 	]
+# }
+# """

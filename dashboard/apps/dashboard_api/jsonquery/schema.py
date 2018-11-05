@@ -43,7 +43,7 @@ class Schema:
     def enum(cls, *values): return {"enum": list(values)}
 
     @classmethod
-    def object(cls, properties, not_required=None, definitions=None):
+    def object(cls, properties, not_required=None, definitions=None, title=None):
         if not_required is None:
             not_required = set()
         if definitions is None:
@@ -53,7 +53,8 @@ class Schema:
             "properties": properties,
             "required": list(set(properties) - set(not_required)),
             "additionalProperties": False,
-            "definitions": definitions
+            "definitions": definitions,
+            **({} if title is None else {"title": title})
         }
 
     @classmethod
