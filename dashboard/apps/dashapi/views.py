@@ -3,6 +3,7 @@ from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
 from dashboard.apps.dashapi.serializers import *
+from dashboard.shared.middleware import WARN_view_deprecated
 from dashboard.shared.permissions import IsOwner
 
 
@@ -30,7 +31,6 @@ class ReportChartViewSet(viewsets.ModelViewSet):
 # ========================================================================= #
 # UTIL VIEWS                                                                #
 # ========================================================================= #
-
 
 @api_view(['GET'])
 @permission_classes([permissions.AllowAny])

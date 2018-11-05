@@ -24,4 +24,11 @@ REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] += [
     'rest_framework.authentication.BasicAuthentication',
 ]
 
+# print annoying deprecated messages:
+MIDDLEWARE += [
+    'dashboard.shared.middleware.DeprecatedViewsMiddleware'
+]
+
+
+
 
