@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from django.core.exceptions import FieldError
 from django.http import JsonResponse
 from jsonschema import ValidationError
@@ -15,29 +17,39 @@ from dashboard.apps.dashboard_api.models import *
 class QueryApiView(APIView):
 
     query_model = None
+    querier = jsonqueryset
+
+    def _debug_check_fields(self, request, queryset):
+        try:
+            if len(queryset) > 0:
+                try:
+                    item = list(queryset[:1])[0]
+                except:
+                    item = None
+                if type(item) is dict:
+                    names = tuple(item)
+                    fakes = tuple(self.querier.parse_options(self.query_model, request.data))
+                    print(
+                        f"\n{'=' * 30}\nNAMES vs FAKES - equal: {names == fakes}\nnames: {names}\nfakes: {fakes}\n{'=' * 30}\n")
+        except:
+            print(f"\n{'=' * 30}\nNAMES vs FAKES - failed\n{'=' * 30}\n")
 
     def post(self,  request, *args, **kwargs):
         try:
-            queryset = jsonqueryset.parse_request(self.query_model, request.data)
-            try:
-                if len(queryset) > 0:
-                    item = list(queryset[:1])[0]
-                    if type(item) is dict:
-                        names = tuple(item)
-                        fakes = tuple(jsonqueryset.parse_options(self.query_model, request.data))
-                        print(f"\n{'='*30}\nNAMES vs FAKES - equal: {names == fakes}\nnames: {names}\nfakes: {fakes}\n{'='*30}\n")
-            except:
-                print(f"\n{'=' * 30}\nNAMES vs FAKES - failed\n{'=' * 30}\n")
+            fake = ('fake' in request.query_params) and (request.query_params['fake'] in ['True', 'true', '1'])
+            queryset = self.querier.parse_request(self.query_model, request.data, fake=fake)
+            if not fake:
+                self._debug_check_fields(request, queryset)
         except ValidationError as e:
-            return JsonResponse({"status": "invalid", "message": str(e)})   # received json is wrong
+            return JsonResponse({"status": "invalid", "message": "json error", "description": str(e)})   # received json is wrong
         except FieldError as e:
-            return JsonResponse({"status": "invalid", "message": str(e)})   # received field name is wrong / does not exist
+            return JsonResponse({"status": "invalid", "message": "field not found", "description": str(e)})   # received field name is wrong / does not exist
         # valid result
         return JsonResponse({"status": "valid", "results": list(queryset)})
 
     def options(self, request, *args, **kwargs):
         try:
-            queryset = jsonqueryset.parse_options(self.query_model, request.data)
+            queryset = self.querier.parse_options(self.query_model, request.data)
         except ValidationError as e:
             return JsonResponse({"status": "invalid", "message": str(e)})   # received json is wrong
         except FieldError as e:
@@ -55,19 +67,21 @@ class QueryApiView(APIView):
 
 class CourseStatsQuery(QueryApiView):
     query_model = CourseStats
+    querier = jsonquery
 
 
 # SchoolInfo
 
 class SchoolInfoQuery(QueryApiView):
     query_model = SchoolInfo
+    querier = jsonquery
 
 
 # CourseInfo
 
 class CourseInfoQuery(QueryApiView):
     query_model = CourseInfo
-
+    querier = jsonquery
 
 
 # ========================================================================= #
@@ -127,4 +141,3 @@ class EnrolledYearQuery(QueryApiView):
 
 class EnrolledCourseQuery(QueryApiView):
     query_model = EnrolledCourse
-

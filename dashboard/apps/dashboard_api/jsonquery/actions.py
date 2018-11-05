@@ -1,11 +1,11 @@
 import copy
 import datetime
+from pprint import pprint
 from typing import Type
 
 from asteval import asteval
 from django.db import models
-from django.db.models import QuerySet
-from django.utils.datastructures import OrderedSet
+from django.db.models import QuerySet, Model
 
 from dashboard.apps.dashboard_api.jsonquery.schema import Schema
 
@@ -107,7 +107,7 @@ class QuerysetAction(object):
         """
         raise NotImplementedError()
 
-    def fake(self, fakeset: dict, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: dict, fragment: dict):
         """
         Fake operations on a queryset,
         by just mutating the fields in a dictionary
@@ -197,11 +197,12 @@ class AnnotateAction(QuerysetAction):
             annotate[f['field']] = _AEVAL_ANNOTATE(f['expr'])
         return queryset.annotate(**annotate)
 
-    def fake(self, fakeset: dict, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: dict, fragment: dict):
         return {
             **fakeset,
             **{f['field']: None for f in fragment['fields']}
         }
+
 
 @register_action
 class ValuesAction(QuerysetAction):
@@ -218,12 +219,14 @@ class ValuesAction(QuerysetAction):
                 "field": Schema.str,
                 "expr": Schema.str,
             })
-        ))
+        ), min_size=1)
     }
     not_required = ['fields']
 
     def _extract(self, fragment: dict):
-        (fields, expressions, names) = [], {}, []
+        if 'fields' not in fragment or len(fragment['fields']) < 1:
+            raise Exception("'fields' must contain values - this limitation will hopefully be removed in future")
+        (fields, expressions, names) = [], {}, []  # names exists so the fields dont go out of order.
         for field in fragment['fields']:
             if type(field) == str:
                 fields.append(field)
@@ -237,13 +240,18 @@ class ValuesAction(QuerysetAction):
 
     def handle(self, queryset: QuerySet, fragment: dict):
         (fields, expressions, names) = self._extract(fragment)
-        return queryset.values(*fields, **expressions)
+        queryset = queryset.values(*fields, **expressions)
+        return queryset
 
-    def fake(self, fakeset: dict, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: dict, fragment: dict):
         (fields, expressions, names) = self._extract(fragment)
-        return {
-            **{f: None for f in names},
-        }
+        if len(names) > 0:
+            return {**{f: None for f in names}}
+        else:
+            # TODO: this needs to emulate the queryset, and store separate values for annotations, values, expressions etc.
+            # logic taken from queryset.query.set_values
+            return {**{f: None for f in set(f.attname for f in model._meta.concrete_fields) | set(fakeset)}}
+
 
 @register_action
 class ValuesListAction(QuerysetAction):
@@ -262,6 +270,7 @@ class ValuesListAction(QuerysetAction):
     not_required = ['fields', 'flat', 'named']
 
     def handle(self, queryset: QuerySet, fragment: dict):
+        # TODO: does this behave the same as values() when no fields are passed?
         if 'fields' not in fragment:
             fragment['fields'] = []
         if 'flat' not in fragment:
@@ -270,7 +279,7 @@ class ValuesListAction(QuerysetAction):
             fragment['named'] = False
         return queryset.values_list(*fragment['fields'], flat=fragment['flat'], named=fragment['named'])
 
-    def fake(self, fakeset: dict, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: dict, fragment: dict):
         return {f: None for f in fragment['fields']}
 
 

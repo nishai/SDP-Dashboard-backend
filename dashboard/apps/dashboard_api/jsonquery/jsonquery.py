@@ -285,13 +285,16 @@ def _rename_field(model, name):
     return name
 
 
-def parse_request(model: Type[Model], data: Dict):
+def parse_request(model: Type[Model], data: Dict, fake=False):
     try:
         validate(data, schema_query)
     except ValidationError as e:
         raise e
     except SchemaError as e:
         raise e  # we caused this with invalid schema above
+
+    if fake:
+        raise NotImplementedError("fake=True not supported")
 
     queryset = model.objects.all().values()
 
@@ -317,19 +320,7 @@ def parse_request(model: Type[Model], data: Dict):
 
 
 def parse_options(model: Type[Model], data: Dict):
-    try:
-        validate(data, schema_query)
-    except ValidationError as e:
-        return False
-    except SchemaError as e:
-        raise e  # we caused this with invalid schema above
-
-    try:
-        # TODO, dynamically change based on query.
-        return ModelInfo.static_generate_query_tree(model)
-    except:
-        print("FAILED IN parse_options")
-        return {}
+    return ModelInfo.static_generate_query_tree(model)
 
 
 # TODO: check https://github.com/carltongibson/django-filter

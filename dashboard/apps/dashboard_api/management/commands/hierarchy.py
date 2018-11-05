@@ -1,12 +1,10 @@
 import inspect
 import sys
-from pprint import pprint
 from django.core.management import BaseCommand
 from django.db import models
 
 from dashboard.apps.dashboard_api.management.util.errors import VisibleError
 from dashboard.apps.dashboard_api.management.util.modelinfo import ModelInfo
-from dashboard.apps.dashboard_api.models import EnrolledCourse
 
 
 class Command(BaseCommand):
