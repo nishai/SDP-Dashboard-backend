@@ -147,6 +147,15 @@ AUTHENTICATION_BACKENDS = [
     'dashboard.settings.ldap.backends.LDAPBackendWitsStaff',     # extends 'django_auth_ldap.backend.LDAPBackend'
 ]
 
+# All the settings: https://getblimp.github.io/django-rest-framework-jwt/#additional-settings
+# Clarification on expiration settings: https://github.com/GetBlimp/django-rest-framework-jwt/issues/92#issuecomment-227763338
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),             # Default: seconds=300 - individual token expiration time (cannot be used to refresh if this passes)
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=30),    # Default: days=7 - how much time after the first original token was issued that future tokens can be refreshed from.
+    # 'JWT_AUTH_HEADER_PREFIX': 'JWT',                              # Default: 'JWT' - http header "Authentication: JWT <token>"
+    # 'JWT_AUTH_COOKIE': None,                                      # Default: None - If the specified cookie name should also be checked in addition to the auth header (header overrides cookie if present)
+}
+
 # ========================================================================= #
 # Rest Framework                                                            #
 # ========================================================================= #
