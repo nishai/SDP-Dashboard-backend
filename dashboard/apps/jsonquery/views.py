@@ -1,6 +1,7 @@
 from django.core.exceptions import FieldError
 from django.http import JsonResponse
 from jsonschema import ValidationError
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.views import APIView
 
 from dashboard.apps.jsonquery.parser import jsonqueryset
@@ -199,3 +200,18 @@ class EnrolledCourseViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = EnrolledCourse.objects.all()
     serializer_class = EnrolledCourseSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly, )
+
+
+# ========================================================================= #
+# QUERY VIEW                                                                #
+# ========================================================================= #
+
+
+@api_view(['OPTIONS'])
+@permission_classes([permissions.AllowAny])
+@authentication_classes([])
+def query_view(request):
+    """
+    Used to check the structure of a query.
+    """
+    return JsonResponse({"status": "valid", "schema": jsonqueryset.SCHEMA})

@@ -1,3 +1,4 @@
+from django.conf.urls import url
 from django.urls import path
 from dashboard.apps.jsonquery.views import *
 from rest_framework import routers
@@ -18,6 +19,7 @@ router.register(r'data/course-enrollment', EnrolledCourseViewSet)
 # Urls
 urlpatterns = [
     *router.urls,
+    url(r'query', query_view),  # Get the schema
     path('query/faculties', FacultyQuery.as_view()),
     path('query/schools', SchoolQuery.as_view()),
     path('query/courses', CourseQuery.as_view()),
