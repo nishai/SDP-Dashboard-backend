@@ -30,5 +30,10 @@ class CourseStatsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CourseStatsSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+# AverageYearStats
 
+class AverageYearStatsViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = AverageYearMarks.objects.order_by("progress_outcome_type")
+    serializer_class = AverageYearMarksSerializer
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 

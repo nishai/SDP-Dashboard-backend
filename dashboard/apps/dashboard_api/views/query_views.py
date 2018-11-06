@@ -55,3 +55,10 @@ def school_info_query(request):
 @parser_classes((parsers.JSONParser,))
 def course_info_query(request):
     return _perform_query(CourseInfo, request)
+
+# AverageYearStats
+
+@api_view(['GET', 'POST'])  # TODO: add OPTIONS support to retrieve possible options for the request
+@parser_classes((parsers.JSONParser,))
+def average_year_stats_query(request):
+    return _perform_query(AverageYearMarks, request)
