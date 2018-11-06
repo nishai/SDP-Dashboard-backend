@@ -15,7 +15,7 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        module = 'dashboard.apps.dashboard_api.models'
+        module = 'dashboard.apps.jsonquery.models'
         clsmembers = inspect.getmembers(sys.modules[module], inspect.isclass)
         for name, cls in clsmembers:
             if getattr(cls, '__module__', '').startswith(module) and issubclass(cls, models.Model):

@@ -1,0 +1,101 @@
+encrypted_student_no,calendar_instance_year,program_code,program_title,year_of_study,nationality_short_name,home_language_description,race_description,gender,age,course_code,final_mark,final_grade,progress_outcome_type,progress_outcome_type_description,award_grade,average_marks,secondary_school_quintile,urban_rural_secondary_school,secondary_school_name
+4D4E96EA94707A192BDE99ACD73DCB30,2016,AB002,Bachelor of Arts (Law Major),YOS 1,South Africa,English,Indian,F,19,PHIL1003,77.0,PAS,PCD,Permitted to proceed,,70.38,5,URBAN,Hyde Park High School
+4236EF282BABBAE507651BBCD1FDEAA7,2013,AF005,Bachelor of Arts in Speech and Hearing Therapy,YOS 2,South Africa,English,White,F,25,PSYC2020,72.0,PAS,PCD,Permitted to proceed,,76.43,5,URBAN,The Hill High School
+4A2B27CD99F2BC44AF61F7721D961F2B,2015,SB000,Bachelor of  Science,YOS 3,South Africa,Pedi,Black,M,24,MATH3010,92.0,PAS,Q,Completed all requirements for qualification,Q,82.0,1,RURAL,Rebone Secondary School
+781135C16CFDF20A6F55B1C9023A3AA0,2015,AB000,Bachelor of Arts,YOS 2,British,English,Coloured,F,23,PSYC2020,55.0,PAS,PCD,Permitted to proceed,,59.33,5,URBAN,Crawford College (sandton)
+493BF614AAA12D9668DA3E0A58ED216B,2015,AB002,Bachelor of Arts (Law Major),YOS 3,South Africa,Sesotho,Black,F,24,LAWS2015,52.0,PAS,Q,Completed all requirements for qualification,Q,56.0,5,URBAN,Glenvista High School
+9D6C5D204FE1F9B20F4DFE8B5D6CA884,2014,SB000,Bachelor of  Science,YOS 2,South Africa,English,White,M,25,COMS3003,57.0,PAS,PCD,Permitted to proceed,,63.56,5,URBAN,Crawford College (lonehill)
+161995DFC2995426843EB7E94530692B,2017,AB002,Bachelor of Arts (Law Major),YOS 2,South Africa,Zulu,Black,F,20,ENGL2004,52.0,PAS,PCD,Permitted to proceed,,52.14,5,URBAN,Trinity Secondary School
+F0801DAE63BB585E84DD32D37BCFCD92,2017,AB000,Bachelor of Arts,YOS 1,South Africa,Tswana,Black,F,21,PSYC1009,63.0,PAS,PCD,Permitted to proceed,,61.14,4,URBAN,Prinshof High School
+876D442F6D407CFADCBB9C1D39D1C00F,2016,AB000,Bachelor of Arts,YOS 3,South Africa,Setswana,Black,F,23,PSYC3020,50.0,PAS,Q,Completed all requirements for qualification,Q,54.57,5,URBAN,Florida Park High School
+9FFA4BD95D57E3861367BCD5157AE5A6,2016,AB002,Bachelor of Arts (Law Major),YOS 2,South Africa,Afrikaans,White,M,24,SLLS1005,75.0,PAS,PCD,Permitted to proceed,,62.43,6,URBAN,Helpmekaar Kollege
+CCCB186A8E35B8CC71D09C7859917E55,2016,AB000,Bachelor of Arts,YOS 1,South Africa,Zulu,Black,F,20,ANTH1002,65.0,PAS,PCD,Permitted to proceed,,57.63,3,URBAN,Kwadedangendlale H. Schl
+5D457F2DEFBC8B9D87DC2806B71C414C,2014,AB000,Bachelor of Arts,YOS 3,South Africa,Tsonga/Shangaan,Black,F,25,INTR3021,64.0,PAS,Q,Completed all requirements for qualification,Q,62.89,5,URBAN,Dansa International Coll
+C7C0DFAD191E23B8AB3ABF7357D606D3,2013,SB000,Bachelor of  Science,YOS 2,South Africa,Zulu,Black,F,26,GEOL2008,46.0,PMP,RET,Must return to complete requirements for year of study,,52.0,4,RURAL,Masibumbane High School
+F097FAF5E8D3D8F8472D05806F5ABD13,2014,AB000,Bachelor of Arts,YOS 3,South Africa,English,White,F,24,ANTH3007,66.0,PAS,Q,Completed all requirements for qualification,Q,67.0,6,URBAN,St Stithians Girls'college
+0C6AFDA0D4C7CA9A532237241BCC75EC,2013,AB000,Bachelor of Arts,YOS 2,South Africa,Xhosa,Black,F,25,INTR2007,53.0,PAS,PCD,Permitted to proceed,,52.5,5,URBAN,Hudson Park High School
+F3F2A0D16469FCBC417308FBC6B3426A,2015,SB000,Bachelor of  Science,YOS 1,South Africa,Chinese (Cantonese),Chinese,F,22,MATH1010,84.0,PAS,PCD,Permitted to proceed,,73.5,5,URBAN,Queens High School
+F1A09C86E532F08E46EBF201AC2EBD2A,2015,SB000,Bachelor of  Science,YOS 2,South Africa,Tshivenda,Black,M,23,CHEM2001,57.0,PAS,PCD,Permitted to proceed,,55.75,2,RURAL,Tshivhase High School
+9ED806735DE2A93F8F96C11A890442D2,2016,SB000,Bachelor of  Science,YOS 2,South Africa,English,Black,M,22,MATH2001,17.0,FAL,PCD,Permitted to proceed,,60.83,5,URBAN,Noordwyk Secondary School
+204B92E6ABD8ADCCE0833DADC7370087,2016,AB000,Bachelor of Arts,YOS 2,South Africa,Zulu,Black,F,21,GEOG2012,66.0,PAS,PCD,Permitted to proceed,,61.0,6,URBAN,Maris Stella School
+FC3297475E7D556D9761D850F49AD8A1,2013,SB000,Bachelor of  Science,YOS 1,South Africa,English,Indian,F,24,ACCN1000,75.0,PAS,PCD,Permitted to proceed,,69.43,6,URBAN,Abbotts College (Claremont Cape Town)
+1C7DCF2A888B0290A66953013D62B43C,2017,AB000,Bachelor of Arts,YOS 2,South Africa,English,White,F,21,PHIL2009,70.0,PAS,PCD,Permitted to proceed,,68.29,4,URBAN,Barberton High School
+4AF333B11556833F32569473DC72C58A,2013,SB000,Bachelor of  Science,YOS 3,South Africa,Tsonga/Shangaan,Black,M,26,COMS3004,49.0,FAL,Q,Completed all requirements for qualification,Q,53.25,3,URBAN,Medlide High School
+D4C86AAADBDBC80EC5ED4F2F11307A1F,2015,SB000,Bachelor of  Science,YOS 2,South Africa,Zulu,Black,M,24,MATH2007,56.0,PAS,PCD,Permitted to proceed,,60.5,4,RURAL,Luthuli High School
+310A122317AF3A4A816AC6E97F39CEA4,2016,AB000,Bachelor of Arts,YOS 3,South Africa,Zulu,Black,M,23,SLLS3010,71.0,PAS,Q,Completed all requirements for qualification,Q,63.44,1,RURAL,Mzimela Sen Sec School
+F2F888CB0789C2D2FA5026C64770AF52,2017,AF005,Bachelor of Arts in Speech and Hearing Therapy,YOS 1,South Africa,English,White,F,20,LING2004,71.0,PAS,PCD,Permitted to proceed,,76.33,6,URBAN,Durban Girls College
+13F695558E8153B49E00934D81112FBC,2013,AF000,Bachelor of Arts in Dramatic Art,YOS 2,South Africa,Swazi,Black,F,27,DRAA2005,63.0,PAS,PCD,Permitted to proceed,,66.5,5,URBAN,Sir Pierre Van Ryneveld High School
+90DDB1E9E15A8C16B74CF8B0DE40CC5F,2014,AB000,Bachelor of Arts,YOS 1,Zimbabwe,Shona,Black,F,21,SLLS1005,51.0,PAS,PCD,Permitted to proceed,,66.71,5,URBAN,Knights College
+35C7FEFCE0467D55F7326B8D87AF9C48,2013,SB000,Bachelor of  Science,YOS 2,South Africa,English,White,F,25,APES2006,60.0,PAS,PCD,Permitted to proceed,,58.0,5,URBAN,Abbotts College (Northcliff)
+4DF00FCB8D6BEA56D7FDB2B09FD1C926,2013,AF000,Bachelor of Arts in Dramatic Art,YOS 3,South Africa,English,White,M,26,DRAA3032,64.0,PAS,PCD,Permitted to proceed,,62.13,6,URBAN,Grantleigh College
+10F58E150F8256DB508111B7DA26DAFB,2016,AB000,Bachelor of Arts,YOS 1,South Africa,Xhosa,Black,M,23,MDLL1016,64.0,PAS,PCD,Permitted to proceed,,60.43,3,URBAN,Ulwazi High School
+313C0B76E3CB8910441FA95A940F8322,2015,AB000,Bachelor of Arts,YOS 1,South Africa,Zulu,Black,F,22,ANTH1002,75.0,PAS,PCD,Permitted to proceed,,69.71,IQ,UNKNOWN,International Schools
+F3A2D61BDA51554A7CB91331CD5B857A,2014,AB000,Bachelor of Arts,YOS 3,South Africa,English,White,M,24,HIST3003,75.0,PAS,Q,Completed all requirements for qualification,Q,71.5,5,URBAN,Northcliff High School
+EBEC13343EE215F68CA53D32C0F86F75,2015,SB000,Bachelor of  Science,YOS 1,South Africa,South Sotho,Black,F,21,PHIL1001,58.0,PAS,PCD,Permitted to proceed,,61.17,2,URBAN,Khutlo-tharo Sec School
+7376CE221513175AE2DA1B1FF1710449,2017,AF000,Bachelor of Arts in Dramatic Art,YOS 2,South Africa,Setswana,Black,F,20,WSOA2011,35.0,FAL,RET,Must return to complete requirements for year of study,,50.44,6,URBAN,Curro Aurora Private School
+D9F2C9F667EBFF86EAE4751B1B3E7DE7,2015,SB000,Bachelor of  Science,YOS 1,"Congo, The Democratic Republic of the",English,Black,F,22,STAT1003,64.0,PAS,PCD,Permitted to proceed,,71.43,5,URBAN,The Glen High School
+F8DD419B2C5C7B31464C9247D6272F35,2013,SB000,Bachelor of  Science,YOS 2,South Africa,Sesotho,Black,M,25,MATH2007,64.0,PAS,PCD,Permitted to proceed,,53.63,5,URBAN,Pretoria Boys High School
+412A241D5EA526B79CD506B43CCA55E5,2016,AF004,Bachelor of Social Work,YOS 1,South Africa,Tshivenda,Black,F,21,SOCL1014,57.0,PAS,PCD,Permitted to proceed,,65.57,5,URBAN,Lenasia Secondary School
+F6FBA5A84628E6EAE2BD0A62F67827F1,2013,AB000,Bachelor of Arts,YOS 1,South Africa,English,White,F,24,HIST1011,45.0,FAL,PCD,Permitted to proceed,,52.57,5,URBAN,Boksburg High School
+41A666AA87E92870FF18D9A5F82EDC94,2014,SB000,Bachelor of  Science,YOS 1,South Africa,Tsonga/Shangaan,Black,M,25,APPM1006,43.0,FAL,MRNM,Minimum requirements not met,,30.5,1,RURAL,Khatisa High School
+7EF4DFA15574C85725A0E354B79CCD3C,2016,SB000,Bachelor of  Science,YOS 2,South Africa,Pedi,Black,M,22,MCBG2031,56.0,PAS,PCD,Permitted to proceed,,54.33,5,URBAN,Florapark Comprehensive Hs
+4A16BFAF543E18CE444C907769C578F2,2014,AB000,Bachelor of Arts,YOS 3,South Africa,English,Indian,F,25,ENGL3003,67.0,PAS,Q,Completed all requirements for qualification,Q,65.0,5,URBAN,Parktown Girls High School
+34679E11412BF4B407DFE7F7538D21B9,2014,AB000,Bachelor of Arts,YOS 2,South Africa,English,White,F,23,ANTH1001,63.0,PAS,PCD,Permitted to proceed,,67.57,5,URBAN,Rand Park High School
+8436828A7E72581F84CFDEF2EE8D915F,2017,AB000,Bachelor of Arts,YOS 2,South Africa,Zulu,Black,F,20,ANTH2004,56.0,PAS,RER,Must return to same year of study - At risk of exclusion,,47.4,1,URBAN,Asser Maloka Secondary School
+E267426E45681C938E2882B6C454CCE6,2017,SB000,Bachelor of  Science,YOS 3,South Africa,Shona,Black,M,21,MATH3006,77.0,PAS,Q,Completed all requirements for qualification,Q,75.38,5,URBAN,Greenside High School
+8CC89E2B8FB46C4965CB75F3DC9675D7,2017,SB000,Bachelor of  Science,YOS 1,South Africa,Tswana,Black,M,19,APPM1006,57.0,PAS,PCD,Permitted to proceed,,50.63,1,RURAL,Rebone Secondary School
+F29C7E97F7CD2A10C0D4025BE58EACFA,2013,AB000,Bachelor of Arts,YOS 3,South Africa,Pedi,Black,M,29,INTR2008,62.0,PAS,Q,Completed all requirements for qualification,Q,57.17,4,URBAN,Forte Secondary School
+DF103B36B26B3E5700CF1C906C3F8BE5,2016,SB000,Bachelor of  Science,YOS 1,South Africa,Tsonga/Shangaan,Black,M,21,MATH1034,37.0,FAL,M2C,Renewal of Registration permitted by Wits Readmissions Committee-2 with conditions,,35.75,2,URBAN,Thamsanqa Secondary School
+08229660821F1B13D0C2D9A729441C94,2016,AF004,Bachelor of Social Work,YOS 3,South Africa,Zulu,Black,F,22,PSYC3015,62.0,PAS,PCD,Permitted to proceed,,59.83,2,RURAL,Kwanotshelwa High School
+20ECCF1FB37383E1C411CD02DF3EBC62,2016,AF010,Bachelor of Arts in Film and Television,YOS 1,South Africa,Zulu,Black,F,23,WSOA1002,70.0,PAS,PCD,Permitted to proceed,,69.13,6,URBAN,Dominican Convent School
+36004FB1B182C40DA032CAF2D2259121,2013,AF001,Bachelor of Arts in Fine Arts,YOS 2,South Africa,English,White,F,25,FINA2004,71.0,PAS,PCD,Permitted to proceed,,65.88,6,URBAN,De La Salle Holy Cross Col
+B634A14E1CF5E0BBC6932631B1D11EAB,2017,SB000,Bachelor of  Science,YOS 2,South Africa,Zulu,Black,M,21,STAT2012,51.0,PAS,PCD,Permitted to proceed,,64.14,5,URBAN,Nigel High School
+81AB27D01C09ABC019A860162DD133E8,2016,SB000,Bachelor of  Science,YOS 3,South Africa,North Sotho,Black,F,23,APES3047,72.0,PAS,Q,Completed all requirements for qualification,Q,69.6,6,URBAN,Mcauley House School
+F7E00A3AEDF8858A116CEAF0E0D1C1D6,2017,AB000,Bachelor of Arts,YOS 1,South Africa,Setswana,Black,F,20,PSYC2020,43.0,FAL,PCD,Permitted to proceed,,51.86,2,URBAN,Thulani Secondary School
+413E73DF4BFAFA158E5A0BA4C47EF5CB,2017,SB000,Bachelor of  Science,YOS 1,South Africa,Sesotho,Black,M,20,MATH1036,0.0,FAB,MRNM,Minimum requirements not met,,19.63,5,URBAN,John Orr Tech High School
+9159A6139E3792CD4A3972FEF0B07AD1,2016,AF001,Bachelor of Arts in Fine Arts,YOS 1,South Africa,Setswana,Black,M,21,WSOA1003,79.0,PAS,PCD,Permitted to proceed,,72.0,5,URBAN,Allen Glen High School
+053CBEABAF7A4539F331C72B90F662BC,2017,AF004,Bachelor of Social Work,YOS 1,South Africa,Pedi,Black,F,41,PSYC2005,25.0,FAL,PCD,Permitted to proceed,,48.17,3,URBAN,Mokgome Sec School-paarl
+58451F5886D8B28110D1BCEAD931705A,2016,SB000,Bachelor of  Science,YOS 1,South Africa,English,Indian,M,21,BIOL1000,51.0,PAS,PCD,Permitted to proceed,,60.75,5,URBAN,Hoerskool Piet Retief
+E8052A01BAE08EF49D2B82DF6BAFE1E4,2014,SB000,Bachelor of  Science,YOS 1,South Africa,Xhosa,Black,M,23,BIOL1000,65.0,PAS,PCD,Permitted to proceed,,58.5,2,RURAL,Dilizintaba High School
+257BDCB32790C2E792A8AED7C2F2E3D4,2014,SB000,Bachelor of  Science,YOS 2,South Africa,Ndebele,Black,M,24,MATH2016,30.0,FAL,RET,Must return to complete requirements for year of study,,27.22,4,RURAL,Pax High School
+8F16BC4226E9773A0DAD7AA93FC7C772,2013,SB000,Bachelor of  Science,YOS 1,South Africa,English,Indian,F,24,MATH1036,78.0,PAS,PCD,Permitted to proceed,,76.4,5,URBAN,Stanger Manor Sec School
+6147AE44582787B8A5A0C614E0994AFB,2015,AB000,Bachelor of Arts,YOS 3,South Africa,Setswana,Black,F,23,POLS2002,72.0,PAS,Q,Completed all requirements for qualification,Q,62.9,3,URBAN,Maryvale College
+FBDF44D51356FE4ADF8FF0046C37EA81,2014,AB001,Bachelor of Arts,YOS 1,South Africa,Tswana,Black,M,38,ECON1005,72.0,PAS,PCD,Permitted to proceed,,68.0,2,URBAN,Sejankabo High School
+0AF6CEEF71866E60B1B8B74253CEADA7,2016,AF003,Bachelor of Arts in Performing and Visual Arts,YOS 2,South Africa,Zulu,Black,M,23,DRAA3032,52.0,PAS,PCD,Permitted to proceed,,47.13,6,URBAN,Grantleigh College
+7092DA1A7E8BE75B9AA57EE30605264D,2015,AB000,Bachelor of Arts,YOS 1,South Africa,Sesotho,Black,F,37,SOCL1013,57.0,PAS,PCD,Permitted to proceed,,58.0,3,URBAN,Sekolo Sa Borogo School
+F88548ED9498225E34ADC7C433F702D2,2016,SB000,Bachelor of  Science,YOS 1,South Africa,English,White,F,21,STAT1003,70.0,PAS,PCD,Permitted to proceed,,80.43,5,URBAN,Bryanston High School
+7FE327E0763F00B33F2536BEF14D95C2,2013,AB000,Bachelor of Arts,YOS 1,South Africa,Afrikaans,White,M,25,PHIL1002,73.0,PAS,PCD,Permitted to proceed,,71.83,6,URBAN,Helpmekaar Kollege
+1D8ACAAA3475E3DB50BC51079EA2EFCA,2013,AB000,Bachelor of Arts,YOS 2,South Africa,English,Coloured,F,25,SLLS2004,51.0,PAS,PCD,Permitted to proceed,,54.38,5,URBAN,Garlandale Sekonder
+49440999D573734BBC307D35AA3D35B1,2013,SB000,Bachelor of  Science,YOS 3,South Africa,North Sotho,Black,F,28,MATH3032,45.0,PMN,Q,Completed all requirements for qualification,Q,53.25,3,URBAN,Ebenezer Secondary
+FBB6E0DF7B9789251F8D2724DDB3CCA9,2016,SB000,Bachelor of  Science,YOS 1,South Africa,Xhosa,Black,M,21,MATH1034,75.0,PAS,PCD,Permitted to proceed,,63.17,6,URBAN,St Alban's College
+F356794BE14F8402E4EC284E752C7025,2017,AB000,Bachelor of Arts,YOS 2,South Africa,Tswana,Black,M,22,SLLS2003,50.0,PAS,PCD,Permitted to proceed,,52.0,5,URBAN,Voortrekkerhoogte H/s
+CB2843129C671703EA297D48D9AF63AB,2016,SB000,Bachelor of  Science,YOS 1,South Africa,Pedi,Black,M,24,MATH3032,51.0,PAS,PCD,Permitted to proceed,,70.86,6,URBAN,St Thomas College
+E353639D3831AAB8D2B7DF1D3284F934,2015,AB000,Bachelor of Arts,YOS 3,South Africa,English,White,F,23,MDLL3003,73.0,PAS,Q,Completed all requirements for qualification,QD,78.5,6,URBAN,Roedean School (sa)
+A0216648E24CE1B3057E4CA2C993E86B,2014,AB000,Bachelor of Arts,YOS 1,South Africa,English,White,F,23,MDLL1006,81.0,PAS,PCD,Permitted to proceed,,67.29,6,URBAN,Holy Rosary Convent
+04100981AE41EF040BC85B186D118950,2017,AB000,Bachelor of Arts,YOS 3,South Africa,Portuguese,White,F,22,SLLS3026,75.0,PAS,Q,Completed all requirements for qualification,Q,75.38,5,URBAN,The Hill High School
+E4F1DC9395C5EAC3A74EB8AEAE120E5A,2015,AB000,Bachelor of Arts,YOS 1,England,English,White,M,22,PSYC1009,0.0,FAB,MRNM,Minimum requirements not met,,0.0,6,URBAN,St Stithians Boys' College
+6254816721B79B9E9E35BD579A5C38A9,2017,AB001,Bachelor of Arts,YOS 1,South Africa,English,White,M,38,ECON1005,88.0,PAS,PCD,Permitted to proceed,,82.75,5,URBAN,Hoerskool Dinamika
+6DCA2AEDFF001EF03F4D49E29DA8DD5E,2016,AB002,Bachelor of Arts (Law Major),YOS 1,South Africa,English,White,F,21,INTR1012,80.0,PAS,PCD,Permitted to proceed,,78.71,5,URBAN,Northcliff High School
+BDC52B631E8B55E8F035B6DFF7A0C6CA,2016,AB000,Bachelor of Arts,YOS 3,South Africa,English,Indian,F,23,PSYC3015,73.0,PAS,Q,Completed all requirements for qualification,Q,65.13,5,URBAN,The National Schl Of Arts
+1F361CBACDD3E321EB854A98CA627621,2013,AB000,Bachelor of Arts,YOS 3,South Africa,English,Indian,F,27,LING3003,60.0,PAS,Q,Completed all requirements for qualification,Q,59.11,5,URBAN,Kriel Hoerskool
+A88FFCCD858AD5A4FDBFCF37589AE52E,2017,AF004,Bachelor of Social Work,YOS 2,Zimbabwe,English,Black,F,26,PSYC2020,50.0,PAS,PCD,Permitted to proceed,,58.0,IQ,UNKNOWN,International Schools
+148EC711D54DF1B2094658116421B7C6,2014,AB000,Bachelor of Arts,YOS 2,South Africa,English,White,M,24,SLLS2003,66.0,PAS,PCD,Permitted to proceed,,71.57,6,URBAN,King David (victory Park)
+83E994A50796218D7CFC4988A83C6680,2016,SB000,Bachelor of  Science,YOS 2,South Africa,Zulu,Black,M,21,MATH2019,54.0,PAS,PCD,Permitted to proceed,,60.8,4,RURAL,Greytown High School
+823B1EA7B079AC64E36C34325C2A1D60,2017,AB000,Bachelor of Arts,YOS 3,South Africa,Zulu,Black,M,22,PSYC3020,50.0,PAS,Q,Completed all requirements for qualification,Q,54.89,4,URBAN,Umlazi Comtech High School
+9E77894450756BE5CF79DD4C66187B15,2016,SB000,Bachelor of  Science,YOS 3,South Africa,Zulu,Black,M,25,MCBG3004,67.0,PAS,Q,Completed all requirements for qualification,Q,64.0,5,URBAN,Abbotts College (Northcliff)
+982B989EC2440F53126DE2F6C01E9C9B,2014,AB001,Bachelor of Arts,YOS 1,South Africa,Zulu,Black,F,34,SOCL1009,45.0,FAL,RET,Must return to complete requirements for year of study,,57.4,4,URBAN,CBC St John's Parklands Cape Town
+329F2606F2E7A0D781D82D46EBA9517C,2015,SB000,Bachelor of  Science,YOS 1,South Africa,Zulu,Black,F,21,PHYS1000,0.0,FAB,RET,Must return to complete requirements for year of study,,38.2,2,RURAL,Zama High School
+B1CAE15FEC99D51202A2674B76B20275,2017,AB001,Bachelor of Arts,YOS 2,South Africa,Setswana,Black,F,30,ADED1018,74.0,PAS,RET,Must return to complete requirements for year of study,,54.0,5,URBAN,Adamantia Hoerskool
+E127FBBD9CB594A76AE4895C65BCFB9A,2015,AB002,Bachelor of Arts (Law Major),YOS 1,South Africa,Zulu,Black,F,21,INTR1010,60.0,PAS,PCD,Permitted to proceed,,62.67,5,URBAN,Drie Riviere Hoerskool
+5853C9AF8D3660C25AC9C291D9CDCF39,2014,AB001,Bachelor of Arts,YOS 1,South Africa,Setswana,Black,F,31,ADED1018,75.0,PAS,RET,Must return to complete requirements for year of study,,65.0,1,URBAN,Ithuteng Secondary School
+E4A6720233822CD4FB6AC8AC73DB8384,2017,AB001,Bachelor of Arts,YOS 3,South Africa,Xhosa,Black,F,37,SOCL3023,70.0,PAS,Q,Completed all requirements for qualification,Q,68.43,3,URBAN,Bishop Demont Secondary
+234FD10560FFB42A5E42EB7AD84BC291,2017,AB000,Bachelor of Arts,YOS 2,South Africa,Xhosa,Black,F,19,DRAA2025,63.0,PAS,PCD,Permitted to proceed,,61.88,6,URBAN,St Mary's School
+A5648A35B3DCD806C12A445A965DA9A4,2016,AB000,Bachelor of Arts,YOS 1,South Africa,English,White,F,21,SOCL1013,53.0,PAS,PCD,Permitted to proceed,,64.0,IQ,UNKNOWN,International Schools
+57D68ED801F9892DAA2BD1303D4832B1,2017,AB000,Bachelor of Arts,YOS 3,South Africa,Afrikaans,White,F,22,PSYC3001,77.0,PAS,RET,Must return to complete requirements for year of study,,70.5,6,URBAN,Helpmekaar Kollege
+AABB97661809DE2F369661FEF7CB0ADC,2016,SB000,Bachelor of  Science,YOS 2,South Africa,Greek,White,M,22,INFO2001,58.0,PAS,PCD,Permitted to proceed,,51.17,6,URBAN,Saheti School
+CCE713AB072077FEA9D7A307EDC55C20,2016,AB000,Bachelor of Arts,YOS 3,South Africa,Zulu,Black,F,23,POLS3017,72.0,PAS,Q,Completed all requirements for qualification,Q,56.73,2,RURAL,Inanda Seminary
+6E294E8FC01C5306F2C87E220E9A1373,2016,SB000,Bachelor of  Science,YOS 2,South Africa,Tsonga/Shangaan,Black,M,21,MATH2001,62.0,PAS,PCD,Permitted to proceed,,56.63,2,RURAL,Khanyisa Education Centre
+4E86D136683528970C279EC3D2F11B39,2015,AB000,Bachelor of Arts,YOS 1,South Africa,English,White,M,22,ANTH1001,52.0,PAS,PCD,Permitted to proceed,,57.0,6,URBAN,King David High (linksfld)
+122D898B097ADF0E476E796CE81F521E,2014,AB000,Bachelor of Arts,YOS 2,South Africa,English,White,F,23,LING2004,31.0,FAL,M1C,Renewal of registration permitted by Wits Readmissions Committee-1 with conditions,,35.71,6,URBAN,Roedean School (sa)
+B0BC27BC1E4ADB9FA444CAE52BEDC815,2013,SB000,Bachelor of  Science,YOS 2,South Africa,English,White,M,27,MECN2012,81.0,PAS,PCD,Permitted to proceed,,82.14,,,The Kings School (robin Hills)
+6D904F26F3F09BE96485088F75FA17B0,2016,AB001,Bachelor of Arts,YOS 2,South Africa,English,Black,F,39,BUSE2017,74.0,PAS,RET,Must return to complete requirements for year of study,,70.2,6,URBAN,Mcauley House School

@@ -1,0 +1,1032 @@
+faculty,school,course_code
+"Commerce, Law and Management",Accountancy,ACCN1000
+"Commerce, Law and Management",Accountancy,ACCN1004
+"Commerce, Law and Management",Accountancy,ACCN1005
+"Commerce, Law and Management",Accountancy,ACCN1006
+"Commerce, Law and Management",Accountancy,ACCN1010
+"Commerce, Law and Management",Accountancy,ACCN2000
+"Commerce, Law and Management",Accountancy,ACCN2009
+"Commerce, Law and Management",Accountancy,ACCN3010
+Humanities,Education,ADED1005
+Humanities,Education,ADED1016
+Humanities,Education,ADED1017
+Humanities,Education,ADED1018
+Humanities,"Literature, Language and Media",AFRL1002
+Humanities,"Literature, Language and Media",AFRL1003
+Humanities,"Literature, Language and Media",AFRL1004
+Humanities,"Literature, Language and Media",AFRL1005
+Humanities,"Literature, Language and Media",AFRL1006
+Humanities,"Literature, Language and Media",AFRL1007
+Humanities,"Literature, Language and Media",AFRL1009
+Humanities,"Literature, Language and Media",AFRL2001
+Humanities,"Literature, Language and Media",AFRL2002
+Humanities,"Literature, Language and Media",AFRL2003
+Humanities,"Literature, Language and Media",AFRL2004
+Humanities,"Literature, Language and Media",AFRL2005
+Humanities,"Literature, Language and Media",AFRL2006
+Humanities,"Literature, Language and Media",AFRL3001
+Humanities,"Literature, Language and Media",AFRL3003
+Humanities,"Literature, Language and Media",AFRL3004
+Humanities,"Literature, Language and Media",AFRL3007
+Humanities,"Literature, Language and Media",AFRL3008
+Humanities,"Literature, Language and Media",AFRL3009
+Humanities,"Literature, Language and Media",AFRL3011
+Humanities,"Literature, Language and Media",AFRL3012
+Humanities,"Literature, Language and Media",AFRT1001
+Humanities,"Literature, Language and Media",AFRT1002
+Humanities,"Literature, Language and Media",AFRT2001
+Humanities,"Literature, Language and Media",AFRT2002
+Humanities,"Literature, Language and Media",AFRT3001
+Humanities,"Literature, Language and Media",AFRT3002
+Humanities,"Literature, Language and Media",AFRT3003
+Humanities,"Literature, Language and Media",AFRT3004
+Health Sciences,Anatomical Sciences,ANAT1000
+Health Sciences,Anatomical Sciences,ANAT2001
+Health Sciences,Anatomical Sciences,ANAT2021
+Health Sciences,Anatomical Sciences,ANAT3002
+Health Sciences,Anatomical Sciences,ANAT3011
+Humanities,Social Sciences,ANTH1001
+Humanities,Social Sciences,ANTH1002
+Humanities,Social Sciences,ANTH2001
+Humanities,Social Sciences,ANTH2003
+Humanities,Social Sciences,ANTH2004
+Humanities,Social Sciences,ANTH2005
+Humanities,Social Sciences,ANTH2006
+Humanities,Social Sciences,ANTH2007
+Humanities,Social Sciences,ANTH2008
+Humanities,Social Sciences,ANTH3001
+Humanities,Social Sciences,ANTH3003
+Humanities,Social Sciences,ANTH3004
+Humanities,Social Sciences,ANTH3005
+Humanities,Social Sciences,ANTH3006
+Humanities,Social Sciences,ANTH3007
+Humanities,Social Sciences,ANTH3008
+Humanities,Social Sciences,ANTH3009
+Science,"Animal, Plant and Environmental Sciences",APES1001
+Science,"Animal, Plant and Environmental Sciences",APES2000
+Science,"Animal, Plant and Environmental Sciences",APES2001
+Science,"Animal, Plant and Environmental Sciences",APES2002
+Science,"Animal, Plant and Environmental Sciences",APES2005
+Science,"Animal, Plant and Environmental Sciences",APES2006
+Science,"Animal, Plant and Environmental Sciences",APES2007
+Science,"Animal, Plant and Environmental Sciences",APES2008
+Science,"Animal, Plant and Environmental Sciences",APES2009
+Science,"Animal, Plant and Environmental Sciences",APES2011
+Science,"Animal, Plant and Environmental Sciences",APES2012
+Science,"Animal, Plant and Environmental Sciences",APES2015
+Science,"Animal, Plant and Environmental Sciences",APES2022
+Science,"Animal, Plant and Environmental Sciences",APES2023
+Science,"Animal, Plant and Environmental Sciences",APES2027
+Science,"Animal, Plant and Environmental Sciences",APES2030
+Science,"Animal, Plant and Environmental Sciences",APES2031
+Science,"Animal, Plant and Environmental Sciences",APES2032
+Science,"Animal, Plant and Environmental Sciences",APES2033
+Science,"Animal, Plant and Environmental Sciences",APES2034
+Science,"Animal, Plant and Environmental Sciences",APES2035
+Science,"Animal, Plant and Environmental Sciences",APES2036
+Science,"Animal, Plant and Environmental Sciences",APES2037
+Science,"Animal, Plant and Environmental Sciences",APES3009
+Science,"Animal, Plant and Environmental Sciences",APES3021
+Science,"Animal, Plant and Environmental Sciences",APES3023
+Science,"Animal, Plant and Environmental Sciences",APES3026
+Science,"Animal, Plant and Environmental Sciences",APES3028
+Science,"Animal, Plant and Environmental Sciences",APES3029
+Science,"Animal, Plant and Environmental Sciences",APES3034
+Science,"Animal, Plant and Environmental Sciences",APES3035
+Science,"Animal, Plant and Environmental Sciences",APES3038
+Science,"Animal, Plant and Environmental Sciences",APES3039
+Science,"Animal, Plant and Environmental Sciences",APES3041
+Science,"Animal, Plant and Environmental Sciences",APES3042
+Science,"Animal, Plant and Environmental Sciences",APES3044
+Science,"Animal, Plant and Environmental Sciences",APES3045
+Science,"Animal, Plant and Environmental Sciences",APES3047
+Science,"Animal, Plant and Environmental Sciences",APES3048
+Science,"Animal, Plant and Environmental Sciences",APES3051
+Science,"Animal, Plant and Environmental Sciences",APES3052
+Science,"Animal, Plant and Environmental Sciences",APES3053
+Science,"Animal, Plant and Environmental Sciences",APES3054
+Science,"Animal, Plant and Environmental Sciences",APES3055
+Science,"Animal, Plant and Environmental Sciences",APES3057
+Science,"Animal, Plant and Environmental Sciences",APES3058
+Science,"Animal, Plant and Environmental Sciences",APES3059
+Science,"Animal, Plant and Environmental Sciences",APES3061
+Science,"Animal, Plant and Environmental Sciences",APES3062
+Science,"Animal, Plant and Environmental Sciences",APES3063
+Science,"Animal, Plant and Environmental Sciences",APES3064
+Science,"Animal, Plant and Environmental Sciences",APES3065
+Science,"Animal, Plant and Environmental Sciences",APES3066
+Science,"Animal, Plant and Environmental Sciences",APES3067
+Science,"Animal, Plant and Environmental Sciences",APES3068
+Science,"Animal, Plant and Environmental Sciences",APES3069
+Science,"Animal, Plant and Environmental Sciences",APES3070
+Science,"Animal, Plant and Environmental Sciences",APES3071
+Science,"Animal, Plant and Environmental Sciences",APES3072
+Science,Computer Science and Applied Mathematics,APPM1004
+Science,Computer Science and Applied Mathematics,APPM1005
+Science,Computer Science and Applied Mathematics,APPM1006
+Science,Computer Science and Applied Mathematics,APPM1011
+Science,Computer Science and Applied Mathematics,APPM1021
+Science,Computer Science and Applied Mathematics,APPM1022
+Science,Computer Science and Applied Mathematics,APPM2007
+Science,Computer Science and Applied Mathematics,APPM2013
+Science,Computer Science and Applied Mathematics,APPM3017
+Science,"Geography, Archaeology and Environmental Studies",ARCL1000
+Science,"Geography, Archaeology and Environmental Studies",ARCL1001
+Science,"Geography, Archaeology and Environmental Studies",ARCL1002
+Science,"Geography, Archaeology and Environmental Studies",ARCL1006
+Science,"Geography, Archaeology and Environmental Studies",ARCL1007
+Science,"Geography, Archaeology and Environmental Studies",ARCL1008
+Science,"Geography, Archaeology and Environmental Studies",ARCL1009
+Science,"Geography, Archaeology and Environmental Studies",ARCL2000
+Science,"Geography, Archaeology and Environmental Studies",ARCL2001
+Science,"Geography, Archaeology and Environmental Studies",ARCL2002
+Science,"Geography, Archaeology and Environmental Studies",ARCL2004
+Science,"Geography, Archaeology and Environmental Studies",ARCL2005
+Science,"Geography, Archaeology and Environmental Studies",ARCL2006
+Science,"Geography, Archaeology and Environmental Studies",ARCL2007
+Science,"Geography, Archaeology and Environmental Studies",ARCL2008
+Science,"Geography, Archaeology and Environmental Studies",ARCL2009
+Science,"Geography, Archaeology and Environmental Studies",ARCL3000
+Science,"Geography, Archaeology and Environmental Studies",ARCL3001
+Science,"Geography, Archaeology and Environmental Studies",ARCL3002
+Science,"Geography, Archaeology and Environmental Studies",ARCL3003
+Science,"Geography, Archaeology and Environmental Studies",ARCL3004
+Science,"Geography, Archaeology and Environmental Studies",ARCL3005
+Science,"Geography, Archaeology and Environmental Studies",ARCL3006
+Science,"Geography, Archaeology and Environmental Studies",ARCL3007
+Science,"Geography, Archaeology and Environmental Studies",ARCL3008
+Science,"Geography, Archaeology and Environmental Studies",ARCL3009
+Humanities,Social Sciences,ARPL3023
+Science,"Animal, Plant and Environmental Sciences",BIOL1000
+Science,"Animal, Plant and Environmental Sciences",BIOL1006
+Science,"Animal, Plant and Environmental Sciences",BIOL1008
+Science,"Animal, Plant and Environmental Sciences",BIOL1009
+Science,"Animal, Plant and Environmental Sciences",BIOL1025
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2000
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2001
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2002
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2003
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2005
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2006
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2007
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2008
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2009
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2010
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2011
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2012
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2013
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2014
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2015
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2016
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2017
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2018
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2019
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2020
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2021
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2022
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2023
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2024
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2025
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2026
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2027
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2028
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2029
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2030
+"Commerce, Law and Management",Economic and Business Sciences,BUSE2031
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3001
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3002
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3003
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3005
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3010
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3011
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3013
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3014
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3015
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3016
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3017
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3018
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3019
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3020
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3021
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3022
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3023
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3024
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3025
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3026
+"Commerce, Law and Management",Economic and Business Sciences,BUSE3027
+Science,Chemistry,CHEM1012
+Science,Chemistry,CHEM1013
+Science,Chemistry,CHEM1021
+Science,Chemistry,CHEM1033
+Science,Chemistry,CHEM1048
+Science,Chemistry,CHEM2001
+Science,Chemistry,CHEM2002
+Science,Chemistry,CHEM2003
+Science,Chemistry,CHEM2007
+Science,Chemistry,CHEM2029
+Science,Chemistry,CHEM2030
+Science,Chemistry,CHEM3002
+Science,Chemistry,CHEM3003
+Science,Chemistry,CHEM3007
+Science,Chemistry,CHEM3028
+Science,Chemistry,CHEM3030
+Science,Chemistry,CHEM3031
+Science,Chemistry,CHEM3033
+Science,Chemistry,CHEM3034
+Science,Chemistry,CHEM3037
+Engineering,Chemical and Metallurgical Engineering,CHMT1000
+Engineering,Chemical and Metallurgical Engineering,CHMT1002
+Engineering,Chemical and Metallurgical Engineering,CHMT2004
+Engineering,Chemical and Metallurgical Engineering,CHMT2009
+Engineering,Chemical and Metallurgical Engineering,CHMT2011
+Engineering,Chemical and Metallurgical Engineering,CHMT2013
+Engineering,Chemical and Metallurgical Engineering,CHMT2014
+Engineering,Chemical and Metallurgical Engineering,CHMT2015
+Engineering,Chemical and Metallurgical Engineering,CHMT2017
+Engineering,Chemical and Metallurgical Engineering,CHMT2018
+Engineering,Chemical and Metallurgical Engineering,CHMT3019
+Science,Computer Science and Applied Mathematics,COMS1000
+Science,Computer Science and Applied Mathematics,COMS1015
+Science,Computer Science and Applied Mathematics,COMS1016
+Science,Computer Science and Applied Mathematics,COMS1017
+Science,Computer Science and Applied Mathematics,COMS1018
+Science,Computer Science and Applied Mathematics,COMS2000
+Science,Computer Science and Applied Mathematics,COMS2001
+Science,Computer Science and Applied Mathematics,COMS2002
+Science,Computer Science and Applied Mathematics,COMS2003
+Science,Computer Science and Applied Mathematics,COMS2011
+Science,Computer Science and Applied Mathematics,COMS2012
+Science,Computer Science and Applied Mathematics,COMS2013
+Science,Computer Science and Applied Mathematics,COMS2014
+Science,Computer Science and Applied Mathematics,COMS2015
+Science,Computer Science and Applied Mathematics,COMS3000
+Science,Computer Science and Applied Mathematics,COMS3002
+Science,Computer Science and Applied Mathematics,COMS3003
+Science,Computer Science and Applied Mathematics,COMS3004
+Science,Computer Science and Applied Mathematics,COMS3005
+Science,Computer Science and Applied Mathematics,COMS3006
+Science,Computer Science and Applied Mathematics,COMS3007
+Science,Computer Science and Applied Mathematics,COMS3008
+Science,Computer Science and Applied Mathematics,COMS3009
+Humanities,Arts,DRAA1001
+Humanities,Arts,DRAA1002
+Humanities,Arts,DRAA1003
+Humanities,Arts,DRAA1004
+Humanities,Arts,DRAA1007
+Humanities,Arts,DRAA1008
+Humanities,Arts,DRAA1009
+Humanities,Arts,DRAA1010
+Humanities,Arts,DRAA1011
+Humanities,Arts,DRAA1012
+Humanities,Arts,DRAA2001
+Humanities,Arts,DRAA2002
+Humanities,Arts,DRAA2004
+Humanities,Arts,DRAA2005
+Humanities,Arts,DRAA2008
+Humanities,Arts,DRAA2009
+Humanities,Arts,DRAA2011
+Humanities,Arts,DRAA2012
+Humanities,Arts,DRAA2013
+Humanities,Arts,DRAA2014
+Humanities,Arts,DRAA2015
+Humanities,Arts,DRAA2019
+Humanities,Arts,DRAA2020
+Humanities,Arts,DRAA2021
+Humanities,Arts,DRAA2022
+Humanities,Arts,DRAA2023
+Humanities,Arts,DRAA2024
+Humanities,Arts,DRAA2025
+Humanities,Arts,DRAA3002
+Humanities,Arts,DRAA3003
+Humanities,Arts,DRAA3004
+Humanities,Arts,DRAA3005
+Humanities,Arts,DRAA3006
+Humanities,Arts,DRAA3007
+Humanities,Arts,DRAA3021
+Humanities,Arts,DRAA3022
+Humanities,Arts,DRAA3023
+Humanities,Arts,DRAA3024
+Humanities,Arts,DRAA3025
+Humanities,Arts,DRAA3026
+Humanities,Arts,DRAA3027
+Humanities,Arts,DRAA3028
+Humanities,Arts,DRAA3029
+Humanities,Arts,DRAA3032
+Humanities,Arts,DRAA3033
+Humanities,Arts,DRAA3034
+Humanities,Arts,DRAA3035
+Humanities,Arts,DRAA3036
+Humanities,Arts,DRAA3037
+Humanities,Arts,DRAA3038
+Humanities,Arts,DRAA3039
+Humanities,Arts,DRAA3040
+Humanities,Arts,DRAA4002
+Humanities,Arts,DRAA4004
+Humanities,Arts,DRAA4006
+Humanities,Arts,DRAA4008
+Humanities,Arts,DRAA4027
+Humanities,Arts,DRAA4028
+Humanities,Arts,DRAA4034
+Humanities,Arts,DRAA4036
+Humanities,Arts,DRAA4037
+Humanities,Arts,DRAA4044
+Humanities,Arts,DRAA4046
+Humanities,Arts,DRAA4048
+Humanities,Arts,DRAA4050
+Humanities,Arts,DRAA4051
+Humanities,Arts,DRAA4052
+Humanities,Arts,DRAA4053
+Humanities,Arts,DRAA4054
+Humanities,Arts,DRAA4066
+Humanities,Arts,DRAA4068
+Humanities,Arts,DRAA4070
+Humanities,Arts,DRAA4077
+Humanities,Arts,DRAA4079
+Humanities,Arts,DRAA4080
+Humanities,Arts,DRAA4081
+Humanities,Arts,DRAA4082
+Humanities,Arts,DRAA4084
+Humanities,Arts,DRAA4085
+Humanities,Arts,DRAA4086
+Humanities,Arts,DRAA4087
+Humanities,Arts,DRAA4114
+Humanities,Arts,DRAA4115
+Humanities,Arts,DRAA4127
+Humanities,Arts,DRAA4128
+"Commerce, Law and Management",Economic and Business Sciences,ECON1002
+"Commerce, Law and Management",Economic and Business Sciences,ECON1003
+"Commerce, Law and Management",Economic and Business Sciences,ECON1005
+"Commerce, Law and Management",Economic and Business Sciences,ECON1006
+"Commerce, Law and Management",Economic and Business Sciences,ECON1007
+"Commerce, Law and Management",Economic and Business Sciences,ECON1008
+"Commerce, Law and Management",Economic and Business Sciences,ECON1009
+"Commerce, Law and Management",Economic and Business Sciences,ECON1011
+"Commerce, Law and Management",Economic and Business Sciences,ECON1012
+"Commerce, Law and Management",Economic and Business Sciences,ECON1013
+"Commerce, Law and Management",Economic and Business Sciences,ECON1014
+"Commerce, Law and Management",Economic and Business Sciences,ECON1015
+"Commerce, Law and Management",Economic and Business Sciences,ECON1016
+"Commerce, Law and Management",Economic and Business Sciences,ECON1017
+"Commerce, Law and Management",Economic and Business Sciences,ECON1018
+"Commerce, Law and Management",Economic and Business Sciences,ECON1019
+"Commerce, Law and Management",Economic and Business Sciences,ECON2000
+"Commerce, Law and Management",Economic and Business Sciences,ECON2001
+"Commerce, Law and Management",Economic and Business Sciences,ECON2007
+"Commerce, Law and Management",Economic and Business Sciences,ECON2008
+"Commerce, Law and Management",Economic and Business Sciences,ECON3005
+"Commerce, Law and Management",Economic and Business Sciences,ECON3007
+"Commerce, Law and Management",Economic and Business Sciences,ECON3008
+"Commerce, Law and Management",Economic and Business Sciences,ECON3009
+"Commerce, Law and Management",Economic and Business Sciences,ECON3010
+Engineering,Electrical and Information Engineering,ELEN1002
+Engineering,Electrical and Information Engineering,ELEN1003
+Engineering,Electrical and Information Engineering,ELEN2000
+Engineering,Electrical and Information Engineering,ELEN2001
+Engineering,Electrical and Information Engineering,ELEN2003
+Engineering,Electrical and Information Engineering,ELEN2004
+Engineering,Electrical and Information Engineering,ELEN2006
+Engineering,Electrical and Information Engineering,ELEN2008
+Engineering,Electrical and Information Engineering,ELEN3019
+Engineering,Electrical and Information Engineering,ELEN3020
+Engineering,Electrical and Information Engineering,ELEN3021
+Engineering,Electrical and Information Engineering,ELEN3022
+Engineering,Electrical and Information Engineering,ELEN3023
+Humanities,"Literature, Language and Media",ENGL1001
+Humanities,"Literature, Language and Media",ENGL1003
+Humanities,"Literature, Language and Media",ENGL1006
+Humanities,"Literature, Language and Media",ENGL1007
+Humanities,"Literature, Language and Media",ENGL2003
+Humanities,"Literature, Language and Media",ENGL2004
+Humanities,"Literature, Language and Media",ENGL2005
+Humanities,"Literature, Language and Media",ENGL2006
+Humanities,"Literature, Language and Media",ENGL2007
+Humanities,"Literature, Language and Media",ENGL3003
+Humanities,"Literature, Language and Media",ENGL3004
+Humanities,"Literature, Language and Media",ENGL3005
+Humanities,"Literature, Language and Media",ENGL3006
+Humanities,"Literature, Language and Media",ENGL3008
+Humanities,"Literature, Language and Media",ENGL3009
+Humanities,"Literature, Language and Media",ENGL3010
+Humanities,"Literature, Language and Media",ENGL3011
+Health Sciences,Other,FAHS1997
+Humanities,Arts,FINA1001
+Humanities,Arts,FINA1002
+Humanities,Arts,FINA1003
+Humanities,Arts,FINA1004
+Humanities,Arts,FINA1005
+Humanities,Arts,FINA1006
+Humanities,Arts,FINA2001
+Humanities,Arts,FINA2002
+Humanities,Arts,FINA2003
+Humanities,Arts,FINA2004
+Humanities,Arts,FINA2007
+Humanities,Arts,FINA2008
+Humanities,Arts,FINA3001
+Humanities,Arts,FINA3002
+Humanities,Arts,FINA3009
+Humanities,Arts,FINA3010
+Humanities,Arts,FINA3011
+Humanities,Arts,FINA3012
+Humanities,Arts,FINA4012
+Humanities,Arts,FINA4013
+Humanities,Arts,FINA4014
+Humanities,Arts,FINA4015
+Humanities,Arts,FINA4016
+Humanities,Arts,FINA4017
+Engineering,Other,FSCI1997
+Science,"Geography, Archaeology and Environmental Studies",GEOG1000
+Science,"Geography, Archaeology and Environmental Studies",GEOG2010
+Science,"Geography, Archaeology and Environmental Studies",GEOG2011
+Science,"Geography, Archaeology and Environmental Studies",GEOG2012
+Science,"Geography, Archaeology and Environmental Studies",GEOG2013
+Science,"Geography, Archaeology and Environmental Studies",GEOG2014
+Science,"Geography, Archaeology and Environmental Studies",GEOG2015
+Science,"Geography, Archaeology and Environmental Studies",GEOG3017
+Science,"Geography, Archaeology and Environmental Studies",GEOG3018
+Science,"Geography, Archaeology and Environmental Studies",GEOG3019
+Science,"Geography, Archaeology and Environmental Studies",GEOG3020
+Science,"Geography, Archaeology and Environmental Studies",GEOG3021
+Science,"Geography, Archaeology and Environmental Studies",GEOG3022
+Science,"Geography, Archaeology and Environmental Studies",GEOG3023
+Science,"Geography, Archaeology and Environmental Studies",GEOG3024
+Science,"Geography, Archaeology and Environmental Studies",GEOG3025
+Science,"Geography, Archaeology and Environmental Studies",GEOG3026
+Science,Geosciences,GEOL1000
+Science,Geosciences,GEOL2000
+Science,Geosciences,GEOL2008
+Science,Geosciences,GEOL2016
+Science,Geosciences,GEOL2017
+Science,Geosciences,GEOL3008
+Science,Geosciences,GEOL3009
+Science,Geosciences,GEOL3011
+Science,Geosciences,GEOL3012
+Science,Geosciences,GEOL3016
+Science,Geosciences,GEOL3017
+Science,Geosciences,GEOL3018
+Science,Geosciences,GEOL3019
+Science,Geosciences,GEOL3020
+Science,Geosciences,GEOL3021
+Science,Geosciences,GEOL3022
+Science,Geosciences,GEOL3032
+Science,Geosciences,GEOL3033
+Science,Geosciences,GEOL3036
+Science,Geosciences,GEOL3037
+Science,Geosciences,GEOL3038
+Science,Geosciences,GEOL3039
+Science,Geosciences,GEOL3040
+Health Sciences,Pathology,HAEM2001
+Humanities,Arts,HART2001
+Humanities,Arts,HART2002
+Humanities,Arts,HART2003
+Humanities,Arts,HART2004
+Humanities,Arts,HART3001
+Humanities,Arts,HART3002
+Humanities,Arts,HART3003
+Humanities,Arts,HART3004
+Humanities,Arts,HART3005
+Humanities,Arts,HART3006
+Humanities,Arts,HART3007
+Humanities,Arts,HART3008
+Humanities,Arts,HART4028
+Humanities,Social Sciences,HIST1010
+Humanities,Social Sciences,HIST1011
+Humanities,Social Sciences,HIST1012
+Humanities,Social Sciences,HIST1013
+Humanities,Social Sciences,HIST2003
+Humanities,Social Sciences,HIST2004
+Humanities,Social Sciences,HIST2005
+Humanities,Social Sciences,HIST2007
+Humanities,Social Sciences,HIST2008
+Humanities,Social Sciences,HIST3003
+Humanities,Social Sciences,HIST3004
+Humanities,Social Sciences,HIST3008
+Humanities,Social Sciences,HIST3009
+Humanities,Social Sciences,HIST3010
+Humanities,Social Sciences,HIST3011
+Humanities,Social Sciences,HIST3015
+Humanities,Social Sciences,HIST3016
+Humanities,Social Sciences,HIST3017
+Humanities,Social Sciences,HIST4021
+"Commerce, Law and Management",Economic and Business Sciences,INFO1000
+"Commerce, Law and Management",Economic and Business Sciences,INFO1003
+"Commerce, Law and Management",Economic and Business Sciences,INFO1004
+"Commerce, Law and Management",Economic and Business Sciences,INFO1005
+"Commerce, Law and Management",Economic and Business Sciences,INFO2000
+"Commerce, Law and Management",Economic and Business Sciences,INFO2001
+"Commerce, Law and Management",Economic and Business Sciences,INFO2004
+"Commerce, Law and Management",Economic and Business Sciences,INFO3002
+"Commerce, Law and Management",Economic and Business Sciences,INFO3003
+Humanities,Social Sciences,INTR1010
+Humanities,Social Sciences,INTR1011
+Humanities,Social Sciences,INTR1012
+Humanities,Social Sciences,INTR1013
+Humanities,Social Sciences,INTR2003
+Humanities,Social Sciences,INTR2004
+Humanities,Social Sciences,INTR2006
+Humanities,Social Sciences,INTR2007
+Humanities,Social Sciences,INTR2008
+Humanities,Social Sciences,INTR2009
+Humanities,Social Sciences,INTR2010
+Humanities,Social Sciences,INTR3002
+Humanities,Social Sciences,INTR3006
+Humanities,Social Sciences,INTR3008
+Humanities,Social Sciences,INTR3009
+Humanities,Social Sciences,INTR3010
+Humanities,Social Sciences,INTR3012
+Humanities,Social Sciences,INTR3013
+Humanities,Social Sciences,INTR3021
+Humanities,Social Sciences,INTR3022
+Humanities,Social Sciences,INTR3023
+Humanities,Social Sciences,INTR3024
+Humanities,Social Sciences,INTR3025
+Humanities,Social Sciences,INTR3026
+Humanities,Social Sciences,INTR3027
+Humanities,Social Sciences,INTR3028
+Humanities,Social Sciences,INTR3029
+"Commerce, Law and Management",Law,LAWS1000
+"Commerce, Law and Management",Law,LAWS1010
+"Commerce, Law and Management",Law,LAWS1011
+"Commerce, Law and Management",Law,LAWS1012
+"Commerce, Law and Management",Law,LAWS1013
+"Commerce, Law and Management",Law,LAWS1016
+"Commerce, Law and Management",Law,LAWS2013
+"Commerce, Law and Management",Law,LAWS2014
+"Commerce, Law and Management",Law,LAWS2015
+"Commerce, Law and Management",Law,LAWS2017
+"Commerce, Law and Management",Law,LAWS3027
+Humanities,"Literature, Language and Media",LING1001
+Humanities,"Literature, Language and Media",LING1003
+Humanities,"Literature, Language and Media",LING1004
+Humanities,"Literature, Language and Media",LING1005
+Humanities,"Literature, Language and Media",LING2003
+Humanities,"Literature, Language and Media",LING2004
+Humanities,"Literature, Language and Media",LING3003
+Humanities,"Literature, Language and Media",LING3005
+Humanities,"Literature, Language and Media",LING3006
+Humanities,"Literature, Language and Media",LING3008
+Humanities,"Literature, Language and Media",LING3009
+Science,Mathematics,MATH1008
+Science,Mathematics,MATH1010
+Science,Mathematics,MATH1014
+Science,Mathematics,MATH1034
+Science,Mathematics,MATH1035
+Science,Mathematics,MATH1036
+Science,Mathematics,MATH1037
+Science,Mathematics,MATH1041
+Science,Mathematics,MATH2001
+Science,Mathematics,MATH2003
+Science,Mathematics,MATH2006
+Science,Mathematics,MATH2007
+Science,Mathematics,MATH2011
+Science,Mathematics,MATH2012
+Science,Mathematics,MATH2015
+Science,Mathematics,MATH2016
+Science,Mathematics,MATH2018
+Science,Mathematics,MATH2019
+Science,Mathematics,MATH2020
+Science,Mathematics,MATH2021
+Science,Mathematics,MATH2022
+Science,Mathematics,MATH3001
+Science,Mathematics,MATH3002
+Science,Mathematics,MATH3003
+Science,Mathematics,MATH3004
+Science,Mathematics,MATH3006
+Science,Mathematics,MATH3009
+Science,Mathematics,MATH3010
+Science,Mathematics,MATH3015
+Science,Mathematics,MATH3017
+Science,Mathematics,MATH3028
+Science,Mathematics,MATH3031
+Science,Mathematics,MATH3032
+Science,Mathematics,MATH3034
+Science,Molecular and Cell Biology,MCBG2028
+Science,Molecular and Cell Biology,MCBG2029
+Science,Molecular and Cell Biology,MCBG2030
+Science,Molecular and Cell Biology,MCBG2031
+Science,Molecular and Cell Biology,MCBG2032
+Science,Molecular and Cell Biology,MCBG2033
+Science,Molecular and Cell Biology,MCBG2034
+Science,Molecular and Cell Biology,MCBG2035
+Science,Molecular and Cell Biology,MCBG3004
+Science,Molecular and Cell Biology,MCBG3005
+Science,Molecular and Cell Biology,MCBG3008
+Science,Molecular and Cell Biology,MCBG3009
+Science,Molecular and Cell Biology,MCBG3010
+Science,Molecular and Cell Biology,MCBG3011
+Science,Molecular and Cell Biology,MCBG3012
+Science,Molecular and Cell Biology,MCBG3014
+Science,Molecular and Cell Biology,MCBG3017
+Science,Molecular and Cell Biology,MCBG3018
+Science,Molecular and Cell Biology,MCBG3021
+Science,Molecular and Cell Biology,MCBG3022
+Science,Molecular and Cell Biology,MCBG3024
+Science,Molecular and Cell Biology,MCBG3027
+Science,Molecular and Cell Biology,MCBG3029
+Science,Molecular and Cell Biology,MCBG3030
+Science,Molecular and Cell Biology,MCBG3031
+Science,Molecular and Cell Biology,MCBG3032
+Science,Molecular and Cell Biology,MCBG3033
+Humanities,"Literature, Language and Media",MDLL1001
+Humanities,"Literature, Language and Media",MDLL1003
+Humanities,"Literature, Language and Media",MDLL1004
+Humanities,"Literature, Language and Media",MDLL1005
+Humanities,"Literature, Language and Media",MDLL1006
+Humanities,"Literature, Language and Media",MDLL1007
+Humanities,"Literature, Language and Media",MDLL1009
+Humanities,"Literature, Language and Media",MDLL1010
+Humanities,"Literature, Language and Media",MDLL1011
+Humanities,"Literature, Language and Media",MDLL1012
+Humanities,"Literature, Language and Media",MDLL1013
+Humanities,"Literature, Language and Media",MDLL1014
+Humanities,"Literature, Language and Media",MDLL1015
+Humanities,"Literature, Language and Media",MDLL1016
+Humanities,"Literature, Language and Media",MDLL1017
+Humanities,"Literature, Language and Media",MDLL1018
+Humanities,"Literature, Language and Media",MDLL2001
+Humanities,"Literature, Language and Media",MDLL2002
+Humanities,"Literature, Language and Media",MDLL2003
+Humanities,"Literature, Language and Media",MDLL2004
+Humanities,"Literature, Language and Media",MDLL2005
+Humanities,"Literature, Language and Media",MDLL2006
+Humanities,"Literature, Language and Media",MDLL2007
+Humanities,"Literature, Language and Media",MDLL2008
+Humanities,"Literature, Language and Media",MDLL2013
+Humanities,"Literature, Language and Media",MDLL2014
+Humanities,"Literature, Language and Media",MDLL3001
+Humanities,"Literature, Language and Media",MDLL3002
+Humanities,"Literature, Language and Media",MDLL3003
+Humanities,"Literature, Language and Media",MDLL3005
+Humanities,"Literature, Language and Media",MDLL3006
+Humanities,"Literature, Language and Media",MDLL3007
+Humanities,"Literature, Language and Media",MDLL3008
+Humanities,"Literature, Language and Media",MDLL3009
+Humanities,"Literature, Language and Media",MDLL3010
+Humanities,"Literature, Language and Media",MDLL3011
+Humanities,"Literature, Language and Media",MDLL3012
+Humanities,"Literature, Language and Media",MDLL3013
+Humanities,"Literature, Language and Media",MDLL3014
+Humanities,"Literature, Language and Media",MDLL3015
+Humanities,"Literature, Language and Media",MDLL3016
+Humanities,"Literature, Language and Media",MDLL3017
+Humanities,"Literature, Language and Media",MDLL3022
+Humanities,"Literature, Language and Media",MDLL3023
+Humanities,"Literature, Language and Media",MDLL3024
+Humanities,"Literature, Language and Media",MDLL3025
+Humanities,"Literature, Language and Media",MDLL3026
+Humanities,"Literature, Language and Media",MDLL3027
+Humanities,"Literature, Language and Media",MDLL3028
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN1001
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN1003
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN2000
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN2005
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN2006
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN2010
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN2011
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN2012
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN2013
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN2014
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN2016
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN2017
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN2019
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN3004
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN3006
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN3013
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN3023
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN3024
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN3026
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN3028
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN3033
+Engineering,"Mechanical, Industrial and Aeronautical Engineering",MECN3034
+Engineering,Mining Engineering,MINN3013
+Humanities,Arts,MUSC1018
+Humanities,Arts,MUSC1019
+Humanities,Arts,MUSC1022
+Humanities,Arts,MUSC1023
+Humanities,Arts,MUSC1024
+Humanities,Arts,MUSC1025
+Humanities,Arts,MUSC1026
+Humanities,Arts,MUSC1027
+Humanities,Arts,MUSC1028
+Humanities,Arts,MUSC1029
+Humanities,Arts,MUSC1030
+Humanities,Arts,MUSC1031
+Humanities,Arts,MUSC2017
+Humanities,Arts,MUSC2018
+Humanities,Arts,MUSC2019
+Humanities,Arts,MUSC2020
+Humanities,Arts,MUSC2021
+Humanities,Arts,MUSC2022
+Humanities,Arts,MUSC2023
+Humanities,Arts,MUSC2024
+Humanities,Arts,MUSC3015
+Humanities,Arts,MUSC3016
+Humanities,Arts,MUSC3017
+Humanities,Arts,MUSC3018
+Humanities,Arts,MUSC3019
+Humanities,Arts,MUSC3020
+Humanities,Arts,MUSC3021
+Humanities,Arts,MUSC3022
+Humanities,Arts,MUSC4028
+Humanities,Arts,MUSC4031
+Humanities,Arts,MUSC4032
+Humanities,Arts,MUSC4033
+Humanities,Arts,MUSC4034
+Humanities,Arts,MUSC4036
+Humanities,Arts,MUSC4037
+Humanities,Arts,MUSC4038
+Humanities,Arts,MUSC4039
+Humanities,Arts,MUSC4040
+Health Sciences,Therapeutic Sciences,PHAR3004
+Humanities,Social Sciences,PHIL1001
+Humanities,Social Sciences,PHIL1002
+Humanities,Social Sciences,PHIL1003
+Humanities,Social Sciences,PHIL1004
+Humanities,Social Sciences,PHIL1005
+Humanities,Social Sciences,PHIL2001
+Humanities,Social Sciences,PHIL2002
+Humanities,Social Sciences,PHIL2005
+Humanities,Social Sciences,PHIL2006
+Humanities,Social Sciences,PHIL2007
+Humanities,Social Sciences,PHIL2009
+Humanities,Social Sciences,PHIL2012
+Humanities,Social Sciences,PHIL2013
+Humanities,Social Sciences,PHIL2015
+Humanities,Social Sciences,PHIL2016
+Humanities,Social Sciences,PHIL3001
+Humanities,Social Sciences,PHIL3002
+Humanities,Social Sciences,PHIL3003
+Humanities,Social Sciences,PHIL3004
+Humanities,Social Sciences,PHIL3005
+Humanities,Social Sciences,PHIL3006
+Humanities,Social Sciences,PHIL3007
+Humanities,Social Sciences,PHIL3008
+Humanities,Social Sciences,PHIL3009
+Humanities,Social Sciences,PHIL3010
+Health Sciences,Physiology,PHSL2000
+Health Sciences,Physiology,PHSL3002
+Health Sciences,Physiology,PHSL3006
+Science,Physics,PHYS1000
+Science,Physics,PHYS1001
+Science,Physics,PHYS1008
+Science,Physics,PHYS1014
+Science,Physics,PHYS1015
+Science,Physics,PHYS1023
+Science,Physics,PHYS1024
+Science,Physics,PHYS1025
+Science,Physics,PHYS1026
+Science,Physics,PHYS1027
+Science,Physics,PHYS2001
+Science,Physics,PHYS2002
+Science,Physics,PHYS2011
+Science,Physics,PHYS2012
+Science,Physics,PHYS2013
+Science,Physics,PHYS3000
+Science,Physics,PHYS3001
+Science,Physics,PHYS3002
+Science,Physics,PHYS3003
+Science,Physics,PHYS3004
+Science,Physics,PHYS3006
+Science,Physics,PHYS3007
+Science,Physics,PHYS3008
+Science,Physics,PHYS3009
+Humanities,Social Sciences,POLS1007
+Humanities,Social Sciences,POLS1008
+Humanities,Social Sciences,POLS1009
+Humanities,Social Sciences,POLS1010
+Humanities,Social Sciences,POLS2002
+Humanities,Social Sciences,POLS2006
+Humanities,Social Sciences,POLS2012
+Humanities,Social Sciences,POLS2015
+Humanities,Social Sciences,POLS2016
+Humanities,Social Sciences,POLS2017
+Humanities,Social Sciences,POLS2018
+Humanities,Social Sciences,POLS2019
+Humanities,Social Sciences,POLS2020
+Humanities,Social Sciences,POLS2021
+Humanities,Social Sciences,POLS3003
+Humanities,Social Sciences,POLS3008
+Humanities,Social Sciences,POLS3017
+Humanities,Social Sciences,POLS3018
+Humanities,Social Sciences,POLS3019
+Humanities,Social Sciences,POLS3020
+Humanities,Social Sciences,POLS3021
+Humanities,Social Sciences,POLS3022
+Humanities,Social Sciences,POLS3023
+Humanities,Social Sciences,POLS3024
+Humanities,Social Sciences,POLS3025
+Humanities,Social Sciences,POLS3026
+Humanities,Social Sciences,POLS3027
+Humanities,Social Sciences,POLS3028
+Humanities,Social Sciences,POLS3029
+Humanities,Social Sciences,POLS3030
+Humanities,Human and Community Development,PSYC1004
+Humanities,Human and Community Development,PSYC1009
+Humanities,Human and Community Development,PSYC1010
+Humanities,Human and Community Development,PSYC2002
+Humanities,Human and Community Development,PSYC2005
+Humanities,Human and Community Development,PSYC2006
+Humanities,Human and Community Development,PSYC2012
+Humanities,Human and Community Development,PSYC2019
+Humanities,Human and Community Development,PSYC2020
+Humanities,Human and Community Development,PSYC2021
+Humanities,Human and Community Development,PSYC3001
+Humanities,Human and Community Development,PSYC3013
+Humanities,Human and Community Development,PSYC3015
+Humanities,Human and Community Development,PSYC3016
+Humanities,Human and Community Development,PSYC3017
+Humanities,Human and Community Development,PSYC3018
+Humanities,Human and Community Development,PSYC3019
+Humanities,Human and Community Development,PSYC3020
+Humanities,Human and Community Development,PSYC3021
+Humanities,Human and Community Development,PSYC3022
+Humanities,Human and Community Development,PSYC3023
+Humanities,Human and Community Development,PSYC3024
+Humanities,Human and Community Development,PSYC3028
+Humanities,Human and Community Development,PSYC3030
+Humanities,Human and Community Development,PSYC3031
+Humanities,Human and Community Development,PSYC3032
+Humanities,Human and Community Development,PSYC3033
+Humanities,Human and Community Development,PSYC3034
+Health Sciences,Therapeutic Sciences,SCMD1003
+Humanities,"Literature, Language and Media",SLLS1005
+Humanities,"Literature, Language and Media",SLLS1006
+Humanities,"Literature, Language and Media",SLLS1008
+Humanities,"Literature, Language and Media",SLLS1009
+Humanities,"Literature, Language and Media",SLLS2003
+Humanities,"Literature, Language and Media",SLLS2004
+Humanities,"Literature, Language and Media",SLLS2007
+Humanities,"Literature, Language and Media",SLLS2008
+Humanities,"Literature, Language and Media",SLLS2009
+Humanities,"Literature, Language and Media",SLLS3003
+Humanities,"Literature, Language and Media",SLLS3004
+Humanities,"Literature, Language and Media",SLLS3005
+Humanities,"Literature, Language and Media",SLLS3009
+Humanities,"Literature, Language and Media",SLLS3010
+Humanities,"Literature, Language and Media",SLLS3011
+Humanities,"Literature, Language and Media",SLLS3013
+Humanities,"Literature, Language and Media",SLLS3014
+Humanities,"Literature, Language and Media",SLLS3021
+Humanities,"Literature, Language and Media",SLLS3024
+Humanities,"Literature, Language and Media",SLLS3025
+Humanities,"Literature, Language and Media",SLLS3026
+Humanities,Social Sciences,SOCL1008
+Humanities,Social Sciences,SOCL1009
+Humanities,Social Sciences,SOCL1013
+Humanities,Social Sciences,SOCL1014
+Humanities,Social Sciences,SOCL1016
+Humanities,Social Sciences,SOCL2001
+Humanities,Social Sciences,SOCL2002
+Humanities,Social Sciences,SOCL2004
+Humanities,Social Sciences,SOCL2005
+Humanities,Social Sciences,SOCL2007
+Humanities,Social Sciences,SOCL2008
+Humanities,Social Sciences,SOCL2009
+Humanities,Social Sciences,SOCL2011
+Humanities,Social Sciences,SOCL2012
+Humanities,Social Sciences,SOCL2013
+Humanities,Social Sciences,SOCL2014
+Humanities,Social Sciences,SOCL2015
+Humanities,Social Sciences,SOCL2017
+Humanities,Social Sciences,SOCL2018
+Humanities,Social Sciences,SOCL2021
+Humanities,Social Sciences,SOCL3001
+Humanities,Social Sciences,SOCL3002
+Humanities,Social Sciences,SOCL3003
+Humanities,Social Sciences,SOCL3005
+Humanities,Social Sciences,SOCL3007
+Humanities,Social Sciences,SOCL3008
+Humanities,Social Sciences,SOCL3009
+Humanities,Social Sciences,SOCL3010
+Humanities,Social Sciences,SOCL3011
+Humanities,Social Sciences,SOCL3012
+Humanities,Social Sciences,SOCL3013
+Humanities,Social Sciences,SOCL3014
+Humanities,Social Sciences,SOCL3015
+Humanities,Social Sciences,SOCL3016
+Humanities,Social Sciences,SOCL3018
+Humanities,Social Sciences,SOCL3019
+Humanities,Social Sciences,SOCL3020
+Humanities,Social Sciences,SOCL3021
+Humanities,Social Sciences,SOCL3022
+Humanities,Social Sciences,SOCL3023
+Humanities,Social Sciences,SOCL3024
+Humanities,Social Sciences,SOCL3025
+Humanities,Social Sciences,SOCL3026
+Humanities,Human and Community Development,SOCW1001
+Humanities,Human and Community Development,SOCW1005
+Humanities,Human and Community Development,SOCW2001
+Humanities,Human and Community Development,SOCW2006
+Humanities,Human and Community Development,SOCW3001
+Humanities,Human and Community Development,SOCW3005
+Humanities,Human and Community Development,SOCW4001
+Humanities,Human and Community Development,SOCW4003
+Humanities,Human and Community Development,SOCW4004
+Humanities,Social Sciences,SOSS2003
+Humanities,Social Sciences,SOSS2005
+Humanities,Social Sciences,SOSS2006
+Humanities,Social Sciences,SOSS2007
+Humanities,Human and Community Development,SPPA1003
+Humanities,Human and Community Development,SPPA1004
+Humanities,Human and Community Development,SPPA2001
+Humanities,Human and Community Development,SPPA2002
+Humanities,Human and Community Development,SPPA2003
+Humanities,Human and Community Development,SPPA3001
+Humanities,Human and Community Development,SPPA3002
+Humanities,Human and Community Development,SPPA3003
+Humanities,Human and Community Development,SPPA3004
+Humanities,Human and Community Development,SPPA3005
+Humanities,Human and Community Development,SPPA4001
+Humanities,Human and Community Development,SPPA4002
+Humanities,Human and Community Development,SPPA4003
+Humanities,Human and Community Development,SPPA4004
+Humanities,Human and Community Development,SPPA4005
+Humanities,Human and Community Development,SPPA4006
+Humanities,Human and Community Development,SPPA4007
+Science,Statistics and Actuarial Science,STAT1000
+Science,Statistics and Actuarial Science,STAT1001
+Science,Statistics and Actuarial Science,STAT1002
+Science,Statistics and Actuarial Science,STAT1003
+Science,Statistics and Actuarial Science,STAT1004
+Science,Statistics and Actuarial Science,STAT1005
+Science,Statistics and Actuarial Science,STAT2005
+Science,Statistics and Actuarial Science,STAT2008
+Science,Statistics and Actuarial Science,STAT2012
+Science,Statistics and Actuarial Science,STAT2013
+Science,Statistics and Actuarial Science,STAT3008
+Science,Statistics and Actuarial Science,STAT3017
+Science,Statistics and Actuarial Science,STAT3028
+Humanities,"Literature, Language and Media",TRAN3006
+Humanities,Arts,WSOA1002
+Humanities,Arts,WSOA1003
+Humanities,Arts,WSOA1009
+Humanities,Arts,WSOA1010
+Humanities,Arts,WSOA1011
+Humanities,Arts,WSOA1012
+Humanities,Arts,WSOA1013
+Humanities,Arts,WSOA1014
+Humanities,Arts,WSOA1015
+Humanities,Arts,WSOA1016
+Humanities,Arts,WSOA1017
+Humanities,Arts,WSOA1018
+Humanities,Arts,WSOA1019
+Humanities,Arts,WSOA1020
+Humanities,Arts,WSOA2004
+Humanities,Arts,WSOA2006
+Humanities,Arts,WSOA2009
+Humanities,Arts,WSOA2010
+Humanities,Arts,WSOA2011
+Humanities,Arts,WSOA2012
+Humanities,Arts,WSOA2013
+Humanities,Arts,WSOA2014
+Humanities,Arts,WSOA2015
+Humanities,Arts,WSOA2016
+Humanities,Arts,WSOA2017
+Humanities,Arts,WSOA2020
+Humanities,Arts,WSOA2021
+Humanities,Arts,WSOA3000
+Humanities,Arts,WSOA3001
+Humanities,Arts,WSOA3002
+Humanities,Arts,WSOA3003
+Humanities,Arts,WSOA3004
+Humanities,Arts,WSOA3005
+Humanities,Arts,WSOA3006
+Humanities,Arts,WSOA3007
+Humanities,Arts,WSOA3008
+Humanities,Arts,WSOA3009
+Humanities,Arts,WSOA3010
+Humanities,Arts,WSOA3011
+Humanities,Arts,WSOA3012
+Humanities,Arts,WSOA3013
+Humanities,Arts,WSOA3014
+Humanities,Arts,WSOA3015
+Humanities,Arts,WSOA3016
+Humanities,Arts,WSOA3017
+Humanities,Arts,WSOA4030
+Humanities,Arts,WSOA4055
+Humanities,Arts,WSOA4056
+Humanities,Arts,WSOA4057
+Humanities,Arts,WSOA4058
+Humanities,Arts,WSOA4059
+Humanities,Arts,WSOA4060
+Humanities,Arts,WSOA4061
+Humanities,Arts,WSOA4062
+Humanities,Arts,WSOA4063
+Humanities,Arts,WSOA4064
+Humanities,Arts,WSOA4065
+Humanities,Arts,WSOA4075
+Humanities,Arts,WSOA4076
+Humanities,Arts,WSOA4077
+Humanities,Arts,WSOA4078
+Humanities,Arts,WSOA4079
+Humanities,Arts,WSOA4080
+Humanities,Arts,WSOA4081
+Humanities,Arts,WSOA4082
+Humanities,Arts,WSOA4083
+Humanities,Arts,WSOA4084
+Humanities,Arts,WSOA4088
+Humanities,Arts,WSOA4089
+Humanities,Arts,WSOA4091
+Humanities,Arts,WSOA4092
+Humanities,Arts,WSOA4093
+Humanities,Arts,WSOA4094
+Humanities,Arts,WSOA4095

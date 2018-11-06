@@ -2,18 +2,9 @@ from django.core.management.base import BaseCommand
 import os
 import logging
 
-from dashboard.apps.excel_import.models import RawStudentModel
 from dashboard.apps.jsonquery.management.util.dataimport import DataImportCommand
 
 logger = logging.getLogger('debug-import')
-
-
-def import_table(df):
-    logger.info(f"Converting table to records")
-    items = df.to_dict('records')
-    items = [RawStudentModel(**item) for item in items]
-    logger.info(f"Saving records")
-    return len(RawStudentModel.objects.bulk_create(items))
 
 
 class Command(BaseCommand):
@@ -24,10 +15,13 @@ class Command(BaseCommand):
            '\n      "$ python3 manage.py convert --file data_1.xlsx --out all.csv --header_row 5 --limit 10 100 1000 -1"'
 
     def add_arguments(self, parser):
-        parser.add_argument('--files', dest='files', nargs='+', type=str, help='Specify files to be imported')
-        parser.add_argument('--limit', dest='limit', nargs='+', type=int, help='Truncate the outputs')
+        # https://pymotw.com/2/argparse/
+        parser.add_argument('--file', dest='files', nargs='+', type=str, help='Specify files to be imported')
+        parser.add_argument('--limit', dest='limits', nargs='+', type=int, help='Truncate the outputs')
         parser.add_argument('--out', dest='out', nargs=1, type=str, help='Specify the output')
         parser.add_argument('--type', dest='type', nargs=1, type=str, help='Specify the header row if it is an excel file')
+        parser.add_argument('--randomize', action='store_true', help='True if specified')
+        parser.add_argument('--dry', action='store_true', help='True if specified')
 
     def handle(self, *args, **options):
 
@@ -42,11 +36,11 @@ class Command(BaseCommand):
             },
         }
 
-        if options['out'] is None:
-            print("--out not specified")
-            exit(1)
         if options['files'] is None:
             print("--file not specified")
+            exit(1)
+        if options['out'] is None:
+            print("--out not specified")
             exit(1)
         if options['type'] is None or options['type'][0] not in types:
             print("--type not specified, must be 'wits' or 'schools'")
@@ -60,17 +54,20 @@ class Command(BaseCommand):
             raise Exception(f"Are you sure you specified the correct type? The number of columns found is {len(df.columns)}, there should be {types[options['type'][0]]['width']}")
 
         # default value - save everything
-        if not options['limit']:
-            options['limit'] = [-1]
+        if not options['limits']:
+            options['limits'] = [-1]
 
         # get the output extension
         partial, ext = os.path.splitext(options['out'][0])
         ext = ext.lower()
 
+        if 'randomize' in options:
+            df = df.sample(frac=1).reset_index(drop=True)
+
         # save one file per limit
-        for limit in {min(max(-1, l), len(df)) for l in options['limit']}:
+        for limit in {min(max(-1, l), len(df)) for l in options['limits']}:
             path = f"{partial}{ext}" if limit < 0 else f"{partial}_{limit}{ext}"
             logger.info(f"Saving: {path}")
-            if limit >= 0:
-                df = df[:limit]
-            DataImportCommand.save_table(path, df)
+            save_table = df[:limit] if limit >= 0 else df
+            if 'dry' not in options:
+                DataImportCommand.save_table(path, save_table)
