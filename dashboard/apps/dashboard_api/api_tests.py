@@ -1,5 +1,6 @@
 from django.test import Client
 from django.test import TestCase
+import json
 
 
 class APIQueryTestCase(TestCase):
@@ -10,11 +11,24 @@ class APIQueryTestCase(TestCase):
         response = self.client.post('/auth/token/obtain', {'username': 'user', 'password': 'pass'})
         self.assertEqual(response.status_code,400)
 
+        # Actual LDAP Login
+        # response = self.client.post('/auth/token/obtain', {'username': 'user', 'password': 'pass'})
+        # self.assertEqual(response.status_code, 200)
+
+        python_dict = {
+            "chain": [
+                {
+                    "group": {
+                        "by": [
+                            'calendar_instance_year'
+                        ]
+                    }
+                }
+            ]
+        }
         response = self.client.post(
-            '/course_stats/query',
-            {'chain': [{'group': {'by': ['calendar_instance_year'], 'distinctGrouping': 'true',
-                                  'removeDuplicateCountings': 'false'}}]})
-        self.assertEqual(response.status_code,415)
+            '/course_stats/query',json.dumps(python_dict),content_type="application/json")
+        self.assertEqual(response.status_code,200)
 
         response = self.client.post(
             '/school_info/query',
