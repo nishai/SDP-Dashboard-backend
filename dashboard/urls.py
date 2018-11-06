@@ -13,13 +13,14 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-
+import graphene
 from django.contrib import admin
 from django.urls import path
+from graphene_django.views import GraphQLView
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 from rest_framework_swagger.views import get_swagger_view
 from django.conf.urls import url, include
-
+from dashboard.apps.jsonquery.schema import WitsQuerySchema
 
 urlpatterns = [
     # AUTH: JWT Authentication TODO: THIS IS NOT SECURE UNTIL HTTPS IS USED
@@ -34,10 +35,23 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 ]
 
+
+
 # api
 urlpatterns += [
     url(r'^', include('dashboard.apps.dashapi.urls')),
     url(r'^', include('dashboard.apps.excel_import.urls')),
     url(r'^', include('dashboard.apps.jsonquery.urls')),
 ]
+
+
+# graphql
+class AppQuerySchema(WitsQuerySchema, graphene.ObjectType):
+    pass
+
+
+urlpatterns += [
+    url(r'^graphql', GraphQLView.as_view(graphiql=True, schema=graphene.Schema(query=AppQuerySchema))),
+]
+
 

@@ -10,7 +10,7 @@ from dashboard.apps.jsonquery.models import *
 
 # Faculty
 
-class FacultySerializer(serializers.HyperlinkedModelSerializer):
+class FacultySerializer(serializers.ModelSerializer):
     class Meta:
         model = Faculty
         fields = '__all__'
@@ -18,7 +18,7 @@ class FacultySerializer(serializers.HyperlinkedModelSerializer):
 
 # School
 
-class SchoolSerializer(serializers.HyperlinkedModelSerializer):
+class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
         model = School
         fields = '__all__'
@@ -26,7 +26,7 @@ class SchoolSerializer(serializers.HyperlinkedModelSerializer):
 
 # Course
 
-class CourseSerializer(serializers.HyperlinkedModelSerializer):
+class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         fields = '__all__'
@@ -34,7 +34,7 @@ class CourseSerializer(serializers.HyperlinkedModelSerializer):
 
 # Program
 
-class ProgramSerializer(serializers.HyperlinkedModelSerializer):
+class ProgramSerializer(serializers.ModelSerializer):
     class Meta:
         model = Program
         fields = '__all__'
@@ -42,7 +42,7 @@ class ProgramSerializer(serializers.HyperlinkedModelSerializer):
 
 # Progress
 
-class ProgressOutcomeSerializer(serializers.HyperlinkedModelSerializer):
+class ProgressOutcomeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProgressOutcome
         fields = '__all__'
@@ -50,7 +50,7 @@ class ProgressOutcomeSerializer(serializers.HyperlinkedModelSerializer):
 
 # Secondary School
 
-class SecondarySchoolSerializer(serializers.HyperlinkedModelSerializer):
+class SecondarySchoolSerializer(serializers.ModelSerializer):
     class Meta:
         model = SecondarySchool
         fields = '__all__'
@@ -58,7 +58,7 @@ class SecondarySchoolSerializer(serializers.HyperlinkedModelSerializer):
 
 # Student
 
-class StudentSerializer(serializers.HyperlinkedModelSerializer):
+class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
         fields = '__all__'
@@ -66,7 +66,7 @@ class StudentSerializer(serializers.HyperlinkedModelSerializer):
 
 # Enrolled Year
 
-class EnrolledYearSerializer(serializers.HyperlinkedModelSerializer):
+class EnrolledYearSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnrolledYear
         fields = '__all__'
@@ -74,7 +74,7 @@ class EnrolledYearSerializer(serializers.HyperlinkedModelSerializer):
 
 # Enrolled Course
 
-class EnrolledCourseSerializer(serializers.HyperlinkedModelSerializer):
+class EnrolledCourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnrolledCourse
         fields = '__all__'

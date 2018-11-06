@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'dashboard.apps.excel_import',  # wits related - legacy
     'dashboard.apps.jsonquery',     # wits related
     # external apps
+    'graphene_django',              # https://github.com/graphql-python/graphene
     'rest_framework',               # http://www.django-rest-framework.org
     'rest_framework_jwt',           # http://getblimp.github.io/django-rest-framework-jwt
     'django_auth_ldap',             # https://django-auth-ldap.readthedocs.io
@@ -167,7 +168,7 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.IsAuthenticated', # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication', # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
     ],
 }
 
