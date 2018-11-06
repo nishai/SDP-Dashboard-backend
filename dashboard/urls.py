@@ -25,6 +25,7 @@ router = routers.DefaultRouter()
 router.register(r'course_info', CourseInfoViewSet, base_name="query")
 router.register(r'school_info', SchoolInfoViewSet, base_name="query")
 router.register(r'course_stats', CourseStatsViewSet, base_name="query")
+router.register(r'average_year_stats', AverageYearStatsViewSet, base_name="query")
 
 router.register(r'report', UserReportViewSet, base_name="report")
 router.register(r'report/chart', ReportChartViewSet, base_name="chart")
@@ -45,4 +46,5 @@ urlpatterns += [
     path('course_stats/query', course_stats_query),
     path('school_info/query', school_info_query),
     path('course_info/query', course_info_query),
+    path('average_year_stats/query', average_year_stats_query),
 ]
