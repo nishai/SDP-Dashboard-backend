@@ -1,5 +1,5 @@
 from rest_framework import serializers, viewsets, permissions
-from dashboard.apps.jsonquery.models import *
+from dashboard.apps.wits.models import *
 
 
 # ========================================================================= #

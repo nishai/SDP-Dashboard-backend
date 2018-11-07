@@ -11,10 +11,10 @@ from datetime import timedelta
 from django.db.models.fields.reverse_related import ForeignObjectRel
 from django.utils import timezone
 
-from dashboard.apps.jsonquery.parser.schema import Schema
+from dashboard.apps.wits.parser.schema import Schema
 
 from jsonschema import validate, ValidationError, SchemaError
-from dashboard.apps.jsonquery.management.util.modelinfo import ModelInfo
+from dashboard.apps.wits.management.util.modelinfo import ModelInfo
 
 
 # ========================================================================= #

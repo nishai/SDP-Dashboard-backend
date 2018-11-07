@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from rest_framework import routers
-from dashboard.apps.dashapi.views import *
+from dashboard.apps.dash.views import *
 
 
 # ViewSets

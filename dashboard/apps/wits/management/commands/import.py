@@ -1,5 +1,5 @@
-from dashboard.apps.jsonquery.management.util.dataimport import DataImportCommand
-from dashboard.apps.jsonquery.models import *
+from dashboard.apps.wits.management.util.dataimport import DataImportCommand
+from dashboard.apps.wits.models import *
 import logging
 
 logger = logging.getLogger('debug-import')

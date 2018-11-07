@@ -2,8 +2,8 @@ from django.conf.urls import url
 from django.urls import path
 from graphene_django.views import GraphQLView
 
-from dashboard.apps.jsonquery import schema
-from dashboard.apps.jsonquery.views import *
+from dashboard.apps.wits import schema
+from dashboard.apps.wits.views import *
 from rest_framework import routers
 
 

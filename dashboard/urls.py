@@ -20,7 +20,7 @@ from graphene_django.views import GraphQLView
 from rest_framework_jwt.views import obtain_jwt_token, refresh_jwt_token
 from rest_framework_swagger.views import get_swagger_view
 from django.conf.urls import url, include
-from dashboard.apps.jsonquery.schema import WitsQuerySchema
+from dashboard.apps.wits.schema import WitsQuerySchema
 
 urlpatterns = [
     # AUTH: JWT Authentication TODO: THIS IS NOT SECURE UNTIL HTTPS IS USED
@@ -39,9 +39,9 @@ urlpatterns = [
 
 # api
 urlpatterns += [
-    url(r'^', include('dashboard.apps.dashapi.urls')),
+    url(r'^', include('dashboard.apps.dash.urls')),
     url(r'^', include('dashboard.apps.excel_import.urls')),
-    url(r'^', include('dashboard.apps.jsonquery.urls')),
+    url(r'^', include('dashboard.apps.wits.urls')),
 ]
 
 

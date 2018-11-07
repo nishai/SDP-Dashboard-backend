@@ -52,9 +52,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     # dashboard apps
-    'dashboard.apps.dashapi',       # user related
+    'dashboard.apps.dash',       # user related
     'dashboard.apps.excel_import',  # wits related - legacy
-    'dashboard.apps.jsonquery',     # wits related
+    'dashboard.apps.wits',     # wits related
     # external apps
     'graphene_django',              # https://github.com/graphql-python/graphene
     'rest_framework',               # http://www.django-rest-framework.org

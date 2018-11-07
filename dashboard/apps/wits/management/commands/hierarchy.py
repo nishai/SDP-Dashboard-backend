@@ -3,7 +3,7 @@ import sys
 from django.core.management import BaseCommand
 from django.db import models
 
-from dashboard.apps.jsonquery.management.util.modelinfo import ModelInfo
+from dashboard.apps.wits.management.util.modelinfo import ModelInfo
 from dashboard.shared.errors import VisibleError
 
 
@@ -15,7 +15,7 @@ class Command(BaseCommand):
         pass
 
     def handle(self, *args, **options):
-        module = 'dashboard.apps.jsonquery.models'
+        module = 'dashboard.apps.wits.models'
         clsmembers = inspect.getmembers(sys.modules[module], inspect.isclass)
         for name, cls in clsmembers:
             if getattr(cls, '__module__', '').startswith(module) and issubclass(cls, models.Model):

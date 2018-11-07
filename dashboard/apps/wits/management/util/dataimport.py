@@ -4,7 +4,7 @@ import os
 import logging
 import pandas as pd
 
-from dashboard.apps.jsonquery.management.util.datainserter import Inserter
+from dashboard.apps.wits.management.util.datainserter import Inserter
 
 logger = logging.getLogger('debug-import')
 

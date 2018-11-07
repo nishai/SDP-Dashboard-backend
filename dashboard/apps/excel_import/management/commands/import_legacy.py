@@ -1,4 +1,4 @@
-from dashboard.apps.jsonquery.management.util.dataimport import DataImportCommand
+from dashboard.apps.wits.management.util.dataimport import DataImportCommand
 from dashboard.apps.excel_import.models import *
 import logging
 

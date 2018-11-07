@@ -7,7 +7,7 @@ from django.forms import model_to_dict
 
 from dashboard.shared.errors import VisibleError
 from dashboard.shared.measure import Measure
-from dashboard.apps.jsonquery.management.util.modelinfo import ModelInfo
+from dashboard.apps.wits.management.util.modelinfo import ModelInfo
 
 logger = logging.getLogger('debug-import')
 

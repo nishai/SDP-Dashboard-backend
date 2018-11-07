@@ -2,7 +2,7 @@ from rest_framework import viewsets, permissions
 from dashboard.apps.excel_import.parser import jsonquery
 
 from dashboard.apps.excel_import.serializers import *
-from dashboard.apps.jsonquery.views import QueryApiView  # TODO: remove
+from dashboard.apps.wits.views import QueryApiView  # TODO: remove
 from dashboard.shared.middleware import WARN_view_deprecated
 
 

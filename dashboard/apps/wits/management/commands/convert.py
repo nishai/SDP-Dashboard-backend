@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 import os
 import logging
 
-from dashboard.apps.jsonquery.management.util.dataimport import DataImportCommand
+from dashboard.apps.wits.management.util.dataimport import DataImportCommand
 
 logger = logging.getLogger('debug-import')
 

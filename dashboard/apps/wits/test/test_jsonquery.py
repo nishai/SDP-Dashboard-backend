@@ -15,7 +15,7 @@ from typing import Type
 from django.db.models import Model
 from django.test import TestCase
 from django.core.management import call_command
-from dashboard.apps.jsonquery.models import *
+from dashboard.apps.wits.models import *
 
 
 # ========================================================================= #
@@ -42,11 +42,11 @@ class JsonQueryImportTestCase(TestCase):
 
     def test_command_convert(self):
         self.assertEqual(
-            call_command('convert', '--file', './dashboard/apps/jsonquery/test/data/all-test-ran_100.csv', '--out', './data/test.csv', '--type', 'wits', '--limit', '10', '50', '--randomize'),
+            call_command('convert', '--file', './dashboard/apps/wits/test/data/all-test-ran_100.csv', '--out', './data/test.csv', '--type', 'wits', '--limit', '10', '50', '--randomize'),
             None
         )
         self.assertEqual(
-            call_command('convert', '--file', './dashboard/apps/jsonquery/test/data/schools.csv', '--out', './data/test.csv', '--type', 'schools', '--limit', '10', '50'),
+            call_command('convert', '--file', './dashboard/apps/wits/test/data/schools.csv', '--out', './data/test.csv', '--type', 'schools', '--limit', '10', '50'),
             None
         )
 
@@ -56,7 +56,7 @@ class JsonQueryImportTestCase(TestCase):
         self.assertEqual(EnrolledYear.objects.count(), 0)
         # run command
         self.assertEqual(
-            call_command('import', '--wits', './dashboard/apps/jsonquery/test/data/all-test-ran_100.csv', '--schools', './dashboard/apps/jsonquery/test/data/schools.csv'),
+            call_command('import', '--wits', './dashboard/apps/wits/test/data/all-test-ran_100.csv', '--schools', './dashboard/apps/wits/test/data/schools.csv'),
             None
         )
         # check added
@@ -65,7 +65,7 @@ class JsonQueryImportTestCase(TestCase):
         self.assertGreater(count_enroll_year, 0)
         # run command again
         self.assertEqual(
-            call_command('import', '--wits', './dashboard/apps/jsonquery/test/data/all-test-ran_100.csv', './dashboard/apps/jsonquery/test/data/all-test-ran_10.csv', '--schools', './dashboard/apps/jsonquery/test/data/schools.csv'),
+            call_command('import', '--wits', './dashboard/apps/wits/test/data/all-test-ran_100.csv', './dashboard/apps/wits/test/data/all-test-ran_10.csv', '--schools', './dashboard/apps/wits/test/data/schools.csv'),
             None
         )
         # check nothing has been added

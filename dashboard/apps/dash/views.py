@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from rest_framework import viewsets, permissions
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 
-from dashboard.apps.dashapi.serializers import *
+from dashboard.apps.dash.serializers import *
 from dashboard.shared.permissions import IsOwner
 
 

@@ -11,8 +11,8 @@
 # ========================================================================= #
 import pytest
 
-from dashboard.apps.jsonquery.models import EnrolledCourse, Course
-from dashboard.apps.jsonquery.parser.jsonqueryset import register_action, parse_request, parse_options, QuerysetAction, ACTIONS
+from dashboard.apps.wits.models import EnrolledCourse, Course
+from dashboard.apps.wits.parser.jsonqueryset import register_action, parse_request, parse_options, QuerysetAction, ACTIONS
 from dashboard.shared.errors import VisibleError
 
 

@@ -4,8 +4,8 @@ from jsonschema import ValidationError
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.views import APIView
 
-from dashboard.apps.jsonquery.parser import jsonqueryset
-from dashboard.apps.jsonquery.serializers import *
+from dashboard.apps.wits.parser import jsonqueryset
+from dashboard.apps.wits.serializers import *
 
 
 # ========================================================================= #

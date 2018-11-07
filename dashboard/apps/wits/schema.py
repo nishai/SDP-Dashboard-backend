@@ -2,7 +2,7 @@ from graphene import relay
 import graphene
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django.types import DjangoObjectType
-from dashboard.apps.jsonquery.models import *
+from dashboard.apps.wits.models import *
 
 
 # ========================================================================= #
