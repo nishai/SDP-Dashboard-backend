@@ -168,7 +168,7 @@ REST_FRAMEWORK = {
         # 'rest_framework.permissions.IsAuthenticated', # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication', # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication', # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
     ],
 }
 

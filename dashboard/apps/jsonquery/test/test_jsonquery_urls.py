@@ -133,7 +133,7 @@ def test_endpoint_data_courses_options(admin_client):
 def test_jsonqueryset_action(admin_client):
     for action in data['queryset']:
         with pytest.raises(Exception):
-            ACTIONS[action['action']].fake(set(), action)
+            ACTIONS[action['action']].fake([], action)
             raise Exception
         with pytest.raises(Exception):
             ACTIONS[action['action']].handle(Course.objects.values(), action)

@@ -22,8 +22,6 @@ router.register(r'data/course-enrollment', EnrolledCourseViewSet)
 # Urls
 urlpatterns = [
     *router.urls,
-    # Query JsonSchema
-    url(r'query', query_view),
     # Queryable Objects
     path('query/faculties', FacultyQuery.as_view()),
     path('query/schools', SchoolQuery.as_view()),
@@ -34,4 +32,6 @@ urlpatterns = [
     path('query/students', StudentQuery.as_view()),
     path('query/year-enrollment', EnrolledYearQuery.as_view()),
     path('query/course-enrollment', EnrolledCourseQuery.as_view()),
+    # Query JsonSchema # THIS NEEDS TO BE AFTER EVERYTHING
+    url(r'^query', query_view),
 ]

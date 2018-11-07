@@ -28,6 +28,9 @@ class Schema:
     def int(cls): return {"type": "integer"}
 
     @classproperty
+    def null(cls): return {"type": "null"}
+
+    @classproperty
     def bool(cls): return {"type": "boolean"}
 
     @classproperty

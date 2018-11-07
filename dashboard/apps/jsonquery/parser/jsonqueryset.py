@@ -1,11 +1,14 @@
 import copy
 import datetime
+import operator
 from typing import Type
 
 from asteval import asteval
 from django.db import models
-from django.db.models import QuerySet, Model, When, Case, Value
+from django.db.models import QuerySet, Model, When, Case, Value, Q, AutoField
 from datetime import timedelta
+
+from django.db.models.fields.reverse_related import ForeignObjectRel
 from django.utils import timezone
 
 from dashboard.apps.jsonquery.parser.schema import Schema
@@ -68,6 +71,7 @@ def parse_request(model: Type[Model], data: dict, fake=False):
 
     Is the same as:
     ===============
+    # TODO: this might be wrong
     {
         "queryset": [
             {
@@ -122,7 +126,7 @@ def parse_request(model: Type[Model], data: dict, fake=False):
     except SchemaError as e:
         raise e  # we caused this with invalid schema above
 
-    queryset = set(f.name for f in model._meta.get_fields()) if fake else (model.objects.all().values())
+    queryset = [f.attname for f in model._meta.concrete_fields] if fake else model.objects.all().values()
 
     if 'queryset' in data and len(data['queryset']) > 0:
         for i, fragment in enumerate(data['queryset']):
@@ -177,15 +181,19 @@ _FILTER_METHODS = {
     **_ANNOTATE_METHODS,
 }
 
-_AEVAL_FILTER = asteval.Interpreter(
+_AEVAL_FILTER_INTERPRETER = asteval.Interpreter(
     symtable={**_AGGREGATE_METHODS, **_FILTER_METHODS},
     use_numpy=False, minimal=True, builtins_readonly=True
 )
 
-_AEVAL_ANNOTATE = asteval.Interpreter(
+_AEVAL_FILTER = lambda expr: _AEVAL_FILTER_INTERPRETER.eval(expr, show_errors=False)  # throw exceptions instead
+
+_AEVAL_ANNOTATE_INTERPRETER = asteval.Interpreter(
     symtable={**_AGGREGATE_METHODS, **_ANNOTATE_METHODS},
     use_numpy=False, minimal=True, builtins_readonly=True
 )
+
+_AEVAL_ANNOTATE = lambda expr: _AEVAL_ANNOTATE_INTERPRETER.eval(expr, show_errors=False)  # throw exceptions instead
 
 
 # ========================================================================= #
@@ -225,7 +233,7 @@ class QuerysetAction(object):
         """
         raise NotImplementedError()
 
-    def fake(self, model: Type[Model], fakeset: dict, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
         """
         Fake operations on a queryset,
         by just mutating the fields in a dictionary
@@ -254,31 +262,108 @@ class QuerysetAction(object):
 class FilterAction(QuerysetAction):
     """
     Action version of a QuerySet.filter(...)
+
+    Example Expression 01:
+    {
+        "action": "filter",
+        "expr": "Q(question__startswith='Who', pub_date__year=2004) | ~Q(pub_date__year=2005)"
+    }
+
+    Example Expression 02 (Equivalent):
+    {
+        "action": "filter",
+        "expr": "Q(question__startswith='Who') & Q(pub_date__year=F('del_date__year') + 4 - 1) | ~Q(pub_date__year=2005)"
+    }
+
+    Example RPN Expression:
+    {
+        "action": "filter",
+        "expr": [
+            {
+                "field": "question",
+                "operator": "startswith",
+                "expr": "Who"
+            },
+            {
+                "field": "pub_date",
+                "operator": "exact",
+                "expr": "2014"
+            },
+            "&",
+            {
+                "field": "pub_date",
+                "operator": "exact",
+                "expr": "2005"
+            },
+            "~",
+            "|"
+        ]
+    }
     """
 
     name = 'filter'
     properties = {
-        "fields": Schema.any(  # TODO: rethink
-            Schema.str,
-            Schema.array(Schema.object({
-                "field": Schema.str,
-                "expr": Schema.str,
-            }), min_size=1),
+        "expr": Schema.any(
+            Schema.str,                     # 1. single expression formed from Q() statements.
+            Schema.array(Schema.any(        # 2. generate single expression using RPN methods (https://en.wikipedia.org/wiki/Reverse_Polish_notation)
+                Schema.enum('|', '&', '~'),     # RPN operator ('|')
+                Schema.object({                 # RPN element representing a single Q() statement with one parameter
+                    "meta": Schema.str,             # pub_date__year__exact eg. Q(pub_date__year=F('del_date__year')+4)
+                    "expr": Schema.str,             # F('del_date__year')+4 eg. Q(pub_date__year=F('del_date__year')+4) # TODO convert into similar RPN Stack
+                }),
+            ), min_size=1),
         )
     }
     _exclude = False
 
     def handle(self, queryset: QuerySet, fragment: dict):
-        if type(fragment['fields']) == str:
-            expr = _AEVAL_FILTER(fragment['fields'])
+        if type(fragment['expr']) == str:   # 1. (above)
+            # Evaluate Single Expression String
+
+            try:
+                expr = _AEVAL_FILTER(fragment['expr'])
+            except Exception as e:
+                raise RuntimeError('Invalid Expression: ' + fragment['expr']).with_traceback(e.__traceback__)
+
             if not isinstance(expr, models.Q):
                 raise Exception("expression must produce an instance of models.Q")
-        else:
-            expr = None
-            for f in fragment['fields']:
-                q = models.Q(**{f['field']: _AEVAL_ANNOTATE(f['expr'])})
-                expr = q if expr is None else (expr | q)
-        return (queryset.exclude if self._exclude else queryset.filter)(expr)
+            # return filtered expression
+            try:
+                return (queryset.exclude if self._exclude else queryset.filter)(expr)
+            except ValueError as e:
+                raise ValueError("Probably a malformed query expression, check your Q()").with_traceback(e.__traceback__)
+        else:                               # 2. (above)
+            # RPN Stack Calculator
+            (stack, ops1, ops2) = [], {'~': operator.inv}, {'&': operator.and_, '|': operator.or_}
+            for token in fragment['expr']:
+                if type(token) == str:
+                    if token in ops1:
+                        if len(stack) < 1:
+                            raise ValueError('Must have at least one parameter to perform op')
+                        a = stack.pop()
+                        if not isinstance(a, models.Q):
+                            raise ValueError('Negation cannot be applied to operator.')
+                        stack.append(ops1[token](a))
+                    else:
+                        if len(stack) < 2:
+                            raise ValueError('Must have at least two parameters to perform op')
+                        a = stack.pop()
+                        b = stack.pop()
+                        stack.append(ops2[token](b, a))
+                    # NO THIRD CASE DUE TO JSON SCHEMA
+                else:
+                    try:
+                        result = _AEVAL_ANNOTATE(token['expr'])
+                    except Exception as e:
+                        result = token['expr']
+                        # raise RuntimeError('Invalid Expression: ' + token['expr']).with_traceback(e.__traceback__)
+                    stack.append(models.Q(**{token['meta']: result}))
+                # NO THIRD CASE DUE TO JSON SCHEMA
+            expr = stack.pop()
+            if len(stack) > 0:
+                raise ValueError("No more operators, not all values consumed.")
+            # return filtered expression
+            return (queryset.exclude if self._exclude else queryset.filter)(expr)
 
 
 @register_action
@@ -286,6 +371,9 @@ class ExcludeAction(FilterAction):
     """
     Action version of a QuerySet.exclude(...)
     The inverse of FilterAction
+
+    Example:
+        See FilterAction
     """
 
     name = 'exclude'
@@ -297,6 +385,21 @@ class AnnotateAction(QuerysetAction):
     """
     Action version of a QuerySet.annotate(...)
     - Use ValuesAction followed by AnnotateAction to "group_by"
+
+    Example:
+    {
+        "action": "annotate",
+        "fields": [
+            {
+                "field": "asdf",
+                "expr": "max('final_mark')"
+            },
+            {
+                "field": "year",
+                "expr": "-2000 + F('enrolled_year_id__calendar_instance_year')"     # TODO: add support for string entries
+            }
+        ]
+    }
     """
 
     name = 'annotate'
@@ -312,21 +415,29 @@ class AnnotateAction(QuerysetAction):
     def handle(self, queryset: QuerySet, fragment: dict):
         annotate = {}
         for f in fragment['fields']:
-            annotate[f['field']] = _AEVAL_ANNOTATE(f['expr'])
+            try:
+                annotate[f['field']] = _AEVAL_ANNOTATE(f['expr'])
+            except Exception as e:
+                raise RuntimeError('Invalid Expression: ' + f['expr']).with_traceback(e.__traceback__)
         return queryset.annotate(**annotate)
 
-    def fake(self, model: Type[Model], fakeset: dict, fragment: dict):
-        return {
-            **fakeset,
-            **{f['field']: None for f in fragment['fields']}
-        }
-
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+        return fakeset + [f['field'] for f in fragment['fields'] if f['field'] not in fakeset]
 
 @register_action
 class ValuesAction(QuerysetAction):
     """
     Action version of a QuerySet.values(...)
     - Use ValuesAction followed by AnnotateAction to "group_by"
+
+    Example:
+    {
+        "action": "values",
+        "fields": [
+            "course_code",
+            "enrolled_year_id__progress_outcome_type"
+        ]
+    }
     """
 
     name = 'values'
@@ -349,7 +460,10 @@ class ValuesAction(QuerysetAction):
                 fields.append(field)
                 names.append(field)
             elif type(field) == dict:
-                expressions[field['field']] = _AEVAL_ANNOTATE(field['expr'])
+                try:
+                    expressions[field['field']] = _AEVAL_ANNOTATE(field['expr'])
+                except Exception as e:
+                    raise RuntimeError('Invalid Expression: ' + field['expr']).with_traceback(e.__traceback__)
                 names.append(field['field'])
             else:
                 assert False, "This should never happen"
@@ -360,15 +474,15 @@ class ValuesAction(QuerysetAction):
         queryset = queryset.values(*fields, **expressions)
         return queryset
 
-    def fake(self, model: Type[Model], fakeset: dict, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
         (fields, expressions, names) = self._extract(fragment)
         if len(names) > 0:
-            return {**{f: None for f in names}}
+            return names
         else:
             # TODO: this needs to emulate the queryset, and store separate values for annotations, values, expressions etc.
             # logic taken from queryset.query.set_values
-            return {**{f: None for f in set(f.attname for f in model._meta.concrete_fields) | set(fakeset)}}
-
+            concrete_fields = [f.attname for f in model._meta.concrete_fields]
+            return concrete_fields + [f for f in fakeset if f not in concrete_fields]
 
 @register_action
 class ValuesListAction(QuerysetAction):
@@ -396,14 +510,25 @@ class ValuesListAction(QuerysetAction):
             fragment['named'] = False
         return queryset.values_list(*fragment['fields'], flat=fragment['flat'], named=fragment['named'])
 
-    def fake(self, model: Type[Model], fakeset: dict, fragment: dict):
-        return {f: None for f in fragment['fields']}
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+        return [f for f in fragment['fields']]
 
 
 @register_action
 class OrderByAction(QuerysetAction):
     """
     Action version of a QuerySet.order_by(...)
+
+    Example:
+    {
+        "action": "order_by",
+        "fields": [
+            {
+                "field": "asdf",
+                "descending": true
+            }
+        ]
+    },
 
     NOTE: order_by does not necessarily need to be placed at the end of a queryset.
     For example slices do not support ordering, and so this needs to be called before hand, even though values may not yet exist for this.
@@ -469,6 +594,28 @@ class OrderByAction(QuerysetAction):
 class LimitAction(QuerysetAction):
     """
     Action version of a QuerySet[...]
+
+    Example First:
+    {
+        "action": "limit",
+        "method": "first",
+        "num": 100
+    }
+
+    Example Last:
+    {
+        "action": "limit",
+        "method": "last",
+        "num": 100
+    }
+
+    Example Pages:
+    {
+        "action": "limit",
+        "method": "page",
+        "num": 10,
+        "index": 3
+    }
     """
 
     name = 'limit'
@@ -497,6 +644,11 @@ class LimitAction(QuerysetAction):
 class DistinctAction(QuerysetAction):
     """
     Action version of a QuerySet.distinct(...)
+
+    Example:
+    {
+        "action": "distinct"
+    }
     """
 
     name = 'distinct'
@@ -514,6 +666,11 @@ class DistinctAction(QuerysetAction):
 class ReverseAction(QuerysetAction):
     """
     Action version of a QuerySet.reverse()
+
+    Example:
+    {
+        "action": "reverse"
+    }
     """
 
     name = 'reverse'
@@ -526,6 +683,10 @@ class ReverseAction(QuerysetAction):
 class AllAction(QuerysetAction):
     """
     Action version of a QuerySet.all()
+
+    {
+        "action": "all"
+    }
     """
 
     name = 'all'
@@ -538,6 +699,11 @@ class AllAction(QuerysetAction):
 class NoneAction(QuerysetAction):
     """
     Action version of a QuerySet.none(...)
+
+    Example:
+    {
+        "action": "none"
+    }
     """
 
     name = 'none'

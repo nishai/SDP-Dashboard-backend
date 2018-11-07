@@ -19,6 +19,10 @@ class QueryApiView(APIView):
     querier = jsonqueryset
 
     def _debug_check_fields(self, request, queryset):
+        """
+        Debug function that prints out if the fields contained
+        in a fakeset and queryset differ or are not in order.
+        """
         try:
             if len(queryset) > 0:
                 try:
@@ -28,31 +32,41 @@ class QueryApiView(APIView):
                 if type(item) is dict:
                     names = tuple(item)
                     fakes = tuple(self.querier.parse_request(self.query_model, request.data, fake=True))
-                    print(
-                        f"\n{'=' * 30}\nNAMES vs FAKES - equal: {names == fakes}\nnames: {names}\nfakes: {fakes}\n{'=' * 30}\n")
+                    if names != fakes:
+                        print(f"\n{'=' * 30}\nNAMES vs FAKES:\nnames: {names}\nfakes: {fakes}\n{'=' * 30}\n")
         except:
             print(f"\n{'=' * 30}\nNAMES vs FAKES - failed\n{'=' * 30}\n")
 
     def post(self,  request, *args, **kwargs):
+        """
+        Handle the post request for a query.
+        Supports ?fake=1 to only return the expected names of fields returned by the query,
+        instead of performing an actual query.
+        """
+        # TODO: better error messages returned to the server.
         try:
             fake = ('fake' in request.query_params) and (request.query_params['fake'] in ['True', 'true', '1'])
             queryset = self.querier.parse_request(self.query_model, request.data, fake=fake)
             if not fake: # check that fields are the same, for debugging purposes
                 self._debug_check_fields(request, queryset)
         except ValidationError as e:
-            return JsonResponse({"status": "invalid", "message": "json error", "description": str(e)})   # received json is wrong
+            return JsonResponse({"status": "invalid", "message": "json error", "description": str(e)}, status=400)   # received json is wrong
         except FieldError as e:
-            return JsonResponse({"status": "invalid", "message": "field not found", "description": str(e)})   # received field name is wrong / does not exist
+            return JsonResponse({"status": "invalid", "message": "field not found", "description": str(e)}, status=400)   # received field name is wrong / does not exist
         # valid result
         return JsonResponse({"status": "valid", "results": list(queryset)})
 
     def options(self, request, *args, **kwargs):
+        """
+        Returns all the fields that a model has,
+        including fields that can be referenced from foreign keys.
+        """
         try:
             queryset = self.querier.parse_options(self.query_model, request.data)
         except ValidationError as e:
-            return JsonResponse({"status": "invalid", "message": str(e)})   # received json is wrong
+            return JsonResponse({"status": "invalid", "message": str(e)}, status=400)   # received json is wrong
         except FieldError as e:
-            return JsonResponse({"status": "invalid", "message": str(e)})   # received field name is wrong / does not exist
+            return JsonResponse({"status": "invalid", "message": str(e)}, status=400)   # received field name is wrong / does not exist
         # valid result
         return JsonResponse({"status": "valid", "results": list(queryset)})
 
