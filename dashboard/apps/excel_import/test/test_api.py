@@ -18,10 +18,10 @@ class APIQueryTestCase(TestCase):
                 {
                     "group": {
                         "by": [
-                            'calendar_instance_year'
+                            "calendar_instance_year"
                         ],
-                        "distinctGrouping": 'true',
-                        "removeDuplicateCountings": 'false'
+                        "distinctGrouping": True,
+                        "removeDuplicateCountings": False
                     }
                 }
             ]
@@ -36,10 +36,10 @@ class APIQueryTestCase(TestCase):
                 {
                     "group": {
                         "by": [
-                            'faculty'
+                            "faculty"
                         ],
-                        "distinctGrouping": 'true',
-                        "removeDuplicateCountings": 'false'
+                        "distinctGrouping": True,
+                        "removeDuplicateCountings": False
                     }
                 }
             ]
@@ -54,10 +54,10 @@ class APIQueryTestCase(TestCase):
                 {
                     "group": {
                         "by": [
-                            'school'
+                            "school"
                         ],
-                        "distinctGrouping": 'true',
-                        "removeDuplicateCountings": 'false'
+                        "distinctGrouping": True,
+                        "removeDuplicateCountings": False
                     }
                 }
             ]
@@ -72,10 +72,10 @@ class APIQueryTestCase(TestCase):
                 {
                     "group": {
                         "by": [
-                            'course_name'
+                            "course_code"
                         ],
-                        "distinctGrouping": 'true',
-                        "removeDuplicateCountings": 'false'
+                        "distinctGrouping": True,
+                        "removeDuplicateCountings": False
                     }
                 }
             ]
@@ -89,20 +89,20 @@ class APIQueryTestCase(TestCase):
             "chain": [
                 {
                     "filter": [{
-                        "field": 'faculty', "operator": 'exact', "value": 'Science'
+                        "field": "faculty", "operator": "exact", "value": "Science"
                     }],
                     "group": {
                         "by": [
-                            'school'
+                            "school"
                         ],
-                        "distinctGrouping": 'true',
-                        "removeDuplicateCountings": 'false'
+                        "distinctGrouping": True,
+                        "removeDuplicateCountings": False
                     }
                 }
             ]
         }
         response = self.client.post(
-            '/school_info/query', json.dumps(python_dict), content_type="application/json"
+            "/school_info/query", json.dumps(python_dict), content_type="application/json"
         )
         self.assertEqual(response.status_code, 200)
 
@@ -110,20 +110,20 @@ class APIQueryTestCase(TestCase):
             "chain": [
                 {
                     "filter": [{
-                        "field": 'school', "operator": 'exact', "value": 'Computer Science and Applied Mathematics'
+                        "field": "school", "operator": "exact", "value": "Computer Science and Applied Mathematics"
                     }],
                     "group": {
                         "by": [
-                            'course_name'
+                            "course_code"
                         ],
-                        "distinctGrouping": 'true',
-                        "removeDuplicateCountings": 'false'
+                        "distinctGrouping": "true",
+                        "removeDuplicateCountings": "false"
                     }
                 }
             ]
         }
         response = self.client.post(
-            '/course_info/query', json.dumps(python_dict), content_type="application/json"
+            "/course_info/query", json.dumps(python_dict), content_type="application/json"
         )
         self.assertEqual(response.status_code, 200)
 
@@ -131,34 +131,34 @@ class APIQueryTestCase(TestCase):
             "chain": [
                 {
                     "filter": [{
-                            "field": 'calendar_instance_year', "operator": 'exact', "value": '2015'
+                            "field": "calendar_instance_year", "operator": "exact", "value": "2015"
                         },
                         {
-                            "field": 'faculty', "operator": 'exact', "value": 'Science'
+                            "field": "faculty", "operator": "exact", "value": "Science"
                         },
                         {
-                            "field": 'school', "operator": 'exact', "value": 'Computer Science and Applied Mathematics'
+                            "field": "school", "operator": "exact", "value": "Computer Science and Applied Mathematics"
                         },
                         {
-                            "field": 'course_code', "operator": 'exact', "value": 'COMS1018'
+                            "field": "course_code", "operator": "exact", "value": "COMS1018"
                         }
                     ],
                     "group": {
                         "by": [
-                            'course_name'
+                            "course_code"
                         ],
                         "yield": [
                             {
-                                "name": 'count', "via": 'count', "from": 'gender'
+                                "name": "count", "via": "count", "from": "gender"
                             }
                         ],
-                        "distinctGrouping": 'true',
-                        "removeDuplicateCountings": 'false'
+                        "distinctGrouping": "true",
+                        "removeDuplicateCountings": "false"
                     }
                 }
             ]
         }
         response = self.client.post(
-            '/course_stats/query', json.dumps(python_dict), content_type="application/json"
+            "/course_stats/query", json.dumps(python_dict), content_type="application/json"
         )
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400) # bad request, fields not found
