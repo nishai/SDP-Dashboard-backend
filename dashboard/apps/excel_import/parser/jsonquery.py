@@ -36,7 +36,7 @@ schema_filter = {
             "value": {  # single string or list of different values for filters, each is effectively an | operation
                 "anyOf": [{
                         "type": "array",
-                        "minItems": 1,
+                        "minItems": 0,
                     }, {
                         "type": "string"
                     }
@@ -197,7 +197,8 @@ def _filter(queryset: QuerySet, fragment: List):
         if type(f['value']) == str:
             f['value'] = [f['value']]
         q_values = [Q(**{f"{f['field']}__{f['operator']}": value}) for value in f['value']]
-        queryset = filterer(reduce(lambda a, b: a | b, q_values))  # TODO: Add method of selecting option
+        if len(q_values) != 0:
+            queryset = filterer(reduce(lambda a, b: a | b, q_values))  # TODO: Add method of selecting option
     return queryset
 
 def _annotate(queryset: QuerySet, fragment: List):

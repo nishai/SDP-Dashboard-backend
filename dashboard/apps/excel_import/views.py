@@ -36,6 +36,14 @@ class CourseInfoQuery(QueryApiView):
     querier = jsonquery
 
 
+# AverageYearMarks
+
+@WARN_view_deprecated
+class AverageYearMarksQuery(QueryApiView):
+    query_model = AverageYearMarks
+    querier = jsonquery
+
+
 # ========================================================================= #
 # STAT VIEWS - Wits performance data                                        #
 # Legacy Views - TODO: REMOVE                                               #
@@ -107,7 +115,7 @@ class ProgressDescriptionViewSet(viewsets.ReadOnlyModelViewSet):
 @WARN_view_deprecated
 class AverageYearMarksViewSet(viewsets.ReadOnlyModelViewSet):
     """ `list` and `detail` actions. """
-    queryset = AverageYearMarks.objects.all()
+    queryset = AverageYearMarks.objects.order_by("progress_outcome_type")
     serializer_class = AverageYearMarksSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
