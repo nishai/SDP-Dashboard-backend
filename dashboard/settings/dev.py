@@ -17,6 +17,11 @@ GRAPH_MODELS = {
 
 # dangerous on production
 CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_WHITELIST += [
+    "localhost:3080",
+    "localhost:4080",
+    "dashboard-dev.ms.wits.ac.za:3080",
+]
 
 # makes life easier sometimes
 REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] += [
