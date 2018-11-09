@@ -1,10 +1,13 @@
 import inspect
 import sys
+from pprint import pprint
+
 from django.core.management import BaseCommand
 from django.db import models
 
-from dashboard.apps.wits.management.util.modelinfo import ModelInfo
 from dashboard.shared.errors import VisibleError
+from dashboard.shared.measure import Measure
+from dashboard.shared.model import model_relations_string, get_model_relations
 
 
 class Command(BaseCommand):
@@ -21,7 +24,16 @@ class Command(BaseCommand):
             if getattr(cls, '__module__', '').startswith(module) and issubclass(cls, models.Model):
                 print(f"\n{'=' * 100}\n{name}\n{'=' * 100}\n")
                 try:
-                    ModelInfo.static_print_query_tree(cls)
+                    print("\nFOREIGN KEY RELATIONSHIPS ONLY (MANY TO ONE) (THIS TO PARENT):\n")
+                    with Measure("FRN"):
+                        print(model_relations_string(cls, skip_reverse_model=False, skip_foreign_model=True))
+                    print("\nREVERSE RELATIONSHIPS ONLY (ONE TO MANY) (THIS TO CHILDREN):\n")
+                    with Measure("REV"):
+                        print(model_relations_string(cls, skip_reverse_model=True, skip_foreign_model=False))
+                    print("\nDEPTH FIRST SEARCH LINK TO ALL POSSIBLE NODES:\n")
+                    with Measure("DFS"):
+                        print(model_relations_string(cls, skip_reverse_model=False, skip_foreign_model=False))
+                    print()
                 except Exception as e:
                     raise VisibleError("Failed to print hierarchy").with_traceback(e.__traceback__)
 

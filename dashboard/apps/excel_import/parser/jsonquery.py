@@ -2,13 +2,12 @@ from typing import Dict, List, Type
 from django.db import models
 from django.db.models import Model, QuerySet, Q, ForeignKey, F
 from functools import reduce
+from jsonschema import validate, ValidationError, SchemaError
+from dashboard.shared.model import get_model_relations
 
 # ========================================================================= #
 # AGGREGATE METHODS                                                         #
 # ========================================================================= #
-from jsonschema import validate, ValidationError, SchemaError
-
-from dashboard.apps.wits.management.util.modelinfo import ModelInfo
 
 AGGREGATE_METHODS = {
     "max": models.Max,
@@ -321,7 +320,7 @@ def parse_request(model: Type[Model], data: Dict, fake=False):
 
 
 def parse_options(model: Type[Model], data: Dict):
-    return ModelInfo.static_generate_query_tree(model)
+    return set(get_model_relations(model, reverse_relations=True, foreign_relations=True))
 
 
 # TODO: check https://github.com/carltongibson/django-filter

@@ -1,15 +1,127 @@
-import logging
-from typing import Type
 import pandas as pd
 from django.db import connection, transaction
-from django.db.models import Model
+from django.db.models.fields.reverse_related import ForeignObjectRel
 from django.forms import model_to_dict
-
 from dashboard.shared.errors import VisibleError
 from dashboard.shared.measure import Measure
-from dashboard.apps.wits.management.util.modelinfo import ModelInfo
+from dashboard.shared.model import model_relations_string, get_model_relations
+import logging
+from typing import Type
+from django.db.models import Model, AutoField, ForeignKey
 
 logger = logging.getLogger('debug-import')
+
+
+# ========================================================================= #
+# MODEL INFO                                                                #
+# ========================================================================= #
+
+
+class ModelInfo(object):
+
+    """
+    TODO: REFACTOR TO MAKE USE OF DJANGO API & ABOVE CODE:
+
+        pprint({attr: getattr(EnrolledYear._meta, attr) for attr in EnrolledYear._meta.FORWARD_PROPERTIES if not attr.startswith("__")})
+        pprint({attr: getattr(EnrolledYear._meta, attr) for attr in EnrolledYear._meta.REVERSE_PROPERTIES if not attr.startswith("__")})
+
+        -------------------------------------------------------------------------------------------------------------
+
+        # <this>_to_<parent/child>
+        print('is_relation')
+        pprint({f.name: f for f in EnrolledYear._meta.get_fields() if f.is_relation}) # reverse relations
+        print('one_to_many')
+        pprint({f.name: f for f in EnrolledYear._meta.get_fields() if f.one_to_many}) # reverse relations
+        print('one_to_one')
+        pprint({f.name: f for f in EnrolledYear._meta.get_fields() if f.one_to_one}) # reverse relations
+        print('concrete')
+        pprint({f.name: f for f in EnrolledYear._meta.get_fields() if f.concrete}) # reverse relations
+        print('many_to_many')
+        pprint({f.name: f for f in EnrolledYear._meta.get_fields() if f.many_to_many}) # reverse relations
+        print('many_to_one')
+        pprint({f.name: f for f in EnrolledYear._meta.get_fields() if f.many_to_one}) # reverse relations
+        print('auto_created')
+        pprint({f.name: f for f in EnrolledYear._meta.get_fields() if f.auto_created}) # reverse relations
+        # EnrolledYear._meta.fields_map # reverse relations (name -> one_to_many_field)
+
+        -------------------------------------------------------------------------------------------------------------
+
+        is_relation
+        {'encrypted_student_no': <django.db.models.fields.related.ForeignKey: encrypted_student_no>,
+         'enrolled_courses': <ManyToOneRel: wits.enrolledcourse>,
+         'program_code': <django.db.models.fields.related.ForeignKey: program_code>,
+         'progress_outcome_type': <django.db.models.fields.related.ForeignKey: progress_outcome_type>}
+
+        one_to_many     # this_to_child
+        {'enrolled_courses': <ManyToOneRel: wits.enrolledcourse>}
+
+        one_to_one      # this_to_child/parent
+        {}
+
+        concrete
+        {'average_marks': <django.db.models.fields.FloatField: average_marks>,
+         'award_grade': <django.db.models.fields.CharField: award_grade>,
+         'calendar_instance_year': <django.db.models.fields.IntegerField: calendar_instance_year>,
+         'encrypted_student_no': <django.db.models.fields.related.ForeignKey: encrypted_student_no>,
+         'id': <django.db.models.fields.AutoField: id>,
+         'program_code': <django.db.models.fields.related.ForeignKey: program_code>,
+         'progress_outcome_type': <django.db.models.fields.related.ForeignKey: progress_outcome_type>,
+         'year_of_study': <django.db.models.fields.CharField: year_of_study>}
+
+        many_to_many    # this_to_child/parent
+        {}
+
+        many_to_one     # this_to_parent
+        {'encrypted_student_no': <django.db.models.fields.related.ForeignKey: encrypted_student_no>,
+         'program_code': <django.db.models.fields.related.ForeignKey: program_code>,
+         'progress_outcome_type': <django.db.models.fields.related.ForeignKey: progress_outcome_type>}
+
+        auto_created
+        {'enrolled_courses': <ManyToOneRel: wits.enrolledcourse>,
+         'id': <django.db.models.fields.AutoField: id>}
+
+    TODO: ^^^ REFACTOR TO MAKE USE OF DJANGO API & ABOVE CODE ^^^
+
+    Helper object to find relationships between models.
+    [Specific to the Inserter class]
+    """
+
+    def __init__(self, model: Type[Model]):
+        self.model = model
+        self.meta = self.model._meta
+        self.name = self.meta.object_name  # self.meta.model_name
+
+        # QUERIES
+        # =======
+        self.query_field_map = get_model_relations(self.model, reverse_relations=False, foreign_relations=True)
+
+        # HIERARCHY - TODO: find unnecessary data and remove, or create data structure for fields too.
+        # =========
+        self.field_map = {f.name: f for f in self.meta.get_fields() if not isinstance(f, ForeignObjectRel) and not isinstance(f, AutoField) and f.name != 'id'}
+        self.foreign_field_map = {n: f for n, f in self.field_map.items() if isinstance(f, ForeignKey)}
+        self.foreign_models_map = {n: ModelInfo(f.related_model) for n, f in self.foreign_field_map.items()}
+        # unique
+        if len(self.meta.unique_together) > 0:
+            self.unique_map = {n: self.field_map[n] for n in self.meta.unique_together[0]}
+        else:
+            logger.warning(f"[{self.model.__name__}]: No Uniqueness Constraints Specified, defaulting to primary key '{self.meta.pk.name}'")
+            if not isinstance(self.meta.pk, AutoField) and self.meta.pk.name != 'id':
+                self.unique_map = {self.meta.pk.name: self.meta.pk}
+            else:
+                raise VisibleError(f"Defaulting to primary key '{self.meta.pk.name}' failed, try specifying a uniqueness constraint on '{self.name}'")
+        # uniqueness map
+        self.unique_flat_map = {itemn: itemf for n, f in self.unique_map.items() for itemn, itemf in (self.foreign_models_map[n].unique_flat_map.items() if (n in self.foreign_models_map) else {n: f}.items())}
+        # foreign
+        self.foreign_unique_map = {n: self.foreign_models_map[n].unique_flat_map for n in self.foreign_field_map}
+        self.foreign_flat = {n: f for uk, uv in self.foreign_unique_map.items() for n, f in uv.items()}
+        # all fields needed to generate a record for this model, including finding dependencies by their unique values and record data
+        self.dependent = set(self.foreign_flat) | (set(self.field_map) - set(self.foreign_field_map))
+        self.dependent_non_null = {n for n in self.dependent if n in self.foreign_flat or (n in self.field_map and not self.field_map[n].null)}
+
+
+# ========================================================================= #
+# INSERTER                                                                  #
+# ========================================================================= #
 
 
 class Inserter(object):
@@ -119,7 +231,7 @@ class Inserter(object):
 
     def insert(self, df: pd.DataFrame) -> int:
         print()
-        self.info.print_hierarchy()
+        print(model_relations_string(self.model, skip_reverse_model=False, skip_foreign_model=True))
         print()
         with Measure(f"{self.model.__name__}", logger.info):
             try:

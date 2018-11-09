@@ -2,25 +2,19 @@ import copy
 import datetime
 import operator
 from typing import Type
-
 from asteval import asteval
 from django.db import models
-from django.db.models import QuerySet, Model, When, Case, Value, Q, AutoField
+from django.db.models import QuerySet, Model, When, Case, Value
 from datetime import timedelta
-
-from django.db.models.fields.reverse_related import ForeignObjectRel
 from django.utils import timezone
-
 from dashboard.apps.wits.parser.schema import Schema
-
 from jsonschema import validate, ValidationError, SchemaError
-from dashboard.apps.wits.management.util.modelinfo import ModelInfo
+from dashboard.shared.model import get_model_relations
 
 
 # ========================================================================= #
 # EXPORT                                                                    #
 # ========================================================================= #
-
 
 """
 All action classes registered by (the annotation) register_action.
@@ -146,7 +140,7 @@ def parse_options(model: Type[Model], data: dict):
     :param data: A dictionary representing the query
     :return: A set of field names
     """
-    return set(ModelInfo.static_generate_query_tree(model)) | set(parse_request(model, data, fake=True))
+    return set(get_model_relations(model, reverse_relations=True, foreign_relations=True)) | set(parse_request(model, data, fake=True))
 
 
 # ========================================================================= #
