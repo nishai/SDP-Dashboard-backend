@@ -87,6 +87,10 @@ def create_default_logger(log_path, name, console_only=False):
                 'level': 'DEBUG',
                 'handlers': ['console'] if console_only else ['console'],
             },
+            'dashboard': {
+                'level': 'DEBUG',
+                'handlers': ['console'] if console_only else ['console'],
+            },
         }
     }
 

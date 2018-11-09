@@ -52,17 +52,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     # dashboard apps
-    'dashboard.apps.dash',       # user related
+    'dashboard.apps.dash',          # user related
     'dashboard.apps.excel_import',  # wits related - legacy
-    'dashboard.apps.wits',     # wits related
-    # external apps
-    'graphene_django',              # https://github.com/graphql-python/graphene
+    'dashboard.apps.wits',          # wits related
+    # Django Rest Framework
     'rest_framework',               # http://www.django-rest-framework.org
     'rest_framework_jwt',           # http://getblimp.github.io/django-rest-framework-jwt
+    # Security
     'django_auth_ldap',             # https://django-auth-ldap.readthedocs.io
-    # alternative documentation views
+    # Documentation
     'rest_framework_swagger',
-    # views & routing
+    'silk',
+    # Routing
     # 'dynamic_rest',  # https://github.com/AltSchool/dynamic-rest # 'rest_framework_filters' may be better alternative: https://github.com/philipn/django-rest-framework-filters # combined with https://github.com/alanjds/drf-nested-routers
 
 ]
@@ -76,6 +77,7 @@ ALLOWED_HOSTS = []
 
 # intercept and handle requests before our app.
 MIDDLEWARE = [
+    'silk.middleware.SilkyMiddleware',                          # profiling
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',

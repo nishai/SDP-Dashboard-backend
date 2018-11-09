@@ -1,4 +1,4 @@
-from rest_framework import serializers, viewsets, permissions
+from rest_framework import serializers
 from dashboard.apps.wits.models import *
 
 

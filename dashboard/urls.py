@@ -26,8 +26,9 @@ urlpatterns = [
     url(r'^auth/token/obtain', obtain_jwt_token),     # obtain a new token from user + pass
     url(r'^auth/token/refresh', refresh_jwt_token),   # obtain a new token from an old token : JWT_ALLOW_REFRESH=True
 
-    # DOCS: Third Party Documentation Generator
+    # DOCS: Third Party Documentation / Profiling
     url(r'^swag/', get_swagger_view(title='Wits Dashboard Api')),
+    url(r'^silk/', include('silk.urls', namespace='silk')),
 
     # DOCS: Builtin Django database admin
     path('admin/', admin.site.urls),
