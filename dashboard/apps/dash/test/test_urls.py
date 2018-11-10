@@ -13,8 +13,8 @@
 import pytest
 
 
-def test_endpoint_status(client):
-    assert client.get('/status').status_code == 200
+# def test_endpoint_status(client):
+#     assert client.get('/status').status_code == 200
 
 @pytest.mark.django_db
 def test_endpoint_auth_token_obtain(client):

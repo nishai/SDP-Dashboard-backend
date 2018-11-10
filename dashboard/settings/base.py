@@ -53,7 +53,6 @@ INSTALLED_APPS = [
     'corsheaders',
     # dashboard apps
     'dashboard.apps.dash',          # user related
-    'dashboard.apps.excel_import',  # wits related - legacy
     'dashboard.apps.wits',          # wits related
     # Django Rest Framework
     'rest_framework',               # http://www.django-rest-framework.org

@@ -38,6 +38,5 @@ urlpatterns = [
 # api
 urlpatterns += [
     url(r'^', include('dashboard.apps.dash.urls')),
-    url(r'^', include('dashboard.apps.excel_import.urls')),
     url(r'^', include('dashboard.apps.wits.urls')),
 ]
