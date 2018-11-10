@@ -81,7 +81,7 @@ test :: clean migrate _run-tests
 _run-tests :
 	@mkdir -p coverage
 	@make section tag="Run Unit Tests"
-	$(ENV_DEV) python $(PY_ARGS) -m pytest -v --cov=./ || true
+	$(ENV_DEV) python $(PY_ARGS) -m pytest -v --cov=./ --junitxml=./coverage/junit.xml || true
 	@make section tag="Code Covergage"
 	$(ENV_DEV) python $(PY_ARGS) -m coverage xml -o $(OUT_COV_FILE)
 
