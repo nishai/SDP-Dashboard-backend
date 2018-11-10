@@ -231,7 +231,7 @@ class Inserter(object):
 
     def insert(self, df: pd.DataFrame) -> int:
         print()
-        print(model_relations_string(self.model, skip_reverse_model=False, skip_foreign_model=True))
+        print(model_relations_string(self.model, skip_reverse_model=True, skip_foreign_model=False))
         print()
         with Measure(f"{self.model.__name__}", logger.info):
             try:
