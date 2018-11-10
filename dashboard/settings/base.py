@@ -52,12 +52,19 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     # dashboard apps
-    'dashboard.apps.dashboard_api',
-    'dashboard.apps.excel_import',
-    # external apps
+    'dashboard.apps.dash',          # user related
+    'dashboard.apps.wits',          # wits related
+    # Django Rest Framework
     'rest_framework',               # http://www.django-rest-framework.org
     'rest_framework_jwt',           # http://getblimp.github.io/django-rest-framework-jwt
+    # Security
     'django_auth_ldap',             # https://django-auth-ldap.readthedocs.io
+    # Documentation
+    'rest_framework_swagger',
+    'silk',
+    # Routing
+    # 'dynamic_rest',  # https://github.com/AltSchool/dynamic-rest # 'rest_framework_filters' may be better alternative: https://github.com/philipn/django-rest-framework-filters # combined with https://github.com/alanjds/drf-nested-routers
+
 ]
 
 # ========================================================================= #
@@ -69,12 +76,11 @@ ALLOWED_HOSTS = []
 
 # intercept and handle requests before our app.
 MIDDLEWARE = [
+    'silk.middleware.SilkyMiddleware',                          # profiling
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'corsheaders.middleware.CorsPostCsrfMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -100,10 +106,9 @@ MIDDLEWARE = [
 # ========================================================================== #
 
 # A list of origin hostnames that are authorized to make cross-site HTTP requests (default: [])
-CORS_ORIGIN_WHITELIST = (
+CORS_ORIGIN_WHITELIST = [
     'dashboard-dev.ms.wits.ac.za:4080',
-    'dashboard-dev.ms.wits.ac.za:3080'
-)
+]
 
 # GET, POST, etc (default: corsheaders.defaults.default_methods)
 CORS_ALLOW_METHODS = corsheaders.defaults.default_methods
@@ -113,26 +118,6 @@ CORS_ALLOW_HEADERS = corsheaders.defaults.default_headers
 
 # cookies will be allowed to be included in cross-site HTTP requests (default: False)
 CORS_ALLOW_CREDENTIALS = False
-
-# ========================================================================= #
-# CSRF (Cross-Site Request Forgery)                                         #
-#                                                                           #
-# Cross-Site Request Forgery (CSRF) is an attack that forces an end user to #
-# execute unwanted actions on a web application in which they're currently  #
-# authenticated. CSRF attacks specifically target state-changing requests,  #
-# not theft of data, since the attacker has no way to see the response to   #
-# the forged request. With a little help of social engineering (such as     #
-# sending a link via email or chat), an attacker may trick the users of a   #
-# web application into executing actions of the attacker's choosing. If the #
-# victim is a normal user, a successful CSRF attack can force the user to   #
-# perform state changing requests like transferring funds, changing their   #
-# email address, and so forth. If the victim is an administrative account,  #
-# CSRF can compromise the entire web application.                           #
-# ========================================================================= #
-
-CSRF_TRUSTED_ORIGINS = (
-    'dashboard-dev.ms.wits.ac.za',
-)
 
 # ========================================================================= #
 # Authentication                                                            #
@@ -165,20 +150,27 @@ AUTHENTICATION_BACKENDS = [
     'dashboard.settings.ldap.backends.LDAPBackendWitsStaff',     # extends 'django_auth_ldap.backend.LDAPBackend'
 ]
 
+# All the settings: https://getblimp.github.io/django-rest-framework-jwt/#additional-settings
+# Clarification on expiration settings: https://github.com/GetBlimp/django-rest-framework-jwt/issues/92#issuecomment-227763338
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),             # Default: seconds=300 - individual token expiration time (cannot be used to refresh if this passes)
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=30),    # Default: days=7 - how much time after the first original token was issued that future tokens can be refreshed from.
+    # 'JWT_AUTH_HEADER_PREFIX': 'JWT',                              # Default: 'JWT' - http header "Authentication: JWT <token>"
+    # 'JWT_AUTH_COOKIE': None,                                      # Default: None - If the specified cookie name should also be checked in addition to the auth header (header overrides cookie if present)
+}
+
 # ========================================================================= #
 # Rest Framework                                                            #
 # ========================================================================= #
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': (
+    'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
-        # 'rest_framework.permissions.IsAuthenticated',
-    ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication', # TODO: UNCOMMENT TO ENABLE JWT AUTHENTICATION
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
-    ),
+        # 'rest_framework.permissions.IsAuthenticated', # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication', # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
+    ],
 }
 
 # ========================================================================= #
@@ -213,6 +205,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
+        'OPTIONS': {
+            'timeout': 10,  # https://docs.python.org/3.7/library/sqlite3.html#sqlite3.connect
+        }
     }
 }
 

@@ -1,0 +1,11 @@
+encrypted_student_no,calendar_instance_year,program_code,program_title,year_of_study,nationality_short_name,home_language_description,race_description,gender,age,course_code,final_mark,final_grade,progress_outcome_type,progress_outcome_type_description,award_grade,average_marks,secondary_school_quintile,urban_rural_secondary_school,secondary_school_name
+741079918EA7B9191862A2DAA58AEE12,2016,AB000,Bachelor of Arts,YOS 3,South Africa,English,White,M,23,PHIL3009,97.0,PAS,Q,Completed all requirements for qualification,QD,78.13,6,URBAN,St Martin's School
+E4E31B68D591B186974DA9B9F79EAB5D,2016,AF010,Bachelor of Arts in Film and Television,YOS 3,South Africa,English,White,M,22,DRAA3002,61.0,PAS,PCD,Permitted to proceed,,66.38,6,URBAN,St Dunstan's College
+769CB18B3F3002DCA9578545F2D26235,2017,AB000,Bachelor of Arts,YOS 1,South Africa,English,White,F,20,ANTH1001,72.0,PAS,PCD,Permitted to proceed,,77.67,6,URBAN,King David (victory Park)
+A00D23A41376D99B19CE99982A3BE1DB,2017,AB000,Bachelor of Arts,YOS 1,South Africa,Zulu,Black,F,18,SOCL1013,50.0,PAS,PCD,Permitted to proceed,,53.71,2,URBAN,Kwandebele Science School
+061714A2CD4EA556ADF031A429AD4052,2017,AB000,Bachelor of Arts,YOS 2,South Africa,English,White,F,22,SLLS2004,63.0,PAS,PCD,Permitted to proceed,,56.57,5,URBAN,Hyde Park High School
+013AA15F2FCB103B9D25CBB17226AF7E,2013,AB000,Bachelor of Arts,YOS 3,South Africa,English,White,F,28,ANTH3006,73.0,PAS,Q,Completed all requirements for qualification,Q,71.4,IQ,UNKNOWN,International Schools
+392E41E819F33470DE7253C5BA02763F,2017,SB000,Bachelor of  Science,YOS 1,South Africa,English,Black,M,23,MATH2015,27.0,FAL,M2C,Renewal of Registration permitted by Wits Readmissions Committee-2 with conditions,,26.43,5,RURAL,Howick High School
+502D81A375CFD3153F03C2CC2004CBDD,2015,SB000,Bachelor of  Science,YOS 1,South Africa,English,Indian,F,21,MATH1010,36.0,FAL,RET,Must return to complete requirements for year of study,,44.5,5,URBAN,Lenasia Secondary School
+F0C2544C65377FDD67AA17817701EE6B,2015,AB001,Bachelor of Arts,YOS 3,South Africa,Zulu,Black,F,38,PSYC3028,75.0,PAS,Q,Completed all requirements for qualification,Q,68.43,5,URBAN,Eastbury Secondary School
+5B3AA746B23AE6ADD0C47731739672BB,2014,SB000,Bachelor of  Science,YOS 1,South Africa,Tsonga/Shangaan,Black,F,21,CHEM1012,60.0,PAS,PCD,Permitted to proceed,,57.5,5,URBAN,Johannesburg Polytech Inst

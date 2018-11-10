@@ -1,0 +1,11 @@
+encrypted_student_no,calendar_instance_year,program_code,program_title,year_of_study,nationality_short_name,home_language_description,race_description,gender,age,course_code,final_mark,final_grade,progress_outcome_type,progress_outcome_type_description,award_grade,average_marks,secondary_school_quintile,urban_rural_secondary_school,secondary_school_name
+4D4E96EA94707A192BDE99ACD73DCB30,2016,AB002,Bachelor of Arts (Law Major),YOS 1,South Africa,English,Indian,F,19,PHIL1003,77.0,PAS,PCD,Permitted to proceed,,70.38,5,URBAN,Hyde Park High School
+4236EF282BABBAE507651BBCD1FDEAA7,2013,AF005,Bachelor of Arts in Speech and Hearing Therapy,YOS 2,South Africa,English,White,F,25,PSYC2020,72.0,PAS,PCD,Permitted to proceed,,76.43,5,URBAN,The Hill High School
+4A2B27CD99F2BC44AF61F7721D961F2B,2015,SB000,Bachelor of  Science,YOS 3,South Africa,Pedi,Black,M,24,MATH3010,92.0,PAS,Q,Completed all requirements for qualification,Q,82.0,1,RURAL,Rebone Secondary School
+781135C16CFDF20A6F55B1C9023A3AA0,2015,AB000,Bachelor of Arts,YOS 2,British,English,Coloured,F,23,PSYC2020,55.0,PAS,PCD,Permitted to proceed,,59.33,5,URBAN,Crawford College (sandton)
+493BF614AAA12D9668DA3E0A58ED216B,2015,AB002,Bachelor of Arts (Law Major),YOS 3,South Africa,Sesotho,Black,F,24,LAWS2015,52.0,PAS,Q,Completed all requirements for qualification,Q,56.0,5,URBAN,Glenvista High School
+9D6C5D204FE1F9B20F4DFE8B5D6CA884,2014,SB000,Bachelor of  Science,YOS 2,South Africa,English,White,M,25,COMS3003,57.0,PAS,PCD,Permitted to proceed,,63.56,5,URBAN,Crawford College (lonehill)
+161995DFC2995426843EB7E94530692B,2017,AB002,Bachelor of Arts (Law Major),YOS 2,South Africa,Zulu,Black,F,20,ENGL2004,52.0,PAS,PCD,Permitted to proceed,,52.14,5,URBAN,Trinity Secondary School
+F0801DAE63BB585E84DD32D37BCFCD92,2017,AB000,Bachelor of Arts,YOS 1,South Africa,Tswana,Black,F,21,PSYC1009,63.0,PAS,PCD,Permitted to proceed,,61.14,4,URBAN,Prinshof High School
+876D442F6D407CFADCBB9C1D39D1C00F,2016,AB000,Bachelor of Arts,YOS 3,South Africa,Setswana,Black,F,23,PSYC3020,50.0,PAS,Q,Completed all requirements for qualification,Q,54.57,5,URBAN,Florida Park High School
+9FFA4BD95D57E3861367BCD5157AE5A6,2016,AB002,Bachelor of Arts (Law Major),YOS 2,South Africa,Afrikaans,White,M,24,SLLS1005,75.0,PAS,PCD,Permitted to proceed,,62.43,6,URBAN,Helpmekaar Kollege

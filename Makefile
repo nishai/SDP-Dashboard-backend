@@ -52,8 +52,10 @@ echo-prod-port:
 PY_ARGS         := -B # same as PYTHONDONTWRITEBYTECODE
 ENV_DEV         := PYTHONDONTWRITEBYTECODE="true" DJANGO_DEVELOP="true"
 ENV_PROD        := PYTHONDONTWRITEBYTECODE="true" DJANGO_DEVELOP="false"
-ENV_TEST        := PYTHONDONTWRITEBYTECODE="true" DJANGO_DEVELOP="true" COVERAGE_FILE="coverage/coverage.dat"
 OUT_COV_FILE    := coverage/coverage.xml
+
+test test-nuke :: ENV_DEV += DJANGO_TEST="true" COVERAGE_FILE="coverage/coverage.dat"
+test test-nuke :: ENV_PROD += DJANGO_TEST="true" COVERAGE_FILE="coverage/coverage.dat"
 
 admin: migrate
 	@make section tag="Local - Creating Default Admin User"
@@ -73,12 +75,15 @@ dev: migrate
 	@make section tag="Serving (Dev Mode)"
 	$(ENV_DEV) python $(PY_ARGS) manage.py runserver 0.0.0.0:$(DEV_PORT)
 
-test: clean clean-data migrate
+test-nuke :: nuke migrate _run-tests
+test :: clean migrate _run-tests
+
+_run-tests :
 	@mkdir -p coverage
 	@make section tag="Run Unit Tests"
-	$(ENV_TEST) python $(PY_ARGS) -m pytest -v --cov=./
+	$(ENV_DEV) python $(PY_ARGS) -m pytest -v --cov=./ --junitxml=./coverage/junit.xml || ( make section tag="Code Covergage Cannot Procede (Tests Failed)" details="Errors below are expected:" && exit 1 )
 	@make section tag="Code Covergage"
-	$(ENV_TEST) python $(PY_ARGS) -m coverage xml -o $(OUT_COV_FILE)
+	$(ENV_DEV) python $(PY_ARGS) -m coverage xml -o $(OUT_COV_FILE)
 
 dist: clean-dist
 	@make section tag="Collecting Static Files"
@@ -92,7 +97,13 @@ serve: dist migrate
 # CLEAN                                                                     #
 # =========================================================================	#
 
-clean: clean-data clean-migrations
+clean: clean-migrations clean-dist clean-logs clean-cov clean-pycache clean-test-data
+
+nuke: clean-migrations clean-dist clean-logs clean-cov clean-pycache clean-test-data clean-data
+
+clean-test-data:
+	@make section tag="Cleaning Test Data"
+	make -C "./data" clean-test-data
 
 clean-data:
 	@make section tag="Cleaning Data"
@@ -100,7 +111,7 @@ clean-data:
 
 clean-migrations:
 	@make section tag="Cleaning Migrations"
-	make -C "./dashboard/apps/dashboard_api/migrations" clean-migrations
+	@find ./dashboard/apps/*/migrations/* -not -name "README.md" -a -not -name ".gitignore" -a -not -name "Makefile" -a -not -name "__init__.py" -print -exec rm -rf {} \; || true
 
 clean-dist:
 	@make section tag="Cleaning Dist Folder"
@@ -117,6 +128,3 @@ clean-cov:
 clean-pycache:
 	@make section tag="Cleaning all __pycache__"
 	find . -name __pycache__ -exec rm -rf {} \; || true
-
-clean: clean-dist clean-logs clean-cov clean-pycache
-
