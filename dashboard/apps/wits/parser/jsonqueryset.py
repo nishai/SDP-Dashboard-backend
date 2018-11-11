@@ -274,19 +274,16 @@ class FilterAction(QuerysetAction):
         "action": "filter",
         "expr": [
             {
-                "field": "question",
-                "operator": "startswith",
+                "meta": "question__startswith",
                 "expr": "Who"
             },
             {
-                "field": "pub_date",
-                "operator": "exact",
+                "meta": "pub_date__exact",
                 "expr": "2014"
             },
             "&",
             {
-                "field": "pub_date",
-                "operator": "exact",
+                "meta": "pub_date__exact",
                 "expr": "2005"
             },
             "~",
@@ -303,7 +300,13 @@ class FilterAction(QuerysetAction):
                 Schema.enum('|', '&', '~'),     # RPN operator ('|')
                 Schema.object({                 # RPN element representing a single Q() statement with one parameter
                     "meta": Schema.str,             # pub_date__year__exact eg. Q(pub_date__year=F('del_date__year')+4)
-                    "expr": Schema.str,             # F('del_date__year')+4 eg. Q(pub_date__year=F('del_date__year')+4) # TODO convert into similar RPN Stack
+                    "expr": Schema.any(
+                        Schema.str,
+                        Schema.array(
+                            Schema.any(Schema.str, Schema.int, Schema.bool, Schema.float, Schema.null),
+                            min_size=0,
+                        )
+                    ),             # F('del_date__year')+4 eg. Q(pub_date__year=F('del_date__year')+4) # TODO convert into similar RPN Stack
                 }),
             ), min_size=1),
         )
@@ -346,11 +349,16 @@ class FilterAction(QuerysetAction):
                         stack.append(ops2[token](b, a))
                     # NO THIRD CASE DUE TO JSON SCHEMA
                 else:
-                    try:
-                        result = _AEVAL_ANNOTATE(token['expr'])
-                    except Exception as e:
+                    if type(token) == list:
+                        if not token['meta'].endswith("__in"):
+                            raise Exception("expr of type array, must use operator 'in'")
                         result = token['expr']
-                        # raise RuntimeError('Invalid Expression: ' + token['expr']).with_traceback(e.__traceback__)
+                    else:
+                        try:
+                            result = _AEVAL_ANNOTATE(token['expr'])
+                        except Exception as e:
+                            result = token['expr']
+                            # raise RuntimeError('Invalid Expression: ' + token['expr']).with_traceback(e.__traceback__)
                     stack.append(models.Q(**{token['meta']: result}))
                 # NO THIRD CASE DUE TO JSON SCHEMA
             expr = stack.pop()
