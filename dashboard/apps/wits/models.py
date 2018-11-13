@@ -8,6 +8,8 @@ from dashboard.shared.admin import admin_site_register
 # ========================================================================= #
 
 
+
+
 # not in excel
 @admin_site_register
 class Faculty(models.Model):
@@ -34,7 +36,7 @@ class School(models.Model):
 # partially in excel
 @admin_site_register
 class Course(models.Model):
-    course_code = models.CharField(primary_key=True, max_length=5)
+    course_code = models.CharField(primary_key=True, max_length=8)
     # course_title = models.CharField(max_length=255, null=True) # TODO fix import
     school_id = models.ForeignKey('School', related_name='courses', on_delete=models.CASCADE)
 
@@ -65,7 +67,7 @@ class ProgressOutcome(models.Model):
 
 @admin_site_register
 class SecondarySchool(models.Model):
-    secondary_school_name = models.CharField(primary_key=True, max_length=255)
+    secondary_school_name = models.CharField(primary_key=True, max_length=255) # TODO: fix case insensitivity... see for example: 'Reddam House (constantia)' and 'Reddam House (Constantia)' :
     secondary_school_quintile = models.CharField(max_length=5, null=True)
     urban_rural_secondary_school = models.CharField(max_length=10, null=True)
 

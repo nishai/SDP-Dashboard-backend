@@ -167,9 +167,10 @@ class Inserter(object):
                 raise VisibleError(f"Error, group by cols '{sorted(self.a_not_in_b(cols, df.columns))}' not present in table")
             # effective group by (just drop columns)
             group_by = [c for c in cols if c in self.info.dependent]
-            self.log(logger.info, f"Grouping By: {group_by}")
+            # group
             grouped = df.drop_duplicates(group_by)
-            self.log(logger.info, f"Grouped! Found {len(grouped)} unique entries")
+            # lowercase - some duplicates with different cases exist...
+            self.log(logger.info, f"Grouped! Found {len(grouped)} unique entries from {len(df)} total")
             return grouped
 
     @transaction.atomic

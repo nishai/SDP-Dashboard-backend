@@ -201,15 +201,30 @@ TEMPLATES = [
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
+DATABASES = {}
+
+if os.environ.get('DJANGO_USE_SQLITE', default='false') == 'true':
+    # SQLITE does not support a high level of concurrency
+    # - With multiple requests coming in at the same time,
+    #   this can lead to a "database is locked" exception,
+    #   and the request will fail.
+    DATABASES['default'] = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
         'OPTIONS': {
             'timeout': 10,  # https://docs.python.org/3.7/library/sqlite3.html#sqlite3.connect
         }
     }
-}
+else:
+    DATABASES['default'] = {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'wits_dashboard',
+        'USER': os.environ.get('DJANGO_MYSQL_USER', default='root'),
+        'PASSWORD': os.environ.get('DJANGO_MYSQL_PASS', default='password'),
+        'HOST': os.environ.get('DJANGO_MYSQL_HOST', default='localhost'),
+        'PORT': os.environ.get('DJANGO_MYSQL_PORT', default='3306'),  # MySQL default
+    }
+
 
 # ========================================================================== #
 # Languages                                                                  #

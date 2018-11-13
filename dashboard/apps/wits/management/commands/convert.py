@@ -22,6 +22,7 @@ class Command(BaseCommand):
         parser.add_argument('--type', dest='type', nargs=1, type=str, help='Specify the header row if it is an excel file')
         parser.add_argument('--randomize', action='store_true', help='True if specified')
         parser.add_argument('--dry', action='store_true', help='True if specified')
+        parser.add_argument('--lowercase', action='store_true', help='True if specified, Output a lowercase csv file, hack for duplicates case-insensitivity')
 
     def handle(self, *args, **options):
 
@@ -70,4 +71,4 @@ class Command(BaseCommand):
             logger.info(f"Saving: {path}")
             save_table = df[:limit] if limit >= 0 else df
             if 'dry' not in options:
-                DataImportCommand.save_table(path, save_table)
+                DataImportCommand.save_table(path, save_table, to_lowercase='lowercase' in options)

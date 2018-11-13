@@ -14,10 +14,10 @@ class Command(DataImportCommand):
     options = {
         'schools': {
             'header_row': 0,
-            'models': [                 # -NEW-
-                Faculty,                # 5
-                School,                 # 26
-                Course                  # 1031
+            'models': [                 # -NEW-     -LOWERCASE-
+                Faculty,                # 5         5
+                School,                 # 26        26
+                Course                  # 1031      1031
             ],
             'header_to_field': {
                 'faculty': 'faculty_title',
@@ -27,13 +27,13 @@ class Command(DataImportCommand):
         'wits': {
             'header_row': 5,
             'depends_on': ['schools'],
-            'models': [                 # -NEW-
-                Program,                # 14
-                ProgressOutcome,        # 26
-                SecondarySchool,        # 2720
-                Student,                # 16487
-                EnrolledYear,           # 34272     # Replaces: AverageYearMarks, YearOfStudy, StudentPrograms
-                EnrolledCourse,         # 206139
+            'models': [                 # -NEW      -LOWERCASE-
+                Program,                # 14        14
+                ProgressOutcome,        # 26        26
+                SecondarySchool,        # 2720      2719        <NB>
+                Student,                # 16487     16487
+                EnrolledYear,           # 34272     34272       # Replaces: AverageYearMarks, YearOfStudy, StudentPrograms
+                EnrolledCourse,         # 206139    206139
             ],
         },
     }
