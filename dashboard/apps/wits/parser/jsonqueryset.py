@@ -19,8 +19,16 @@ from dashboard.shared.model import get_model_relations
 """
 All action classes registered by (the annotation) register_action.
 All parse methods can have these classes applied.
+RETURN QUERYSETS
 """
 ACTIONS = {}
+
+"""
+All action classes registered by (the annotation) register_action.
+All parse methods can have these classes applied.
+FINAL ACTION ON A QUERYSET
+"""
+FINALS = {}
 
 """
 Base object representing the schema for all requests.
@@ -28,7 +36,21 @@ See JSON Schema for details.
 """
 SCHEMA = Schema.object({
     "queryset": Schema.array(Schema.any()),
-})
+    "explain": Schema.bool,
+    # "fake": Schema.bool, # TODO, remove parameter from query
+}, not_required='explain')
+
+def register(cls: Type['QuerysetAction'], dict_obj: dict):
+    instance = cls()
+    if instance.name in dict_obj:
+        raise RuntimeError(f"Duplicate name found: {instance.name}")
+    dict_obj[instance.name] = instance
+    any_list = SCHEMA['properties']['queryset']['items']['anyOf']
+    if instance.name in set(f['properties']['action']['const'] for f in any_list):
+        raise RuntimeError(f"Duplicate name found: {instance.name}")
+    any_list.append(instance.get_schema())
+    return cls
+
 
 
 def register_action(cls: Type['QuerysetAction']):
@@ -36,13 +58,16 @@ def register_action(cls: Type['QuerysetAction']):
     Decorator that can be applied to QuerysetAction(s) to
     register them with this modules ACTIONS & SCHEMA
     """
-    instance = cls()
-    ACTIONS[instance.name] = instance
-    any_list = SCHEMA['properties']['queryset']['items']['anyOf']
-    if instance.name in set(f['properties']['action']['const'] for f in any_list):
-        raise RuntimeError(f"Duplicate name found: {instance.name}")
-    any_list.append(instance.get_schema())
-    return cls
+    return register(cls, ACTIONS)
+
+
+def register_final(cls: Type['QuerysetAction']):
+    """
+    Decorator that can be applied to QuerysetAction(s) to
+    register them with this modules FINALS & SCHEMA
+    - these end the queryset, by returning data.
+    """
+    return register(cls, FINALS)
 
 
 # ========================================================================= #
@@ -67,6 +92,7 @@ def parse_request(model: Type[Model], data: dict, fake=False):
     ===============
     # TODO: this might be wrong
     {
+        "explain": true,
         "queryset": [
             {
                 "action": "values",
@@ -111,7 +137,7 @@ def parse_request(model: Type[Model], data: dict, fake=False):
     :param model: The django model to generate the queryset for.
     :param data: A dictionary representing the query
     :param fake: Indicates if, instead, only a (approximate) list of the field names of the queryset should be returned.
-    :return: A queryset (if fake=False) or list (if fake=True)
+    :return: A queryset (if fake=False) or list (if fake=True) PLUS the explanation if requested PLUS a boolean variable is_final
     """
     try:
         validate(data, SCHEMA)
@@ -121,13 +147,32 @@ def parse_request(model: Type[Model], data: dict, fake=False):
         raise e  # we caused this with invalid schema above
 
     queryset = [f.attname for f in model._meta.concrete_fields] if fake else model.objects.all().values()
+    explanation, should_explain = None, 'explain' in data and data['explain']
 
+    is_final = False
     if 'queryset' in data and len(data['queryset']) > 0:
         for i, fragment in enumerate(data['queryset']):
-            action = ACTIONS[fragment['action']]
+            # check that a final action hasnt already been called.
+            if is_final:
+                raise Exception('Final actions must be at the end of the queryset.')
+            # get actions
+            if fragment['action'] in ACTIONS:
+                (action, is_final) = (ACTIONS[fragment['action']], False)
+            elif fragment['action'] in FINALS:
+                (action, is_final) = (FINALS[fragment['action']], True)
+            else:
+                raise Exception('Invalid action: ' + fragment['action'])  # this should never happen.
+
+            if is_final and should_explain:
+                explanation = queryset.explain()
+
+            # get the data from the action
             queryset = action.fake(model, queryset, fragment) if fake else action.handle(queryset, fragment)
 
-    return queryset
+    if not is_final and should_explain:
+        explanation = queryset.explain()
+
+    return queryset, explanation, is_final
 
 
 def parse_options(model: Type[Model], data: dict):
@@ -713,6 +758,121 @@ class NoneAction(QuerysetAction):
     def handle(self, queryset: QuerySet, fragment: dict):
         return queryset.none()
 
+# ========================================================================= #
+# LOCKING ACTIONS - NOTHING CAN BE DONE AFTER - DO NOT RETURN QUERYSETS     #
+# ========================================================================= #
+
+@register_final
+class CountAction(QuerysetAction):
+    """
+    Action version of a QuerySet.none(...)
+
+    Example:
+    {
+        "action": "count"
+    }
+    """
+
+    name = 'count'
+
+    def handle(self, queryset: QuerySet, fragment: dict):
+        return {'count': queryset.count()}
+
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+        raise Exception("Actions that do not return a queryset are not supported.")
+
+@register_final
+class FirstAction(QuerysetAction):
+    """
+    Action version of a QuerySet.none(...)
+
+    Example:
+    {
+        "action": "first"
+    }
+    """
+
+    name = 'first'
+
+    def handle(self, queryset: QuerySet, fragment: dict):
+        return {'first': queryset.first()}
+
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+        raise Exception("Actions that do not return a queryset are not supported.")
+
+@register_final
+class LastAction(QuerysetAction):
+    """
+    Action version of a QuerySet.none(...)
+
+    Example:
+    {
+        "action": "last"
+    }
+    """
+
+    name = 'last'
+
+    def handle(self, queryset: QuerySet, fragment: dict):
+        return {'last': queryset.last()}
+
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+        raise Exception("Actions that do not return a queryset are not supported.")
+
+
+@register_final
+class AggregateAction(QuerysetAction):
+    """
+    Effectively the same as annotate, but operates on all the CURRENT elements,
+    instead of the groupings.
+
+    This should have the same api as annotate except
+    that the list has to have at least one item.
+    """
+
+    name = 'aggregate'
+    properties = {
+        "fields": Schema.array(
+            Schema.object({
+                "field": Schema.str,
+                "expr": Schema.str,
+            }), min_size=1
+        )
+    }
+
+    def handle(self, queryset: QuerySet, fragment: dict):
+        aggregate = {}
+        for f in fragment['fields']:
+            try:
+                aggregate[f['field']] = _AEVAL_ANNOTATE(f['expr'])
+            except Exception as e:
+                raise RuntimeError('Invalid Expression: ' + f['expr']).with_traceback(e.__traceback__)
+        return queryset.aggregate(**aggregate)
+
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+        raise Exception("Actions that do not return a queryset are not supported.")
+
+
+# rather implemented as a parameter to the request.
+
+# @register_final
+# class ExplainAction(QuerysetAction):
+#     """
+#     Action version of a QuerySet.none(...)
+#
+#     Example:
+#     {
+#         "action": "explain"
+#     }
+#     """
+#
+#     name = 'explain'
+#
+#     def handle(self, queryset: QuerySet, fragment: dict):
+#         return {'explanation': queryset.explain()}
+#
+#     def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+#         raise Exception("Actions that do not return a queryset are not supported.")
 
 # ========================================================================= #
 # NON-STANDARD ACTIONS                                                      #
