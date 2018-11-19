@@ -47,15 +47,19 @@ class QueryApiView(APIView):
         # TODO: better error messages returned to the server.
         try:
             fake = ('fake' in request.query_params) and (request.query_params['fake'] in ['True', 'true', '1'])
-            queryset = self.querier.parse_request(self.query_model, request.data, fake=fake)
-            if not fake: # check that fields are the same, for debugging purposes
+            (queryset, explain, is_final) = self.querier.parse_request(self.query_model, request.data, fake=fake)
+            if not fake and not is_final:  # check that fields are the same, for debugging purposes
                 self._debug_check_fields(request, queryset)
         except ValidationError as e:
             return JsonResponse({"status": "invalid", "message": "json error", "description": str(e)}, status=400)   # received json is wrong
         except FieldError as e:
             return JsonResponse({"status": "invalid", "message": "field not found", "description": str(e)}, status=400)   # received field name is wrong / does not exist
+        # generate response:
+        response = {"status": "valid", "results": queryset if is_final else list(queryset)}
+        if explain:
+            response['explain'] = explain
         # valid result
-        return JsonResponse({"status": "valid", "results": list(queryset)})
+        return JsonResponse(response)
 
     def options(self, request, *args, **kwargs):
         """
