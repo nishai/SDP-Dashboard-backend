@@ -2,12 +2,14 @@ import pandas as pd
 from django.db import connection, transaction
 from django.db.models.fields.reverse_related import ForeignObjectRel
 from django.forms import model_to_dict
+
+from dashboard.apps.wits.models import SecondarySchool
 from dashboard.shared.errors import VisibleError
 from dashboard.shared.measure import Measure
 from dashboard.shared.model import model_relations_string, get_model_relations
 import logging
 from typing import Type
-from django.db.models import Model, AutoField, ForeignKey
+from django.db.models import Model, AutoField, ForeignKey, CharField
 
 logger = logging.getLogger('debug-import')
 
@@ -168,6 +170,7 @@ class Inserter(object):
             # effective group by (just drop columns)
             group_by = [c for c in cols if c in self.info.dependent]
             # group
+            self.log(logger.info, f"Grouping By (lowercase): {group_by}")
             grouped = df.drop_duplicates(group_by)
             # lowercase - some duplicates with different cases exist...
             self.log(logger.info, f"Grouped! Found {len(grouped)} unique entries from {len(df)} total")
@@ -247,7 +250,7 @@ class Inserter(object):
                     self.log(logger.info, f"Dropped {len(df_old) - len(df)} rows! Columns '{sorted(self.info.dependent_non_null)}' Break non-null requirement:\n{df_old[~df_old.isin(df)].dropna(how='all')}")
                 del df_old
                 # import
-                grouped = self._group(df)
+                grouped = self._group(df, )
                 imported = self._save(grouped)
                 self.log(logger.info, f"AFTER {len(self.model.objects.all())} entries")
             except Exception as e:

@@ -18,15 +18,26 @@ Thus for our app, we need to use MySQL instead.
 # MySQL Setup:
 1. $ mysqladmin -u "root" password "newpwd"
 2. $ mysql -u root -p
-3. $ CREATE DATABASE wits_dashboard;
-4. $ EXIT:
+  - CREATE DATABASE wits_dashboard;
+  - EXIT;
+
+
+# MySQL Timouts:
+1. $ mysql -u root -p
+  - SET GLOBAL connect_timeout=30;
+  - SET GLOBAL wait_timeout=30;
+  - SET GLOBAL interactive_timeout=30;
+
+connect_timeout:     Number of seconds the mysqld server waits for a connect packet before responding with 'Bad handshake'
+interactive_timeout: Number of seconds the server waits for activity on an interactive connection before closing it
+wait_timeout:        Number of seconds the server waits for activity on a connection before closing it
 
 
 # MySQL restart:
 1. $ mysql -u root -p
-2. $ DROP DATABASE wits_dashboard;
-3. $ CREATE DATABASE wits_dashboard;
-4. EXIT;
+  - DROP DATABASE wits_dashboard;
+  - CREATE DATABASE wits_dashboard;
+  - EXIT;
 
 
 # Django Connection Options:

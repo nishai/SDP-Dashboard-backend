@@ -212,7 +212,7 @@ if os.environ.get('DJANGO_USE_SQLITE', default='false') == 'true':
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
         'OPTIONS': {
-            'timeout': 10,  # https://docs.python.org/3.7/library/sqlite3.html#sqlite3.connect
+            'timeout': 15,  # https://docs.python.org/3.7/library/sqlite3.html#sqlite3.connect
         }
     }
 else:
@@ -223,6 +223,9 @@ else:
         'PASSWORD': os.environ.get('DJANGO_MYSQL_PASS', default='password'),
         'HOST': os.environ.get('DJANGO_MYSQL_HOST', default='localhost'),
         'PORT': os.environ.get('DJANGO_MYSQL_PORT', default='3306'),  # MySQL default
+        'OPTIONS': {
+            'connect_timeout': 15,
+        },
     }
 
 
