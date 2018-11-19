@@ -73,7 +73,7 @@ def get_model_relations(model: Type[Model], reverse_relations=True, foreign_rela
     Get all the reachable fields from a model.
     """
     fields = {}
-    if reverse_relations and foreign_relations:
+    if reverse_relations and foreign_relations: # pragma: no cover
         fields.update(get_model_relations(model, reverse_relations=True, foreign_relations=False, depth=depth))
         fields.update(get_model_relations(model, reverse_relations=False, foreign_relations=True, depth=depth))
     elif reverse_relations or foreign_relations:
@@ -84,7 +84,7 @@ def get_model_relations(model: Type[Model], reverse_relations=True, foreign_rela
             skip_foreign_model=not foreign_relations,
             depth=depth,
         )
-    else:
+    else: # pragma: no cover
         raise Exception("At least one of reverse or foreign must be True")
     return fields
 
