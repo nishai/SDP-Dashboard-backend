@@ -75,15 +75,28 @@ INSTALLED_APPS = [
 ALLOWED_HOSTS = []
 
 # intercept and handle requests before our app.
+# ordering: https://djangobook.com/available-middleware/
 MIDDLEWARE = [
-    'silk.middleware.SilkyMiddleware',                          # profiling
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
+
+    # OLD ORDER
+    # 'silk.middleware.SilkyMiddleware',                          # profiling - adds a lot of overhead...
+    # 'django.middleware.security.SecurityMiddleware',
+    # 'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.common.CommonMiddleware',
+    # 'django.contrib.messages.middleware.MessageMiddleware',
+    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 # ========================================================================== #
@@ -228,6 +241,25 @@ else:
         },
     }
 
+# ========================================================================= #
+# Cache                                                                     #
+# ========================================================================= #
+
+# https://docs.djangoproject.com/en/2.1/topics/cache/
+# https://djangobook.com/djangos-cache-framework/
+
+CACHES = {
+    'default': {
+        # 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': os.path.join(DATA_DIR, 'cache'),
+
+        # create cache table with: $ python3 manage.py createcachetable
+        # 'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        # 'LOCATION': 'dashboard_cache_table',
+    }
+}
 
 # ========================================================================== #
 # Languages                                                                  #
