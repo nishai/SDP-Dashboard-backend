@@ -1,31 +1,57 @@
+from drf_writable_nested import WritableNestedModelSerializer
 from rest_framework import serializers
 from dashboard.apps.dash.models import *
-
 
 # ========================================================================= #
 # USER SERIALIZER                                                           #
 # ========================================================================= #
 
+# # User Report Charts
+#
+# class ReportChartSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = ReportChart
+#         fields = '__all__'
+#
+#
+# # User Report
+#
+# class UserReportSerializer(serializers.ModelSerializer):
+#     charts = ReportChartSerializer(many=True)
+#
+#     class Meta:
+#         model = UserReport
+#         fields = '__all__'
+
+
+# Profile
+
+class ProfileSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Profile
+        fields = (
+            'date_created',
+            'date_modified',
+            'rawData',
+        )
+
 
 # User
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(WritableNestedModelSerializer):
+    profile = ProfileSerializer()
+
     class Meta:
         model = User
-        fields = '__all__'
+        fields = (
+            "username",
+            "email",
+            "date_joined",
+            # Other
+            'profile',
+        )
 
 
-# User Report
 
-class UserReportSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserReport
-        fields = '__all__'
-
-
-# User Report Charts
-
-class ReportChartSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ReportChart
-        fields = '__all__'

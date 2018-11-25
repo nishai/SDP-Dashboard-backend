@@ -64,7 +64,10 @@ INSTALLED_APPS = [
     'silk',
     # Routing
     # 'dynamic_rest',  # https://github.com/AltSchool/dynamic-rest # 'rest_framework_filters' may be better alternative: https://github.com/philipn/django-rest-framework-filters # combined with https://github.com/alanjds/drf-nested-routers
-
+    # Serializers
+    'drf_multiple_model',  # https://github.com/MattBroach/DjangoRestMultipleModels
+    'django_mysql',  # https://django-mysql.readthedocs.io/en/latest/installation.html
+    # drf-writable-nested  # https://github.com/beda-software/drf-writable-nested
 ]
 
 # ========================================================================= #
@@ -79,12 +82,12 @@ ALLOWED_HOSTS = []
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
 
     # OLD ORDER
     # 'silk.middleware.SilkyMiddleware',                          # profiling - adds a lot of overhead...
@@ -178,11 +181,13 @@ JWT_AUTH = {
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
-        # 'rest_framework.permissions.IsAuthenticated', # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
+        # 'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticated',  # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication', # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',  # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
+        # 'rest_framework.authentication.SessionAuthentication',  # added in dev settings
+        # 'rest_framework.authentication.BasicAuthentication',  # added in dev settings
     ],
 }
 
@@ -238,6 +243,7 @@ else:
         'PORT': os.environ.get('DJANGO_MYSQL_PORT', default='3306'),  # MySQL default
         'OPTIONS': {
             'connect_timeout': 15,
+            'charset': 'utf8mb4',  # support all unicode characters https://django-mysql.readthedocs.io/en/latest/checks.html#django-mysql-w003-utf8mb4
         },
     }
 
@@ -248,18 +254,22 @@ else:
 # https://docs.djangoproject.com/en/2.1/topics/cache/
 # https://djangobook.com/djangos-cache-framework/
 
-CACHES = {
-    'default': {
-        # 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+# CACHE_MIDDLEWARE_ALIAS = 'default'
+# CACHE_MIDDLEWARE_SECONDS = 60*60*24*7
+# CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(DATA_DIR, 'cache'),
-
-        # create cache table with: $ python3 manage.py createcachetable
-        # 'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
-        # 'LOCATION': 'dashboard_cache_table',
-    }
-}
+# CACHES = {
+#     'default': {
+#         # 'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#
+#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#         'LOCATION': os.path.join(DATA_DIR, 'cache'),
+#
+#         # create cache table with: $ python3 manage.py createcachetable
+#         # 'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+#         # 'LOCATION': 'dashboard_cache_table',
+#     }
+# }
 
 # ========================================================================== #
 # Languages                                                                  #

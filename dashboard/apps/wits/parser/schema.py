@@ -46,17 +46,22 @@ class Schema:
     def enum(cls, *values): return {"enum": list(values)}
 
     @classmethod
-    def object(cls, properties, not_required=None, definitions=None, title=None):
+    def object(cls, properties=None, not_required=None, definitions=None, title=None, anything=False):
+        if properties is None:
+            properties = {}
         if not_required is None:
             not_required = set()
         if definitions is None:
             definitions = {}
+
+        required = list(set(properties) - set(not_required))
+
         return {
             "type": "object",
-            "properties": properties,
-            "required": list(set(properties) - set(not_required)),
-            "additionalProperties": False,
-            "definitions": definitions,
+            "additionalProperties": anything,
+            **({} if len(definitions) < 1 else {"definitions": definitions}),
+            **({} if len(properties) < 1 else {"properties": properties}),
+            **({} if len(required) < 1 else {"required": required}),
             **({} if title is None else {"title": title})
         }
 
