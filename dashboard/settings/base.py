@@ -181,8 +181,8 @@ JWT_AUTH = {
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        # 'rest_framework.permissions.AllowAny',
-        'rest_framework.permissions.IsAuthenticated',  # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
+         'rest_framework.permissions.AllowAny',
+        #'rest_framework.permissions.IsAuthenticated',  # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',  # TODO: UNCOMMENT TO FORCE JWT AUTHENTICATION
@@ -221,31 +221,18 @@ TEMPLATES = [
 
 DATABASES = {}
 
-if os.environ.get('DJANGO_USE_SQLITE', default='true') == 'true':
-    # SQLITE does not support a high level of concurrency
-    # - With multiple requests coming in at the same time,
-    #   this can lead to a "database is locked" exception,
-    #   and the request will fail.
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(DATA_DIR, 'db.sqlite3'),
-        'OPTIONS': {
-            'timeout': 15,  # https://docs.python.org/3.7/library/sqlite3.html#sqlite3.connect
-        }
-    }
-else:
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'wits_dashboard',
-        'USER': os.environ.get('DJANGO_MYSQL_USER', default='root'),
-        'PASSWORD': os.environ.get('DJANGO_MYSQL_PASS', default='password'),
-        'HOST': os.environ.get('DJANGO_MYSQL_HOST', default='localhost'),
-        'PORT': os.environ.get('DJANGO_MYSQL_PORT', default='3306'),  # MySQL default
-        'OPTIONS': {
-            'connect_timeout': 15,
-            'charset': 'utf8mb4',  # support all unicode characters https://django-mysql.readthedocs.io/en/latest/checks.html#django-mysql-w003-utf8mb4
-        },
-    }
+DATABASES['default'] = {
+    'ENGINE': 'django.db.backends.mysql',
+    'NAME': 'wits_dashboard',
+    'USER': os.environ.get('DJANGO_MYSQL_USER', default='root'),
+    'PASSWORD': os.environ.get('DJANGO_MYSQL_PASS', default='password'),
+    'HOST': os.environ.get('DJANGO_MYSQL_HOST', default='localhost'),
+    'PORT': os.environ.get('DJANGO_MYSQL_PORT', default='3306'),  # MySQL default
+    'OPTIONS': {
+        'connect_timeout': 15,
+        'charset': 'utf8mb4',  # support all unicode characters https://django-mysql.readthedocs.io/en/latest/checks.html#django-mysql-w003-utf8mb4
+    },
+}
 
 # ========================================================================= #
 # Cache                                                                     #
