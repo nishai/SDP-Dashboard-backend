@@ -24,7 +24,7 @@ class QueryApiView(APIView):
         Debug function that prints out if the fields contained
         in a fakeset and queryset differ or are not in order.
         """
-        try:
+        try: # pragma: no cover
             if len(queryset) > 0:
                 try:
                     item = list(queryset[:1])[0]
@@ -35,7 +35,7 @@ class QueryApiView(APIView):
                     fakes = tuple(self.querier.parse_request(self.query_model, request.data, fake=True))
                     if names != fakes:
                         print(f"\n{'=' * 30}\nNAMES vs FAKES:\nnames: {names}\nfakes: {fakes}\n{'=' * 30}\n")
-        except:
+        except: # pragma: no cover
             print(f"\n{'=' * 30}\nNAMES vs FAKES - failed\n{'=' * 30}\n")
 
     def post(self,  request, *args, **kwargs):
@@ -45,14 +45,14 @@ class QueryApiView(APIView):
         instead of performing an actual query.
         """
         # TODO: better error messages returned to the server.
-        try:
+        try: # pragma: no cover
             fake = ('fake' in request.query_params) and (request.query_params['fake'] in ['True', 'true', '1'])
             (queryset, explain, is_final) = self.querier.parse_request(self.query_model, request.data, fake=fake)
             if not fake and not is_final:  # check that fields are the same, for debugging purposes
                 self._debug_check_fields(request, queryset)
-        except ValidationError as e:
+        except ValidationError as e: # pragma: no cover
             return JsonResponse({"status": "invalid", "message": "json error", "description": str(e)}, status=400)   # received json is wrong
-        except FieldError as e:
+        except FieldError as e: # pragma: no cover
             return JsonResponse({"status": "invalid", "message": "field not found", "description": str(e)}, status=400)   # received field name is wrong / does not exist
         # generate response:
         response = {"status": "valid", "results": queryset if is_final else list(queryset)}
@@ -66,11 +66,11 @@ class QueryApiView(APIView):
         Returns all the fields that a model has,
         including fields that can be referenced from foreign keys.
         """
-        try:
+        try: # pragma: no cover
             queryset = self.querier.parse_options(self.query_model, request.data)
-        except ValidationError as e:
+        except ValidationError as e: # pragma: no cover
             return JsonResponse({"status": "invalid", "message": str(e)}, status=400)   # received json is wrong
-        except FieldError as e:
+        except FieldError as e: # pragma: no cover
             return JsonResponse({"status": "invalid", "message": str(e)}, status=400)   # received field name is wrong / does not exist
         # valid result
         return JsonResponse({"status": "valid", "results": list(queryset)})

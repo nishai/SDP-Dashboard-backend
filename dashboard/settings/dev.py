@@ -30,8 +30,10 @@ REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] += [
 ]
 
 # print annoying deprecated messages:
-MIDDLEWARE += [
-    'dashboard.shared.middleware.DeprecatedViewsMiddleware'
+MIDDLEWARE = [
+    # 'silk.middleware.SilkyMiddleware',
+    'dashboard.shared.middleware.DeprecatedViewsMiddleware',
+    *MIDDLEWARE,
 ]
 
 

@@ -46,7 +46,7 @@ def register(cls: Type['QuerysetAction'], dict_obj: dict):
         raise RuntimeError(f"Duplicate name found: {instance.name}")
     dict_obj[instance.name] = instance
     any_list = SCHEMA['properties']['queryset']['items']['anyOf']
-    if instance.name in set(f['properties']['action']['const'] for f in any_list):
+    if instance.name in set(f['properties']['action']['const'] for f in any_list): # pragma: no cover
         raise RuntimeError(f"Duplicate name found: {instance.name}")
     any_list.append(instance.get_schema())
     return cls
@@ -464,11 +464,11 @@ class AnnotateAction(QuerysetAction):
         for f in fragment['fields']:
             try:
                 annotate[f['field']] = _AEVAL_ANNOTATE(f['expr'])
-            except Exception as e:
+            except Exception as e: # pragma: no cover
                 raise RuntimeError('Invalid Expression: ' + f['expr']).with_traceback(e.__traceback__)
         return queryset.annotate(**annotate)
 
-    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict): # pragma: no cover
         return fakeset + [f['field'] for f in fragment['fields'] if f['field'] not in fakeset]
 
 @register_action
@@ -499,14 +499,14 @@ class ValuesAction(QuerysetAction):
     }
 
     def _extract(self, fragment: dict):
-        if len(fragment['fields']) < 1:
+        if len(fragment['fields']) < 1: # pragma: no cover
             raise Exception("'fields' must contain values - this limitation will hopefully be removed in future")
         (fields, expressions, names) = [], {}, []  # names exists so the fields dont go out of order.
         for field in fragment['fields']:
             if type(field) == str:
                 fields.append(field)
                 names.append(field)
-            elif type(field) == dict:
+            elif type(field) == dict: # pragma: no cover
                 try:
                     expressions[field['field']] = _AEVAL_ANNOTATE(field['expr'])
                 except Exception as e:
@@ -521,7 +521,7 @@ class ValuesAction(QuerysetAction):
         queryset = queryset.values(*fields, **expressions)
         return queryset
 
-    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict): # pragma: no cover
         (fields, expressions, names) = self._extract(fragment)
         if len(names) > 0:
             return names
@@ -557,7 +557,7 @@ class ValuesListAction(QuerysetAction):
             fragment['named'] = False
         return queryset.values_list(*fragment['fields'], flat=fragment['flat'], named=fragment['named'])
 
-    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict): # pragma: no cover
         return [f for f in fragment['fields']]
 
 
@@ -775,10 +775,10 @@ class CountAction(QuerysetAction):
 
     name = 'count'
 
-    def handle(self, queryset: QuerySet, fragment: dict):
+    def handle(self, queryset: QuerySet, fragment: dict): # pragma: no cover
         return {'count': queryset.count()}
 
-    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict): # pragma: no cover
         raise Exception("Actions that do not return a queryset are not supported.")
 
 @register_final
@@ -794,10 +794,10 @@ class FirstAction(QuerysetAction):
 
     name = 'first'
 
-    def handle(self, queryset: QuerySet, fragment: dict):
+    def handle(self, queryset: QuerySet, fragment: dict): # pragma: no cover
         return {'first': queryset.first()}
 
-    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict): # pragma: no cover
         raise Exception("Actions that do not return a queryset are not supported.")
 
 @register_final
@@ -813,10 +813,10 @@ class LastAction(QuerysetAction):
 
     name = 'last'
 
-    def handle(self, queryset: QuerySet, fragment: dict):
+    def handle(self, queryset: QuerySet, fragment: dict): # pragma: no cover
         return {'last': queryset.last()}
 
-    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict): # pragma: no cover
         raise Exception("Actions that do not return a queryset are not supported.")
 
 
@@ -840,7 +840,7 @@ class AggregateAction(QuerysetAction):
         )
     }
 
-    def handle(self, queryset: QuerySet, fragment: dict):
+    def handle(self, queryset: QuerySet, fragment: dict): # pragma: no cover
         aggregate = {}
         for f in fragment['fields']:
             try:
@@ -849,7 +849,7 @@ class AggregateAction(QuerysetAction):
                 raise RuntimeError('Invalid Expression: ' + f['expr']).with_traceback(e.__traceback__)
         return queryset.aggregate(**aggregate)
 
-    def fake(self, model: Type[Model], fakeset: list, fragment: dict):
+    def fake(self, model: Type[Model], fakeset: list, fragment: dict): # pragma: no cover
         raise Exception("Actions that do not return a queryset are not supported.")
 
 

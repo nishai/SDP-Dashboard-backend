@@ -37,13 +37,13 @@ class Command(BaseCommand):
             },
         }
 
-        if options['files'] is None:
+        if options['files'] is None: # pragma: no cover
             print("--file not specified")
             exit(1)
-        if options['out'] is None:
+        if options['out'] is None: # pragma: no cover
             print("--out not specified")
             exit(1)
-        if options['type'] is None or options['type'][0] not in types:
+        if options['type'] is None or options['type'][0] not in types: # pragma: no cover
             print("--type not specified, must be 'wits' or 'schools'")
             exit(1)
 

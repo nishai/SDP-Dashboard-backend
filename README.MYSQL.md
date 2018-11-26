@@ -47,8 +47,7 @@ The following environment variables exist for our django app. Specify these to o
 - DJANGO_MYSQL_HOST (default: localhost)
 - DJANGO_MYSQL_PORT (default: 3306)
 
-A final environment variable exists if you wish to switch back to the legacy SQLite database:
-- DJANGO_USE_SQLITE (default: false, valid options are: ['false', 'true'] make sure the case is correct)
 
+SQLITE SUPPORT IS COMPLETELY DROPPED
 
 

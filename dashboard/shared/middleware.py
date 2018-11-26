@@ -9,7 +9,7 @@ def WARN_view_deprecated(reason=''):
     :param reason: Deprecation message
     :return:
     """
-    def depricate_view_dec(obj):
+    def depricate_view_dec(obj): # pragma: no cover
         func_path = obj.__module__ + "." + obj.__name__
         if func_path in _DEPRECATED_VIEWS:
             raise Exception(f"{func_path}: Already registered as deprecated.")
@@ -18,9 +18,9 @@ def WARN_view_deprecated(reason=''):
         _DEPRECATED_VIEWS[func_path] = reason
         return obj
     # determine if called directly
-    if type(reason) == str:
+    if type(reason) == str: # pragma: no cover
         return depricate_view_dec
-    else:
+    else: # pragma: no cover
         obj, reason = reason, ''
         return depricate_view_dec(obj)
 

@@ -105,7 +105,7 @@ class ModelInfo(object):
         # unique
         if len(self.meta.unique_together) > 0:
             self.unique_map = {n: self.field_map[n] for n in self.meta.unique_together[0]}
-        else:
+        else: # pragma: no cover
             logger.warning(f"[{self.model.__name__}]: No Uniqueness Constraints Specified, defaulting to primary key '{self.meta.pk.name}'")
             if not isinstance(self.meta.pk, AutoField) and self.meta.pk.name != 'id':
                 self.unique_map = {self.meta.pk.name: self.meta.pk}
@@ -161,11 +161,11 @@ class Inserter(object):
         with Measure("group", logger.debug):
             self.log(logger.info, "Grouping Started...")
             # list of fields present in table
-            if len(self.a_not_in_b(self.info.dependent_non_null, df.columns)) > 0:
+            if len(self.a_not_in_b(self.info.dependent_non_null, df.columns)) > 0: # pragma: no cover
                 raise VisibleError(f"Error, dependent fields '{sorted(self.a_not_in_b(self.info.dependent_non_null, df.columns))}' not present in table!")
-            elif len(self.a_not_in_b(self.info.dependent, df.columns)) > 0:
+            elif len(self.a_not_in_b(self.info.dependent, df.columns)) > 0: # pragma: no cover
                 self.log(logger.warning, f"Some nullable fields '{sorted(self.a_not_in_b(self.info.dependent, df.columns))}' are missing from the table")
-            if len(self.a_not_in_b(cols, df.columns)) > 0:
+            if len(self.a_not_in_b(cols, df.columns)) > 0: # pragma: no cover
                 raise VisibleError(f"Error, group by cols '{sorted(self.a_not_in_b(cols, df.columns))}' not present in table")
             # effective group by (just drop columns)
             group_by = [c for c in cols if c in self.info.dependent]
@@ -201,7 +201,7 @@ class Inserter(object):
                         try:
                             for item in grouped:
                                 item[fk] = fk_unique_to_object[tuple(item[k] for k in fk_unique_cols)]
-                        except KeyError as e:
+                        except KeyError as e: # pragma: no cover
                             raise VisibleError(f"Failed to retrieve foreign items for '{fk}' ({sorted(self.info.foreign_unique_map[fk])}), are you sure you have imported all the data's decencies, and that the data does not contain nulls/blanks?").with_traceback(e.__traceback__)
                 # replace - present
                 with Measure("present", logger.debug):
@@ -212,7 +212,7 @@ class Inserter(object):
                         try:
                             for item in grouped:
                                 item[fk] = pk_to_object[item[fk]]
-                        except KeyError as e:
+                        except KeyError as e: # pragma: no cover
                             raise VisibleError(f"Failed to retrieve foreign items for '{fk}', are you sure you have imported all the data's decencies, and that the data does not contain nulls/blanks?").with_traceback(e.__traceback__)
             with Measure("normalising", logger.debug):
                 # remove flat fields, then convert or load model rows
@@ -253,7 +253,7 @@ class Inserter(object):
                 grouped = self._group(df, )
                 imported = self._save(grouped)
                 self.log(logger.info, f"AFTER {len(self.model.objects.all())} entries")
-            except Exception as e:
+            except Exception as e: # pragma: no cover
                 self.log(logger.error, f"\033[91mERROR\033[0m")
                 raise e
         return imported

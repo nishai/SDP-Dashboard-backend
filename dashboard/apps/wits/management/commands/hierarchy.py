@@ -34,6 +34,6 @@ class Command(BaseCommand):
                     with Measure("DFS"):
                         print(model_relations_string(cls, skip_reverse_model=False, skip_foreign_model=False))
                     print()
-                except Exception as e:
+                except Exception as e: # pragma: no cover
                     raise VisibleError("Failed to print hierarchy").with_traceback(e.__traceback__)
 
