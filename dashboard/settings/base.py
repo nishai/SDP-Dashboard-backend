@@ -221,7 +221,7 @@ TEMPLATES = [
 
 DATABASES = {}
 
-if os.environ.get('DJANGO_USE_SQLITE', default='false') == 'true':
+if os.environ.get('DJANGO_USE_SQLITE', default='true') == 'true':
     # SQLITE does not support a high level of concurrency
     # - With multiple requests coming in at the same time,
     #   this can lead to a "database is locked" exception,

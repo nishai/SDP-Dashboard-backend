@@ -26,12 +26,12 @@ def iterate_groups(
     I know this is over complicated... but I might want to reuse it in future elsewhere...
     """
     # check for nulls
-    if root_group is None:
+    if root_group is None: # pragma: no cover
         if len(stack) > 0:
             raise RuntimeError("This should never happen, do not set the stack before calling this function.")
         raise Exception("root_group cannot be none")
     # check for nulls
-    if on_group is None and on_item is None:
+    if on_group is None and on_item is None: # pragma: no cover
         raise Exception("At least one of on_group and on_item must be specified")
     # initialise
     if stack is None:
@@ -43,9 +43,9 @@ def iterate_groups(
             return
     # get all items from group, and skip if None
     items = get_items(root_group, stack)
-    if items is None:
+    if items is None: # pragma: no cover
         return
-    if not (type(items) == list or type(items) == tuple):
+    if not (type(items) == list or type(items) == tuple): # pragma: no cover
         raise Exception("Items must be in list form")
     # iterate
     for index, item in enumerate(items):

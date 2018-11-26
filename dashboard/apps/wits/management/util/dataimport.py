@@ -17,21 +17,21 @@ class DataImportCommand(BaseCommand):
     # set class variable 'header_row' to change import options
 
     def add_arguments(self, parser):
-        if not type(self.options) == dict:
+        if not type(self.options) == dict: # pragma: no cover
             raise Exception("DataImportCommand must have options defined")
         for name in self.options:
             parser.add_argument(f'--{name}', dest=f'{name}', nargs='*', help='Specify files to be imported')
         parser.add_argument('--lowercase', action='store_true', help='True if specified, Output a lowercase csv file, hack for duplicates case-insensitivity')
 
     def handle(self, *args, **kwargs):
-        if not type(self.options) == dict:
+        if not type(self.options) == dict: # pragma: no cover
             raise Exception("DataImportCommand must have options defined")
         # exit if nothing specified
-        if all(kwargs[option] is None for option in self.options):
+        if all(kwargs[option] is None for option in self.options): # pragma: no cover
             print(f"Please specify one or more of: {', '.join(f'--{option} <file>' for option in self.options)}")
             exit()
         # exit if one of the options has no files specified
-        if any(kwargs[option] is not None and len(kwargs[option]) < 1 for option in self.options):
+        if any(kwargs[option] is not None and len(kwargs[option]) < 1 for option in self.options): # pragma: no cover
             print(f"No file arguments found for: {', '.join(f'--{option} <file>' for option in self.options if kwargs[option] is not None and len(kwargs[option]) < 1)}")
             exit()
         # for each custom option
@@ -39,7 +39,7 @@ class DataImportCommand(BaseCommand):
             # count number of records imported
             imported = 0
             # skip
-            if kwargs[option] is None:
+            if kwargs[option] is None: # pragma: no cover
                 continue
             print(f"\n{'=' * 100}\n")
             # check contents
@@ -75,7 +75,7 @@ class DataImportCommand(BaseCommand):
     def load_table(file: str, header=0, dataframe=False, disallow_excel=False, csv_to_lowercase=True):
         ext = os.path.splitext(file)[1].lower()
 
-        if ext == ".xlsx":
+        if ext == ".xlsx": # pragma: no cover
             if disallow_excel:
                 raise Exception(f"excel imports has been disabled, please convert to csv first.")
             if header is None:
