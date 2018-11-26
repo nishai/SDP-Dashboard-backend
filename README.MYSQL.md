@@ -1,4 +1,3 @@
-
 # Why MySQL not SQLite:
 SQLite is not optimised for many concurrent requests.
 As soon as many requests are recieved at the same time,
@@ -15,11 +14,14 @@ Thus for our app, we need to use MySQL instead.
 - $ mysql.server status
 
 
-# MySQL Setup:
-1. $ mysqladmin -u "root" password "newpwd"
-2. $ mysql -u root -p
-  - CREATE DATABASE wits_dashboard;
-  - EXIT;
+# MySQL Setup:install mysql, then mysql-serverthen1. $ systemctl enable mysql
+2. $ mysqladmin -u "root" password "newpwd"
+3. $ mysql -u root -p
+ - CREATE DATABASE wits_dashboard;
+ - EXIT;pyenv stuffdo the rest in virtual env:1. $ pip3 install -r requirements.txt
+2. $ make migrate
+3. $ python3 manage.py import --wits all.csv --schools schools.csv --lowercaseif you get an error about mysql_config, run the following:
+$ sudo apt-get install libmysqlclient-dev
 
 
 # MySQL Timouts:
