@@ -17,13 +17,16 @@ COPY requirements.txt ./
 
 #RUN apt-get update && apt-get install -y python-dev libldap2-dev libsasl2-dev libssl-dev make && \
 
-RUN apt-get update
+RUN \
+        apt-get update
 
-RUN apt-get install -y \
+RUN \
+        apt-get install -y \
         wget make gcc \
         libsasl2-dev libldap2-dev libssl-dev libffi-dev \
         build-essential checkinstall \
-        libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev
+        libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev \
+        libmysqlclient-dev
 
 RUN \
         wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz && \
@@ -31,18 +34,18 @@ RUN \
         cd Python-3.7.0 && \
         ./configure && \
         make altinstall && \
-        cd ..
+        cd .. && \
+        ln -s /usr/local/bin/python3.7 /usr/local/bin/python3
 
 RUN \
         wget https://bootstrap.pypa.io/get-pip.py && \
         python3.7 get-pip.py
 
+RUN \
+        pip install --no-cache-dir -r requirements.txt
 
-RUN apt-get install -y libmysqlclient-dev
-
-RUN pip install --no-cache-dir -r requirements.txt
-
-RUN ln -s /usr/local/bin/python3.7 /usr/local/bin/python3
+RUN \
+        mysql -u root -p password -e "CREATE DATABASE wits_dashboard;"
 
 #RUN addgroup -g 1003 -S dockeruser && \
 #	adduser -u 1003 -S -G dockeruser dockeruser 
