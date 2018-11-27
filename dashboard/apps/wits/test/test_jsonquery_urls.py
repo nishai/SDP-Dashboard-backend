@@ -110,21 +110,21 @@ data = {
 
 @pytest.mark.django_db
 def test_endpoint_data_courses_post(admin_client):
-    assert admin_client.post('/data/courses?fake=0', data).status_code == 301
+    assert admin_client.post('/data/courses?fake=0', data).status_code == 404
     assert admin_client.post('/data/courses/?fake=0', data).status_code == 405
     # TODO, not being sent properly
 
 
 @pytest.mark.django_db
 def test_endpoint_data_courses_post_fake(admin_client):
-    assert admin_client.post('/data/courses?fake=1', data).status_code == 301
+    assert admin_client.post('/data/courses?fake=1', data).status_code == 404
     assert admin_client.post('/data/courses/?fake=1', data).status_code == 405
     # TODO, not being sent properly
 
 
 @pytest.mark.django_db
 def test_endpoint_data_courses_options(admin_client):
-    assert admin_client.options('/data/courses', data).status_code == 301
+    assert admin_client.options('/data/courses', data).status_code == 404
     assert admin_client.options('/data/courses/', data).status_code == 200
     # TODO, not being sent properly
 
