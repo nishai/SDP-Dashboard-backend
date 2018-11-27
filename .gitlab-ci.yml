@@ -1,7 +1,7 @@
 test:
   script:
     - make clean clean-data
-    - make -f Makefile.docker rm test
+    - make rm test
   artifacts:
     reports:
       junit: coverage/junit.xml
