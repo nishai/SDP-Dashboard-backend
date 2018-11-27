@@ -60,7 +60,7 @@ TARGETS         := $(TARGETS_USAGE) $(TARGETS_CLEAN)
 
 # set the variables for the target
 
-RUN_FLAGS       := # nothing
+RUN_FLAGS       := -e MYSQL_ROOT_PASSWORD="password" -e MYSQL_DATABASE="wits_dashboard"
 
 test       :: name = backend-tests
 serve      :: name = backend-prod

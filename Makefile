@@ -59,21 +59,21 @@ test test-nuke :: ENV_PROD += DJANGO_TEST="true" COVERAGE_FILE="coverage/coverag
 
 admin: migrate
 	@make section tag="Local - Creating Default Admin User"
-	$(ENV_DEV) python manage.py createsuperuser --username=admin --email=admin@dashboard-dev.ms.wits.ac.za || true
+	$(ENV_DEV) python3 manage.py createsuperuser --username=admin --email=admin@dashboard-dev.ms.wits.ac.za || true
 
 migrate:
 	@make section tag="Making Migrations"
-	$(ENV_DEV) python $(PY_ARGS) manage.py makemigrations
+	$(ENV_DEV) python3 $(PY_ARGS) manage.py makemigrations
 	@make section tag="Migrating Database"
-	$(ENV_DEV) python $(PY_ARGS) manage.py migrate --run-syncdb
+	$(ENV_DEV) python3 $(PY_ARGS) manage.py migrate --run-syncdb
 
 import: migrate
 	@make section tag="Import Excel Files (Dev Mode)"
-	$(ENV_DEV) python $(PY_ARGS) manage.py excel_import --file="$(file)"
+	$(ENV_DEV) python3 $(PY_ARGS) manage.py excel_import --file="$(file)"
 
 dev: migrate
 	@make section tag="Serving (Dev Mode)"
-	$(ENV_DEV) python $(PY_ARGS) manage.py runserver 0.0.0.0:$(DEV_PORT)
+	$(ENV_DEV) python3 $(PY_ARGS) manage.py runserver 0.0.0.0:$(DEV_PORT)
 
 test-nuke :: nuke migrate _run-tests
 test :: clean migrate _run-tests
@@ -81,17 +81,17 @@ test :: clean migrate _run-tests
 _run-tests :
 	@mkdir -p coverage
 	@make section tag="Run Unit Tests"
-	$(ENV_DEV) python $(PY_ARGS) -m pytest -v --cov=./ --junitxml=./coverage/junit.xml || ( make section tag="Code Covergage Cannot Procede (Tests Failed)" details="Errors below are expected:" && exit 1 )
+	$(ENV_DEV) python3 $(PY_ARGS) -m pytest -v --cov=./ --junitxml=./coverage/junit.xml || ( make section tag="Code Covergage Cannot Procede (Tests Failed)" details="Errors below are expected:" && exit 1 )
 	@make section tag="Code Covergage"
-	$(ENV_DEV) python $(PY_ARGS) -m coverage xml -o $(OUT_COV_FILE)
+	$(ENV_DEV) python3 $(PY_ARGS) -m coverage xml -o $(OUT_COV_FILE)
 
 dist: clean-dist
 	@make section tag="Collecting Static Files"
-	$(ENV_PROD) python $(PY_ARGS) manage.py collectstatic
+	$(ENV_PROD) python3 $(PY_ARGS) manage.py collectstatic
 
 serve: dist migrate
 	@make section tag="Serving"
-	$(ENV_PROD) python $(PY_ARGS) manage.py runserver 0.0.0.0:$(PROD_PORT)
+	$(ENV_PROD) python3 $(PY_ARGS) manage.py runserver 0.0.0.0:$(PROD_PORT)
 
 # =========================================================================	#
 # CLEAN                                                                     #
