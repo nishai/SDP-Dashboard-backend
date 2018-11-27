@@ -51,9 +51,14 @@ class QueryApiView(APIView):
             if not fake and not is_final:  # check that fields are the same, for debugging purposes
                 self._debug_check_fields(request, queryset)
         except ValidationError as e: # pragma: no cover
+            print(str(e))
             return JsonResponse({"status": "invalid", "message": "json error", "description": str(e)}, status=400)   # received json is wrong
         except FieldError as e: # pragma: no cover
+            print(str(e))
             return JsonResponse({"status": "invalid", "message": "field not found", "description": str(e)}, status=400)   # received field name is wrong / does not exist
+        except Exception as e:
+            print(str(e))
+            return JsonResponse({"status": "invalid", "message": "unexpected error", "description": str(e)}, status=400)
         # generate response:
         response = {"status": "valid", "results": queryset if is_final else list(queryset)}
         if explain:
@@ -69,9 +74,14 @@ class QueryApiView(APIView):
         try: # pragma: no cover
             queryset = self.querier.parse_options(self.query_model, request.data)
         except ValidationError as e: # pragma: no cover
-            return JsonResponse({"status": "invalid", "message": str(e)}, status=400)   # received json is wrong
+            print(str(e))
+            return JsonResponse({"status": "invalid", "message": "json error", "description": str(e)}, status=400)   # received json is wrong
         except FieldError as e: # pragma: no cover
-            return JsonResponse({"status": "invalid", "message": str(e)}, status=400)   # received field name is wrong / does not exist
+            print(str(e))
+            return JsonResponse({"status": "invalid", "message": "field not found", "description": str(e)}, status=400)   # received field name is wrong / does not exist
+        except Exception as e:
+            print(str(e))
+            return JsonResponse({"status": "invalid", "message": "unexpected error", "description": str(e)}, status=400)
         # valid result
         return JsonResponse({"status": "valid", "results": list(queryset)})
 

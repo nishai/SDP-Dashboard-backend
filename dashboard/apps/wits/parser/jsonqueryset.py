@@ -4,9 +4,13 @@ import operator
 from typing import Type
 from asteval import asteval
 from django.db import models
-from django.db.models import QuerySet, Model, When, Case, Value
+from django.db.models import *
 from datetime import timedelta
+
+from django.db.models.functions import Cast
 from django.utils import timezone
+from django_mysql.models.functions import Round, Abs, Ceiling, Floor, Sign
+
 from dashboard.apps.wits.parser.schema import Schema
 from jsonschema import validate, ValidationError, SchemaError
 from dashboard.shared.model import get_model_relations
@@ -194,6 +198,7 @@ def parse_options(model: Type[Model], data: dict):
 
 
 _AGGREGATE_METHODS = {
+    # remove
     "max": models.Max,
     "min": models.Min,
     "std": models.StdDev,
@@ -201,6 +206,20 @@ _AGGREGATE_METHODS = {
     "var": models.Variance,
     "ave": models.Avg,
     "count": models.Count,
+    # keep
+    "Max": models.Max,
+    "Min": models.Min,
+    "Std": models.StdDev,
+    "Sum": models.Sum,
+    "Var": models.Variance,
+    "Ave": models.Avg,
+    "Count": models.Count,
+    # Other
+    "Abs": Abs,
+    "Ceiling": Ceiling,
+    "Floor": Floor,
+    "Round": Round,
+    "Sign": Sign,
 }
 
 _ANNOTATE_METHODS = {
@@ -213,6 +232,28 @@ _ANNOTATE_METHODS = {
     "date": datetime.date,
     "timedelta": timedelta,
     "timezone": timezone,
+    # Cast eg. annotate with Cast('my_char_field', IntegerField())
+    "Cast": Cast,
+    # field types
+    "BooleanField": BooleanField,
+    "CharField": CharField,
+    "DateField": DateField,
+    "DateTimeField": DateTimeField,
+    "DecimalField": DecimalField,
+    "DurationField": DurationField,
+    "EmailField": EmailField,
+    "FilePathField": FilePathField,
+    "FloatField": FloatField,
+    "IntegerField": IntegerField,
+    "BigIntegerField": BigIntegerField,
+    "NullBooleanField": NullBooleanField,
+    "PositiveIntegerField": PositiveIntegerField,
+    "PositiveSmallIntegerField": PositiveSmallIntegerField,
+    "TextField": TextField,
+    "TimeField": TimeField,
+    "URLField": URLField,
+    "BinaryField": BinaryField,
+    "UUIDField": UUIDField,
 }
 
 _FILTER_METHODS = {
@@ -225,14 +266,14 @@ _AEVAL_FILTER_INTERPRETER = asteval.Interpreter(
     use_numpy=False, minimal=True, builtins_readonly=True
 )
 
-_AEVAL_FILTER = lambda expr: _AEVAL_FILTER_INTERPRETER.eval(expr, show_errors=False)  # throw exceptions instead
+_AEVAL_FILTER = lambda expr: _AEVAL_FILTER_INTERPRETER.eval(expr.lstrip(), show_errors=False)  # throw exceptions instead
 
 _AEVAL_ANNOTATE_INTERPRETER = asteval.Interpreter(
     symtable={**_AGGREGATE_METHODS, **_ANNOTATE_METHODS},
     use_numpy=False, minimal=True, builtins_readonly=True
 )
 
-_AEVAL_ANNOTATE = lambda expr: _AEVAL_ANNOTATE_INTERPRETER.eval(expr, show_errors=False)  # throw exceptions instead
+_AEVAL_ANNOTATE = lambda expr: _AEVAL_ANNOTATE_INTERPRETER.eval(expr.lstrip(), show_errors=False)  # throw exceptions instead
 
 
 # ========================================================================= #
